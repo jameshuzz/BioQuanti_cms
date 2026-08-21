@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}css/app.css">
+</head>
+<body>
+<#include "头部.htm"/>
+
+<!-- 轮播(后台可配置: 首页幻灯片栏目下 content_type='f' 的文章) -->
+<div class="bq-carousel">
+    <div class="bq-track">
+        {ms:arclist typeid="2787212335907000101" size=5}
+        <div class="bq-slide">
+            <img src="{@ms:file field.litpic/}" alt="${field.title}">
+            <div class="cap">
+                <h2>${field.title}</h2>
+                <#if field.shorttitle?? && field.shorttitle?has_content><p>${field.shorttitle}</p></#if>
+                <a class="cta" href="<#if field.outlink?? && field.outlink?has_content>${field.outlink}<#else>/</#if>">了解更多</a>
+            </div>
+        </div>
+        {/ms:arclist}
+    </div>
+    <div class="bq-arrow prev">‹</div>
+    <div class="bq-arrow next">›</div>
+    <div class="bq-dots"></div>
+</div>
+<script>
+(function(){
+  var track = document.querySelector('.bq-track');
+  var slides = document.querySelectorAll('.bq-slide');
+  var dotsWrap = document.querySelector('.bq-dots');
+  if(!track || !slides.length) return;
+  for(var d=0; d<slides.length; d++){ var s=document.createElement('span'); if(d===0) s.className='on'; dotsWrap.appendChild(s); }
+  var dots = dotsWrap.querySelectorAll('span');
+  if(slides.length < 2) return;
+  var i = 0, timer;
+  function go(n){ i=(n+slides.length)%slides.length; track.style.transform='translateX(-'+(i*100)+'%)'; for(var k=0;k<dots.length;k++){ dots[k].className=(k===i)?'on':''; } }
+  function next(){ go(i+1); }
+  function play(){ timer=setInterval(next,4500); }
+  function restart(){ clearInterval(timer); play(); }
+  document.querySelector('.bq-arrow.next').onclick=function(){ next(); restart(); };
+  document.querySelector('.bq-arrow.prev').onclick=function(){ go(i-1); restart(); };
+  for(var k=0;k<dots.length;k++){ dots[k].onclick=(function(k){ return function(){ go(k); restart(); }; })(k); }
+  play();
+})();
+</script>
+
+<!-- 快捷入口(促销文字介绍) -->
+<div class="bq-quicktabs">
+    <div class="bq-container">
+        <div class="bq-qt-grid">
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/2.jpg" alt=""></span><span class="tt">精选ELISA kit<br>一口价</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-antibody/index.html"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/yangben.webp" alt=""></span><span class="tt">抗体对<br>限时特惠</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-protein/index.html"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/shengwu_shengchan.webp" alt=""></span><span class="tt">重组蛋白<br>现货供应</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-tech/index.html"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/hexinjishu.jpg" alt=""></span><span class="tt">实验指南<br>技术手册</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-tech/index.html"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/jiance.png" alt=""></span><span class="tt">常见问题<br>FAQ</span></a>
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm"><span class="ico"><img src="{ms:global.contextpath/}/static/images/bioquanti/yangben.webp" alt=""></span><span class="tt">全部产品<br>浏览</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- 我们的产品(产品中心 -> 4大主分类 -> 子类列表; 非嵌套写法保证稳定渲染) -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>我们的产品</h2><span class="en">OUR PRODUCTS</span><span class="bar"></span></div>
+        <div class="bq-catgrid">
+
+            <!-- 试剂盒 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="{ms:global.contextpath/}/static/images/bioquanti/2.jpg" alt="试剂盒"></div>
+                <h3><a href="{ms:global.html/}bq-products/bq-kit/index.html">试剂盒</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="2787212335907000102" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}bq-products/bq-kit/index.html">更多试剂盒产品 →</a>
+            </div>
+
+            <!-- 蛋白 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="{ms:global.contextpath/}/static/images/bioquanti/shengwu_shengchan.webp" alt="蛋白"></div>
+                <h3><a href="{ms:global.html/}bq-products/bq-protein-m/index.html">蛋白</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="2787212335907000103" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}bq-products/bq-protein-m/index.html">更多蛋白产品 →</a>
+            </div>
+
+            <!-- 抗体 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="{ms:global.contextpath/}/static/images/bioquanti/yangben.webp" alt="抗体"></div>
+                <h3><a href="{ms:global.html/}bq-products/bq-antibody-m/index.html">抗体</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="2787212335907000104" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}bq-products/bq-antibody-m/index.html">更多抗体产品 →</a>
+            </div>
+
+            <!-- 其他 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="{ms:global.contextpath/}/static/images/bioquanti/shiji.png" alt="其他"></div>
+                <h3><a href="{ms:global.html/}bq-products/bq-other/index.html">其他</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="2787212335907000105" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}bq-products/bq-other/index.html">更多其他产品 →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 热门产品 -->
+<div class="bq-section alt">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>热门产品</h2><span class="en">HOT PRODUCTS</span><span class="bar"></span></div>
+        <div class="bq-prodgrid">
+            {ms:arclist size=8 typeid="1787218210806999"}
+            <div class="bq-prodcard">
+                <div class="pic"><a href="{ms:global.html/}${field.link}"><img src="{@ms:file field.litpic/}" alt="${field.title}"></a></div>
+                <div class="info">
+                    <div class="no">${field.shorttitle}</div>
+                    <div class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></div>
+                    <div class="go"><a href="{ms:global.html/}${field.link}">查看详情 →</a></div>
+                </div>
+            </div>
+            {/ms:arclist}
+        </div>
+    </div>
+</div>
+
+<!-- 技术专栏 -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>技术专栏</h2><span class="en">TECHNICAL</span><span class="bar"></span></div>
+        <ul class="bq-newslist">
+            {ms:arclist size=4 typeid="1787212335907000005"}
+            <li>
+                <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
+                <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+            </li>
+            {/ms:arclist}
+        </ul>
+    </div>
+</div>
+
+<#include "底部.htm"/>
+</body>
+</html>

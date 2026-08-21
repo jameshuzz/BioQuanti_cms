@@ -1,0 +1,139 @@
+server:
+  port: 8080
+  servlet:
+    context-path: / #项目名称
+    session.timeout: P0DT60M0S #D天H小时M分钟S秒，字符T是紧跟在时分秒之前的，每个单位都必须由数字开始,且时分秒顺序不能乱
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  error:
+    include-exception: true
+    include-message: always
+  tomcat:
+    max-swallow-size: 1GB # tomcat容器最大请求大小，可按需修改(一般比最大文件上传大小大一些就行)，避免上传文件超出最大限制时容器中断请求，导致获取不到异常信息
+
+#  ssl: #https证书配置 配置了之后只能通过https访问应用
+#    key-store: xxx.pfx 证书文件，证书文件格式具体参考证书分发平台
+#    key-store-password:  1234 证书密码
+#配置日志
+logging:
+  level:
+    net.mingsoft: debug
+    org.springdoc: error
+  config: classpath:log4j-spring.xml
+
+springdoc:
+  api-docs:
+    enabled: true #启用swagger功能，false 将不会启用swagger-ui和api-doc 生产的时候务必关掉
+  swagger-ui:
+    enabled: true #启用swagger文档(启用时需要swagger功能也开启 api-docs.enable: true)，生产的时候务必关掉 访问地址：http://ip|域名/项目发布名/swagger-ui.html
+    doc-expansion: none #默认不展开
+    tags-sorter: alpha   # 按字母顺序排列标签
+    operations-sorter: alpha # 按字母顺序排列操作
+  packages-to-scan: net.mingsoft #扫描包,多个包用逗号隔开
+
+ms:
+  #scheme: https #解决使用代理服务器代理应用时标签解析域名依旧为http的问题
+  xss:
+    enable: true #xss过滤器的开关
+    filter-url: /**   #过滤的url,多个用逗号分开
+    # #排除的url,多个用逗号分开,如果怕设置后台过滤麻烦，直接排除 /ms/**
+    exclude-url: /static/**,/template/**,/ms/mdiy/config/**,/ms/mdiy/model/**,/ms/mdiy/form/**,/ms/mdiy/tag/**,/store/client/model/**
+    #过滤的参数名,多个用逗号分开 默认排除菜单、自定模型JSON、模版内容、文章内容，具体根据需要配置其他字段
+    exclude-field: contentDetails,templateMail,fileContent
+  # shiro-key:  #16位长度，不填写默认随机生成
+  log:
+    exclude-field: managerPassword,oldManagerPassword,newManagerPassword,newConfirmManagerPassword # 日志过滤字段，填写后字段信息将不会出现在日志请求参数和返回参数中，多个用逗号隔开
+  diy:
+    html-dir: html #静态文件存放路径，默认html，不支持绝对路径，修改后需要重新静态化
+
+  manager:
+    path: /ms #后台访问的路径，如:http://项目/ms/login.do，生产的时候建议修改
+    check-code: false #关闭验证码验证(开发/仿站阶段),生产建议改回true
+
+  upload:
+    enable-web: true  #启用web层的上传
+    template: template #模板文件夹名称配置：修改名称后需将原 `template` 文件夹重命名为新值；注意仅支持文件名，不支持路径格式
+    path: upload #文件上传路径，可以根据实际写绝对路径（绝对路径需要开发版以上才支持）
+    mapping: /upload/** #修改需要谨慎，系统第一次部署可以随意修改，如果已经有了上传数据，再次修改会导致之前上传的文件404
+    denied: exe,jsp,xml,sh,bat,py,ftl,jspx,svg,php,asp,aspx,jsp,dll,so,jar,class
+    back-up: /upload_back
+    multipart:
+      #最大上传文件大小 单位：KB
+      max-file-size: 1024000
+      #文件暂存临时目录 基于tomcat目录下
+      upload-temp-dir: mcms-temp
+      #临时文件大小
+      max-in-memory-size: 1024000
+      #总上传最大大小 单位：KB -1禁用
+      max-request-size: -1
+
+  #shiro-key:  #16位长度，不填写默认随机生成
+  cookie-name: SHIRO_SESSION_ID
+
+  rand-code:
+    length: 4 #验证码长度
+    circle: 10 #干扰线条数，值越大越不容易辨别
+
+spring:
+  datasource:
+    druid:
+      initialSize: 5 #初始连接数，默认0
+      minIdle: 5  #最小连接数，默认8
+      maxActive: 20 #最大连接数，默认8
+      maxWait: 2000 #获取连接的最大等待时间，单位毫秒
+      validationQuery: SELECT 1
+      testOnBorrow: true #设置从连接池获取连接时是否检查连接有效性，true检查，false不检查
+      testOnReturn: true #设置从连接池归还连接时是否检查连接有效性，true检查，false不检查
+      poolPreparedStatements: true #可以支持PSCache（提升写入、查询效率）
+#      filters: stat,wall #配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      keepAlive: true #保持长连接
+      stat-view-servlet:
+        enabled: false #启用druid监控
+  profiles:
+    active: dev
+  cache:
+    ehcache:
+      config: classpath:ehcache.xml
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+      use-suffix-pattern: true
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,WEB-INF/**
+  servlet:
+    multipart:
+      enabled: true
+  freemarker:
+    suffix: .ftl
+    charset: UTF-8
+    content-type: text/html
+    allow-request-override: true
+    allow-session-override: true
+    expose-request-attributes: true
+    expose-session-attributes: true
+    expose-spring-macro-helpers: true
+    prefer-file-system-access: false
+    template-loader-path: file:WEB-INF/,file:WEB-INF/manager,classpath:/,classpath:/WEB-INF/manager,classpath:/WEB-INF
+    settings:
+      template_update_delay: 1
+      default_encoding: UTF-8
+      classic_compatible: true
+      date_format: yyyy-MM-dd
+      time_format: HH:mm:ss
+      datetime_format: yyyy-MM-dd HH:mm:ss
+      number_format: 0.##
+
+mybatis-plus:
+  #因为IBaseDao是一个抽象类，没有实体，所以自动注入的时候不会注入，需要手动映射
+  mapper-locations: classpath*:/net/mingsoft/base/dao/IBaseDao.xml
+  global-config:
+    db-config:
+      id-type: auto
+      where-strategy: not_empty #防止空串及null拼接条件
+  configuration:
+    database-id: mysql

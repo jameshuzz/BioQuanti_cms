@@ -1,0 +1,41 @@
+<!-- ===== footer ===== -->
+<div class="bq-footer">
+    <div class="bq-container">
+        <div class="cols">
+            <div class="col">
+                <h4>产品中心</h4>
+                {ms:channel typeid="1787212335907000001" type='son' orderby='sort'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+            </div>
+            <div class="col">
+                <h4>技术支持</h4>
+                <a href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">产品搜索</a>
+                {ms:arclist typeid="1787212335907000005" size=3}
+                <a href="{ms:global.html/}${field.link}">${field.title}</a>
+                {/ms:arclist}
+            </div>
+            <div class="col">
+                <h4>关于我们</h4>
+                {ms:channel typeid="1787212335907000006" type='self'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+                {ms:channel typeid="1787212335907000005" type='self'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+            </div>
+            <div class="col">
+                <h4>联系我们</h4>
+                <a href="{ms:global.html/}bq-contact/index.html">在线留言</a>
+                <p>电话：027-XXX-XXXX</p>
+                <p>邮箱：sales@bioquanti.com</p>
+                <p>地址：中国 · 武汉 · 光谷</p>
+            </div>
+        </div>
+    </div>
+    <div class="bq-copyright">
+        <div class="bq-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · {ms:global.name/}
+        </div>
+    </div>
+</div>

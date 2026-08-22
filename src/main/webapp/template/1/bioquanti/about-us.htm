@@ -9,20 +9,18 @@
 <link rel="stylesheet" href="${base}/{ms:global.style/}css/app.css">
 </head>
 <body>
-<#include "头部.htm"/>
+<#include "header.htm"/>
 
-<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}images/hexinjishu.jpg"}')">
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}images/bg-1.jpg"}')">
     <h1>${field.typetitle}</h1>
-    <p>TECHNICAL</p>
+    <p>ABOUT US</p>
 </div>
 
 <div class="bq-container bq-detail">
-    <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="/">首页</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
     <h1 class="title">${field.title}</h1>
-    <div class="meta">发布时间：${field.date?string("yyyy-MM-dd")}　|　点击：${field.hit}</div>
     <div class="content">${field.content}</div>
 </div>
 
-<#include "底部.htm"/>
+<#include "footer.htm"/>
 </body>
 </html>

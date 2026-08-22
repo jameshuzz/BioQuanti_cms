@@ -29,7 +29,7 @@
                         </select>
                         <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入产品名称 / 货号 / 靶标" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}<#else></#if>">
                         <input type="hidden" name="style" value="{ms:global.style/}">
-                        <input type="hidden" name="tmpl" value="搜索.htm">
+                        <input type="hidden" name="tmpl" value="search.htm">
                         <button type="submit"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg></button>
                     </form>
                     <div class="bq-lang">
@@ -40,11 +40,11 @@
                 </div>
                 <p class="bq-hot-links">
                     热门搜索：
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=IL-6&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">IL-6</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=TNF&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">TNF-α</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Leptin&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">Leptin</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=HSP70&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">HSP70</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Interferon&style={ms:global.template/}&tmpl=%E6%90%9C%E7%B4%A2.htm">Interferon</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=IL-6&style={ms:global.template/}&tmpl=search.htm">IL-6</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=TNF&style={ms:global.template/}&tmpl=search.htm">TNF-α</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Leptin&style={ms:global.template/}&tmpl=search.htm">Leptin</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=HSP70&style={ms:global.template/}&tmpl=search.htm">HSP70</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Interferon&style={ms:global.template/}&tmpl=search.htm">Interferon</a>
                 </p>
             </div>
         </div>

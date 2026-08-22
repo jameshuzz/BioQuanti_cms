@@ -3,44 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{ms:global.name/}-搜索结果</title>
-<meta name="keywords" content="{ms:global.keyword/}">
-<meta name="description" content="{ms:global.descrip/}">
+<title>{ms:global.name/}-${field.typetitle}</title>
+<meta name="keywords" content="${field.typekeyword}">
+<meta name="description" content="${field.typedescrip}">
 <link rel="stylesheet" href="${base}/{ms:global.style/}css/app.css">
 {@ms:pageurl/}
 </head>
 <body>
-<#include "头部.htm"/>
+<#include "header.htm"/>
 
-<div class="bq-container bq-searchpage">
-    <div class="bq-result-count">
-        <#if search?? && search.content_title?? && search.content_title?has_content>
-        关键词“<b>${MUtil.escape(search.content_title)}</b>”的搜索结果：共 <b>{ms:page.rcount/}</b> 条
-        <#else>
-        请输入关键词进行搜索。
-        </#if>
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}images/bg-1.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>PRODUCTS</p>
+</div>
+
+<!-- 子栏目标签 -->
+<div class="bq-subnav">
+    <div class="bq-container">
+        <#assign curid = field.typeid>
+        {ms:channel typeid="1787212335907000001" type='son' orderby='sort'}
+        <a href="{ms:global.html/}${field.typelink}" <#if field.typeid == curid>class="cur"</#if>>${field.typetitle}</a>
+        {/ms:channel}
     </div>
+</div>
 
+<div class="bq-container" style="padding:24px 0 40px;">
+    <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="/">首页</a> &gt; 产品中心 &gt; ${field.typetitle}</div>
     <div class="bq-prodlist">
         {ms:arclist ispaging=true size=20}
         <div class="bq-prodrow">
             <div class="pic"><a href="{ms:global.html/}${field.link}"><img src="{@ms:file field.litpic/}" alt="${field.title}"></a></div>
             <span class="no">${field.shorttitle}</span>
             <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+            <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
             <span class="go"><a href="{ms:global.html/}${field.link}">查看详情 →</a></span>
         </div>
         {/ms:arclist}
     </div>
 
+    <!-- 分页 -->
     <div class="bq-pagination">
         <a href="{ms:global.html/}{ms:page.index/}">首页</a>
         <a href="{ms:global.html/}{ms:page.pre/}">上一页</a>
         <span class="cur">{ms:page.cur/}</span><span>/ {ms:page.total/}</span>
         <a href="{ms:global.html/}{ms:page.next/}">下一页</a>
         <a href="{ms:global.html/}{ms:page.last/}">末页</a>
+        <span style="margin-left:10px;color:#999;">共 {ms:page.rcount/} 条</span>
     </div>
 </div>
 
-<#include "底部.htm"/>
+<#include "footer.htm"/>
 </body>
 </html>

@@ -28,7 +28,7 @@
                             <option value="Easy-Step">Easy-Step</option>
                         </select>
                         <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入产品名称 / 货号 / 靶标" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}<#else></#if>">
-                        <input type="hidden" name="style" value="{ms:global.style/}">
+                        <input type="hidden" name="style" value="bioquanti">
                         <input type="hidden" name="tmpl" value="search.htm">
                         <button type="submit"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg></button>
                     </form>
@@ -40,11 +40,11 @@
                 </div>
                 <p class="bq-hot-links">
                     热门搜索：
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=IL-6&style={ms:global.template/}&tmpl=search.htm">IL-6</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=TNF&style={ms:global.template/}&tmpl=search.htm">TNF-α</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Leptin&style={ms:global.template/}&tmpl=search.htm">Leptin</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=HSP70&style={ms:global.template/}&tmpl=search.htm">HSP70</a>
-                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Interferon&style={ms:global.template/}&tmpl=search.htm">Interferon</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=IL-6&style=bioquanti&tmpl=search.htm">IL-6</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=TNF&style=bioquanti&tmpl=search.htm">TNF-α</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Leptin&style=bioquanti&tmpl=search.htm">Leptin</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=HSP70&style=bioquanti&tmpl=search.htm">HSP70</a>
+                    <a href="{ms:global.contextpath/}/mcms/search.do?content_title=Interferon&style=bioquanti&tmpl=search.htm">Interferon</a>
                 </p>
             </div>
         </div>
@@ -101,39 +101,29 @@
       }
     });
   }
-  // 搜索：选物种时把物种名附加到搜索词前
+  // 搜索：关键词与物种完全独立，互不影响；选择物种只作为筛选条件
   var spSel = document.getElementById('bq-species-select');
   var kwInput = document.getElementById('bq-search-keyword');
   var searchForm = document.getElementById('bq-search-form');
   if(spSel && kwInput && searchForm){
-    var allSpecies = '-No Special-';
-    var defaultPh = '\u8bf7\u8f93\u5165\u4ea7\u54c1\u540d\u79f0 / \u8d27\u53f7 / \u9776\u6807';
-    // 收集所有物种值，用于判断输入框内容是否是物种名（搜索页回显场景）
-    var speciesOptions = {};
-    for(var si=0; si<spSel.options.length; si++){
-      speciesOptions[spSel.options[si].value] = true;
-    }
-    spSel.addEventListener('change', function(){
-      var sp = spSel.options[spSel.selectedIndex].text;
-      var spVal = spSel.value;
-      if(sp === allSpecies || !spVal){
-        kwInput.placeholder = defaultPh;
+    var defaultPh = '请输入产品名称 / 货号 / 靶标';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在 ' + spText + ' 产品中搜索（例如：HSP70）';
       }else{
-        kwInput.placeholder = '\u5728 ' + sp + ' \u4ea7\u54c1\u4e2d\u641c\u7d22\uff08\u4f8b\u5982\uff1aHSP70\uff09';
+        kwInput.placeholder = defaultPh;
       }
-      // 输入框内容恰好是某个物种名（上次搜索回显的物种）：换物种时同步更新/清空
-      var kw = kwInput.value.trim();
-      if(kw && speciesOptions[kw]){
-        kwInput.value = spVal ? spVal : '';
-      }
+    }
+    // 下拉改变只更新 placeholder/提示，不污染关键词输入框
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      // 让关键词框重新获得焦点，方便用户继续输入
+      kwInput.focus();
     });
-    searchForm.addEventListener('submit', function(e){
-      var sp = spSel.value;
-      var kw = kwInput.value.trim();
-      // 选了物种但没输关键词：用物种名搜（SQL 匹配 keyword/description）
-      if(sp && !kw){ kwInput.value = sp; }
-      // 物种 + 关键词：species 参数由 select 自动提交，SQL 用 AND 组合过滤
-    });
+    <#if search?? && search.species??>
+    try { spSel.value = '${search.species?js_string}'; updatePlaceholder(); } catch(e){}
+    </#if>
   }
 })();
 </script>

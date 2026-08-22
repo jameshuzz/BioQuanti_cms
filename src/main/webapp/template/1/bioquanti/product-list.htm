@@ -32,7 +32,7 @@
     <div class="bq-prodlist">
         {ms:arclist ispaging=true size=20}
         <div class="bq-prodrow">
-            <div class="pic"><a href="{ms:global.html/}${field.link}"><img src="{@ms:file field.litpic/}" alt="${field.title}"></a></div>
+            <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}images/product/1.png" alt="${field.title}"></#if></a></div>
             <span class="no">${field.shorttitle}</span>
             <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
             <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
@@ -40,6 +40,26 @@
         </div>
         {/ms:arclist}
     </div>
+
+    <!-- 空分类友好提示 -->
+    <div id="bq-empty-cat-tip" style="display:none;text-align:center;padding:40px 20px;background:#f8f9fa;border-radius:8px;margin:20px 0;">
+        <p style="font-size:18px;color:#333;margin-bottom:12px;">该分类暂无产品</p>
+        <p style="color:#666;">推荐浏览以下有产品的分类：</p>
+        <p style="margin-top:16px;">
+            <a href="{ms:global.html/}bq-products/bq-kit/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">试剂盒（1430+）</a>
+            <a href="{ms:global.html/}bq-products/bq-protein-m/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">蛋白（344+）</a>
+            <a href="{ms:global.html/}bq-products/bq-antibody-m/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">抗体（391+）</a>
+        </p>
+    </div>
+    <script>
+    (function(){
+        var rows = document.querySelectorAll('.bq-prodrow');
+        if(rows.length === 0){
+            var tip = document.getElementById('bq-empty-cat-tip');
+            if(tip) tip.style.display = 'block';
+        }
+    })();
+    </script>
 
     <!-- 分页 -->
     <div class="bq-pagination">

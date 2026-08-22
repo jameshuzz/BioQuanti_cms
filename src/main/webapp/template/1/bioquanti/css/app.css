@@ -1,5 +1,10 @@
 /* BioQuanti 皮肤 - 版式对齐 cusabio.cn */
 /* 主色 #29568F · 强调 #F60 · footer #E0EFFF · Microsoft Yahei */
+@import url("iconfont/iconfont.css");
+/* 老系统原版热门产品图标字体 */
+.bq-hotcat-card .ico{display:block;}
+.bq-hotcat-card .ico .iconfont{font-size:40px;line-height:1;color:#29568F;display:inline-block;margin-bottom:8px;}
+.bq-hotcat-card:hover .ico .iconfont{color:#fff;}
 *,*::before,*::after{box-sizing:border-box;}body{margin:0;padding:0;overflow-x:hidden;font-family:"Microsoft Yahei",Simsun,Arial,sans-serif;font-size:14px;color:#333;background:#fff;}
 a{color:#29568F;text-decoration:none;}
 a:hover{color:#F60;text-decoration:none;}
@@ -106,6 +111,26 @@ img{border:0;max-width:100%;}
 .bq-prodcard .tt a{color:#333;}
 .bq-prodcard .tt a:hover{color:#29568F;}
 .bq-prodcard .go{margin-top:8px;font-size:13px;}
+
+/* ===== 热门产品分类卡片(老站首页 HOT PRODUCTS) ===== */
+.bq-hotcat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+.bq-hotcat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px 10px;border:1px solid #e0e6ef;background:#fff;border-radius:6px;transition:all .2s;}
+.bq-hotcat-card:hover{border-color:#29568F;box-shadow:0 2px 14px rgba(41,86,143,.12);}
+.bq-hotcat-card .ico{width:46px;height:46px;margin-bottom:10px;color:#29568F;}
+.bq-hotcat-card .ico img{width:100%;height:100%;object-fit:contain;}
+.bq-hotcat-card .ico .iconfont{font-size:40px;line-height:1;color:#29568F;}
+.bq-hotcat-card .tt{font-size:14px;color:#333;line-height:1.4;}
+.bq-hotcat-card:hover{border-color:#29568F;background:#29568F;}
+.bq-hotcat-card:hover .ico{color:#fff;}
+.bq-hotcat-card:hover .ico .iconfont{color:#fff;}
+.bq-hotcat-card:hover .tt{color:#fff;}
+@media (max-width: 768px) {
+  .bq-hotcat-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .bq-hotcat-card{padding:16px 8px;}
+  .bq-hotcat-card .ico{width:38px;height:38px;}
+  .bq-hotcat-card .ico .iconfont{font-size:32px;}
+  .bq-hotcat-card .tt{font-size:13px;}
+}
 
 /* ===== 产品行列表(带缩略图) ===== */
 .bq-prodlist{border:1px solid #e0e6ef;}

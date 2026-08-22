@@ -1,0 +1,25 @@
+@font-face {
+  font-family: "bioquanti-iconfont";
+  src: url('iconfont.woff2') format('woff2'),
+       url('iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "bioquanti-iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 热门产品分类图标 - 来源：老系统 bioquanti.com iconfont（原版字符映射） */
+.icon-ganxibao:before { content: "\e60b"; }          /* 细胞因子&炎症 */
+.icon-zhongliuke:before { content: "\e670"; }        /* 肿瘤研究 */
+.icon-manxingjibing1:before { content: "\e628"; }    /* 慢性疾病&生长代谢 */
+.icon-mind:before { content: "\e604"; }              /* 神经疾病 */
+.icon-weishengwu1:before { content: "\e623"; }       /* 生物制品残留 */
+.icon-manxingjibing:before { content: "\e627"; }     /* 药物毒性评估 */
+.icon-bacteria1:before { content: "\eb03"; }         /* 自身免疫疾病 */
+.icon-bacteria:before { content: "\ea0a"; }          /* 微生物感染 */
+.icon-shengwu:before { content: "\e642"; }           /* Easy-Step 试剂盒 */
+.icon-weishengwuxiaoxi:before { content: "\e797"; }  /* 辅助试剂盒 */

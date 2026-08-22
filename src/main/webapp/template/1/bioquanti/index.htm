@@ -54,12 +54,12 @@
 <div class="bq-quicktabs">
     <div class="bq-container">
         <div class="bq-qt-grid">
-            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style={ms:global.template/}&tmpl=search.htm"><span class="ico"><img src="/{ms:global.style/}images/2.jpg" alt=""></span><span class="tt">精选ELISA kit<br>一口价</span></a>
-            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-antibody/index.html"><span class="ico"><img src="/{ms:global.style/}images/yangben.webp" alt=""></span><span class="tt">抗体对<br>限时特惠</span></a>
-            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-protein/index.html"><span class="ico"><img src="/{ms:global.style/}images/shengwu_shengchan.webp" alt=""></span><span class="tt">重组蛋白<br>现货供应</span></a>
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style={ms:global.template/}&tmpl=search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt=""></span><span class="tt">精选ELISA kit<br>一口价</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-antibody/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt=""></span><span class="tt">抗体对<br>限时特惠</span></a>
+            <a class="bq-qt" href="{ms:global.html/}bq-products/bq-protein/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt=""></span><span class="tt">重组蛋白<br>现货供应</span></a>
             <a class="bq-qt" href="{ms:global.html/}bq-tech/index.html"><span class="ico"><img src="/{ms:global.style/}images/hexinjishu.jpg" alt=""></span><span class="tt">实验指南<br>技术手册</span></a>
             <a class="bq-qt" href="{ms:global.html/}bq-tech/index.html"><span class="ico"><img src="/{ms:global.style/}images/jiance.png" alt=""></span><span class="tt">常见问题<br>FAQ</span></a>
-            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.template/}&tmpl=search.htm"><span class="ico"><img src="/{ms:global.style/}images/yangben.webp" alt=""></span><span class="tt">全部产品<br>浏览</span></a>
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.template/}&tmpl=search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_1.png" alt=""></span><span class="tt">全部产品<br>浏览</span></a>
         </div>
     </div>
 </div>
@@ -72,7 +72,7 @@
 
             <!-- 试剂盒 -->
             <div class="bq-catcard">
-                <div class="pic"><img src="/{ms:global.style/}images/2.jpg" alt="试剂盒"></div>
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="试剂盒"></div>
                 <h3><a href="{ms:global.html/}bq-products/bq-kit/index.html">试剂盒</a></h3>
                 <ul class="bq-subcats">
                     {ms:channel typeid="2787212335907000102" type='son' orderby='sort'}
@@ -84,7 +84,7 @@
 
             <!-- 蛋白 -->
             <div class="bq-catcard">
-                <div class="pic"><img src="/{ms:global.style/}images/shengwu_shengchan.webp" alt="蛋白"></div>
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="蛋白"></div>
                 <h3><a href="{ms:global.html/}bq-products/bq-protein-m/index.html">蛋白</a></h3>
                 <ul class="bq-subcats">
                     {ms:channel typeid="2787212335907000103" type='son' orderby='sort'}
@@ -96,7 +96,7 @@
 
             <!-- 抗体 -->
             <div class="bq-catcard">
-                <div class="pic"><img src="/{ms:global.style/}images/yangben.webp" alt="抗体"></div>
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="抗体"></div>
                 <h3><a href="{ms:global.html/}bq-products/bq-antibody-m/index.html">抗体</a></h3>
                 <ul class="bq-subcats">
                     {ms:channel typeid="2787212335907000104" type='son' orderby='sort'}
@@ -106,37 +106,46 @@
                 <a class="more" href="{ms:global.html/}bq-products/bq-antibody-m/index.html">更多抗体产品 →</a>
             </div>
 
-            <!-- 其他 -->
+            <!-- 全部产品（其他父级下无产品，改为全站搜索入口） -->
             <div class="bq-catcard">
-                <div class="pic"><img src="/{ms:global.style/}images/shiji.png" alt="其他"></div>
-                <h3><a href="{ms:global.html/}bq-products/bq-other/index.html">其他</a></h3>
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_2.png" alt="全部产品"></div>
+                <h3><a href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.style/}&tmpl=search.htm">全部产品</a></h3>
                 <ul class="bq-subcats">
-                    {ms:channel typeid="2787212335907000105" type='son' orderby='sort'}
-                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
-                    {/ms:channel}
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style={ms:global.style/}&tmpl=search.htm">ELISA 试剂盒</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Protein&style={ms:global.style/}&tmpl=search.htm">重组蛋白</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Antibody&style={ms:global.style/}&tmpl=search.htm">抗体</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?species=Human&style={ms:global.style/}&tmpl=search.htm">Human 产品</a></li>
                 </ul>
-                <a class="more" href="{ms:global.html/}bq-products/bq-other/index.html">更多其他产品 →</a>
+                <a class="more" href="{ms:global.contextpath/}/mcms/search.do?style={ms:global.style/}&tmpl=search.htm">浏览全部产品 →</a>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- 热门产品 -->
+<!-- 热门产品：按应用/疾病领域的搜索入口，每个入口对应一个核心关键词，点击跳转搜索结果 -->
 <div class="bq-section alt">
     <div class="bq-container">
         <div class="bq-sec-title"><h2>热门产品</h2><span class="en">HOT PRODUCTS</span><span class="bar"></span></div>
-        <div class="bq-prodgrid">
-            {ms:arclist size=8 typeid="1787218210806999"}
-            <div class="bq-prodcard">
-                <div class="pic"><a href="{ms:global.html/}${field.link}"><img src="{@ms:file field.litpic/}" alt="${field.title}"></a></div>
-                <div class="info">
-                    <div class="no">${field.shorttitle}</div>
-                    <div class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></div>
-                    <div class="go"><a href="{ms:global.html/}${field.link}">查看详情 →</a></div>
-                </div>
-            </div>
-            {/ms:arclist}
+        <div class="bq-hotcat-grid">
+            <#assign hotCats=[
+                {'title':'细胞因子&炎症','tag':'细胞因子&炎症','ico':'icon-ganxibao','sr':'肝细胞'},
+                {'title':'肿瘤研究','tag':'肿瘤研究','ico':'icon-zhongliuke','sr':'肿瘤'},
+                {'title':'慢性疾病&生长代谢','tag':'慢性疾病&生长代谢','ico':'icon-manxingjibing1','sr':'慢性病'},
+                {'title':'神经疾病','tag':'神经疾病','ico':'icon-mind','sr':'神经'},
+                {'title':'生物制品残留','tag':'生物制品残留','ico':'icon-weishengwu1','sr':'生物制品'},
+                {'title':'药物毒性评估','tag':'神经疾病','ico':'icon-manxingjibing','sr':'毒性'},
+                {'title':'自身免疫疾病','tag':'自身免疫疾病','ico':'icon-bacteria1','sr':'细菌'},
+                {'title':'微生物感染','tag':'微生物感染','ico':'icon-bacteria','sr':'微生物'},
+                {'title':'Easy-Step 试剂盒','tag':'Easy-Step 试剂盒','ico':'icon-shengwu','sr':'生物'},
+                {'title':'辅助试剂盒','tag':'Easy-Step 试剂盒','ico':'icon-weishengwuxiaoxi','sr':'微生物消息'}
+            ]>
+            <#list hotCats as item>
+            <a class="bq-hotcat-card" href="{ms:global.contextpath/}/mcms/search.do?content_tag=${item.tag?url('UTF-8')}&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont ${item.ico}" aria-label="${item.sr}"></i></span>
+                <span class="tt">${item.title}</span>
+            </a>
+            </#list>
         </div>
     </div>
 </div>

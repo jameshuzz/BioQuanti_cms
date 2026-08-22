@@ -19,13 +19,13 @@
 <div class="bq-detail-wrap">
     <div class="bq-container">
         <div class="bq-detail-grid">
-            <!-- 左侧热门产品 -->
+            <!-- 左侧热门产品（取 ELISA 试剂盒叶子栏目最新 10 条，避免空栏目） -->
             <aside class="bq-sidebar">
                 <div class="side-title">热门产品</div>
                 <div class="side-body">
-                    {ms:arclist size=10 typeid="1787218210806999"}
+                    {ms:arclist size=10 typeid="2787212335907000201"}
                     <div class="hot-item">
-                        <div class="pic"><a href="{ms:global.html/}${field.link}"><img src="{@ms:file field.litpic/}" alt="${field.title}"></a></div>
+                        <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}images/product/1.png" alt="${field.title}"></#if></a></div>
                         <div>
                             <div class="no">${field.shorttitle}</div>
                             <div class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></div>
@@ -43,11 +43,13 @@
                     发布时间：${field.date?string("yyyy-MM-dd")}　|　
                     点击：${field.hit}
                 </div>
-                <#if field.litpic?? && field.litpic?has_content>
                 <div class="bq-prod-img">
+                    <#if field.litpic?? && field.litpic?has_content>
                     <img src="{@ms:file field.litpic/}" alt="${field.title}">
+                    <#else>
+                    <img src="/{ms:global.style/}images/product/1.png" alt="${field.title}">
+                    </#if>
                 </div>
-                </#if>
                 <div class="content">${field.content}</div>
             </div>
         </div>

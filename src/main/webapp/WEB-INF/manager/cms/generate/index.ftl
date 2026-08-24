@@ -32,15 +32,19 @@
                     </div>
                     <div class="class-7" >
                         <el-form-item label="主页位置">
-                            <el-input v-model="position"
-                                      :disabled="false"
-                                      :style="{width:  '100%'}"
-                                      :clearable="true"
-                                      placeholder="请输入主页位置">
-                            </el-input>
+                            <el-select v-model="position"
+                                       :filterable="true"
+                                       :allow-create="true"
+                                       :default-first-option="true"
+                                       :clearable="true"
+                                       placeholder="请选择或输入主页位置">
+                                <el-option v-for='item in positionOptions' :key="item" :value="item"
+                                           :label="item"></el-option>
+                            </el-select>
                             <div class="ms-form-tip">
-                                一般为index.html或default.html,
-                                如果是<i>引导页面->首页</i>，可以手动调整主页模板与主页设置，先生成引导页，再生成首页。一般default.html为引导页面index.html为主页(需要服务器容器配置好对应默认页)。<br/>
+                                中文站选<i>cn/index</i>（模板选cn/index.htm），英文站选<i>en/index</i>（模板选en/index.htm），选择模板后会自动匹配位置<br/>
+                                注意：位置不带.html后缀（系统自动追加），填 index.html 会生成出 index.html.html<br/>
+                                引导页可手动输入 default 或 index<br/>
                                 点击“预览主页”可跳转到网站首页进行预览网站首页<br/>
                                 不能选择有分页标签的页面生成，例如news-list.htm、search.htm<br/>
                                 如果下拉没有出现模板，请检查应用设置是否绑定了模板<br/>
@@ -176,7 +180,19 @@
 
     var app = new _Vue({
         el: '#app',
-        watch: {},
+        watch: {
+            //选择主页模板后自动匹配对应语言的主页位置，防止中英文生成位置混淆
+            template: function (newVal) {
+                if (!newVal) {
+                    return;
+                }
+                if (newVal.indexOf('cn/') == 0) {
+                    this.position = 'cn/index';
+                } else if (newVal.indexOf('en/') == 0) {
+                    this.position = 'en/index';
+                }
+            }
+        },
         data: function () {
             return {
                 homeLoading: false,
@@ -186,7 +202,9 @@
                 template: '',
                 //主题模板
                 templateOptions: [],
-                position: 'index',
+                position: 'cn/index',
+                //主页位置选项（中文站/英文站/根引导页）
+                positionOptions: ['cn/index', 'en/index', 'index', 'default'],
                 deletePath:"",
                 //位置
                 contentSection: '0',
@@ -341,11 +359,15 @@
                     pageSize: 99999
                 }).then(function (data) {
                     that.templateOptions = data.data; //寻找主页
-
+                    //优先中文站首页模板，其次英文站首页，最后其他含index/default的模板
                     var template = that.templateOptions.find(function (x) {
-                        return x.indexOf("index") != -1 || x.indexOf("default") != -1;
-                    }); //没有就找其他的
-
+                        return x == "cn/index.htm";
+                    });
+                    if (!template) {
+                        template = that.templateOptions.find(function (x) {
+                            return x.indexOf("index") != -1 || x.indexOf("default") != -1;
+                        }); //没有就找其他的
+                    }
                     that.template = template || (that.templateOptions.length > 0 ? that.templateOptions[0] : "");
                 });
             },

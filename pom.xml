@@ -19,7 +19,6 @@
     </properties>
     <dependencies>
         <!-- ms-base/ms-basic/ms-mdiy 源码已合并进 src/main/java，以下为原 jar 携带的第三方依赖 -->
-        <!-- MStore 商城客户端（store-client）已移除，项目源码无引用 -->
 
         <!-- ===== 以下依赖清单来自 ms-base 3.0.7 pom（版本与 exclusions 保持一致） ===== -->
         <dependency>

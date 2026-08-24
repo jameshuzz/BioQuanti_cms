@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.title}</title>
+<meta name="keywords" content="${field.keyword}">
+<meta name="description" content="${field.descrip}">
+<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
+<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
+<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}en/images/bg-1.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>ABOUT US</p>
+</div>
+
+<div class="bq-container bq-detail">
+    <h1 class="title">${field.title}</h1>
+    <div class="content">${field.content}</div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

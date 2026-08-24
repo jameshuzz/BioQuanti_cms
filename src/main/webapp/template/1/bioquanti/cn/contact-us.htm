@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-联系我们</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}cn/css/app.css">
+<script src="${base}/static/plugins/jquery/3.6.3/jquery-3.6.3.min.js"></script>
+</head>
+<body>
+<#include "/cn/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}cn/images/bg-1.jpg"}')">
+    <h1>联系我们</h1>
+    <p>CONTACT US</p>
+</div>
+
+<div class="bq-container bq-contact">
+    <div class="bq-contact-grid">
+        <!-- ===== 左侧：联系信息 ===== -->
+        <div class="bq-contact-info">
+            <div class="bq-ci-title">联系信息</div>
+            <div class="bq-ci-block">
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">地址</span>
+                    <span class="bq-ci-value">武汉市江夏区光谷生物城（BioQuanti Technology）</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">电话</span>
+                    <span class="bq-ci-value">027-XXXXXXXX</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">传真</span>
+                    <span class="bq-ci-value">027-XXXXXXXX</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">邮箱</span>
+                    <span class="bq-ci-value"><a href="mailto:service@bioquanti.com">service@bioquanti.com</a></span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">邮编</span>
+                    <span class="bq-ci-value">430075</span>
+                </div>
+            </div>
+            <div class="bq-ci-note">工作时间：周一至周五 9:00 - 18:00<br>我们将在收到留言后尽快与您联系。</div>
+        </div>
+
+        <!-- ===== 右侧：在线留言 ===== -->
+        <div class="bq-contact-form">
+            <div class="bq-cf-title">在线留言</div>
+            <form class="bq-form" id="bq-contact-form">
+                <div class="bq-form-row">
+                    <label class="bq-form-label">姓名<em>*</em></label>
+                    <div class="bq-form-item">
+                        <input type="text" name="name" required maxlength="100" placeholder="请输入您的姓名" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">邮箱<em>*</em></label>
+                    <div class="bq-form-item">
+                        <input type="email" name="email" required maxlength="150" placeholder="请输入您的邮箱" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">公司/单位</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="company" maxlength="150" placeholder="请输入您的公司/单位（选填）" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">电话</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="phone" id="bq-phone" maxlength="50" class="bq-form-text" placeholder="请输入您的联系电话（含国际区号）">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">微信</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="wechat" maxlength="100" placeholder="请输入您的微信号（选填）" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">WhatsApp</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="whatsapp" maxlength="50" placeholder="WhatsApp number (e.g. +1 555 123 4567)" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">Telegram</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="telegram" maxlength="100" placeholder="Telegram username" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">需求留言<em>*</em></label>
+                    <div class="bq-form-item">
+                        <textarea name="content" required rows="5" placeholder="请输入您的需求留言" class="bq-form-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="bq-form-submit">
+                    <button type="submit" class="bq-btn-submit">提交留言</button>
+                    <button type="reset" class="bq-btn-reset">重新填写</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<#include "/cn/footer.htm"/>
+
+<style>
+/* 联系我们页 */
+.bq-contact{padding:40px 0 60px;}
+.bq-contact-grid{display:flex;gap:30px;align-items:flex-start;}
+.bq-contact-info{flex:0 0 360px;background:#f7fafd;border:1px solid #e6edf5;border-radius:8px;padding:28px 26px;}
+.bq-ci-title,.bq-cf-title{font-size:20px;color:#29568F;font-weight:bold;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #e6edf5;}
+.bq-ci-row{display:flex;margin-bottom:16px;line-height:1.6;}
+.bq-ci-label{flex:0 0 64px;color:#999;font-size:14px;}
+.bq-ci-value{flex:1;color:#333;font-size:14px;word-break:break-all;}
+.bq-ci-value a{color:#29568F;text-decoration:none;}
+.bq-ci-value a:hover{text-decoration:underline;}
+.bq-ci-note{margin-top:20px;padding-top:16px;border-top:1px dashed #d8e2ee;color:#888;font-size:13px;line-height:1.8;}
+.bq-contact-form{flex:1;min-width:0;background:#fff;border:1px solid #e6edf5;border-radius:8px;padding:28px 30px;}
+.bq-form-row{display:flex;align-items:flex-start;margin-bottom:18px;}
+.bq-form-label{flex:0 0 110px;padding-top:8px;color:#333;font-size:14px;text-align:right;padding-right:14px;}
+.bq-form-label em{color:#f60;font-style:normal;margin-left:2px;}
+.bq-form-item{flex:1;min-width:0;}
+.bq-form-text,.bq-form-textarea{width:100%;border:1px solid #d8e2ee;border-radius:4px;padding:9px 12px;font-size:14px;color:#333;box-sizing:border-box;outline:none;transition:border-color .2s;}
+.bq-form-text:focus,.bq-form-textarea:focus{border-color:#29568F;}
+.bq-form-textarea{resize:vertical;min-height:110px;}
+.bq-form-submit{display:flex;gap:12px;padding-left:124px;}
+.bq-btn-submit,.bq-btn-reset{border:none;border-radius:4px;padding:10px 34px;font-size:14px;cursor:pointer;transition:opacity .2s;}
+.bq-btn-submit{background:#29568F;color:#fff;}
+.bq-btn-submit:hover{opacity:.85;}
+.bq-btn-reset{background:#eef2f7;color:#666;}
+.bq-btn-reset:hover{opacity:.85;}
+/* 提示信息 */
+.bq-form-msg{margin-top:14px;padding:10px 14px;border-radius:4px;font-size:14px;display:none;}
+.bq-form-msg.ok{display:block;background:#f0f9f0;color:#2e7d32;border:1px solid #cde8cd;}
+.bq-form-msg.err{display:block;background:#fdf0f0;color:#c62828;border:1px solid #f0cdcd;}
+/* 响应式 */
+@media (max-width:768px){
+  /* 整体间距 */
+  .bq-contact{padding:20px 0 40px;}
+  /* 整体单列 */
+  .bq-contact-grid{flex-direction:column;gap:16px;}
+  /* 联系信息卡片：占满宽 */
+  .bq-contact-info{flex:auto;width:100%;padding:18px 16px;}
+  .bq-ci-title,.bq-cf-title{font-size:18px;margin-bottom:14px;padding-bottom:8px;}
+  /* 联系信息行：字段名+值上下排 */
+  .bq-ci-row{flex-direction:column;margin-bottom:12px;line-height:1.5;}
+  .bq-ci-label{flex:auto;color:#999;font-size:13px;margin-bottom:2px;}
+  .bq-ci-value{font-size:14px;}
+  /* 表单卡片：占满宽 */
+  .bq-contact-form{flex:auto;width:100%;padding:20px 16px;}
+  /* 表单行：label+输入框上下排 */
+  .bq-form-row{flex-direction:column;margin-bottom:14px;}
+  .bq-form-label{flex:auto;text-align:left;padding:0 0 6px;font-size:13px;}
+  .bq-form-label em{font-size:13px;}
+  .bq-form-item{flex:1;width:100%;}
+  .bq-form-text,.bq-form-textarea{font-size:14px;padding:10px 12px;}
+  .bq-form-textarea{min-height:100px;}
+  /* 提交按钮区：占满宽，按钮堆叠 */
+  .bq-form-submit{flex-direction:column;gap:10px;padding-left:0;}
+  .bq-btn-submit,.bq-btn-reset{width:100%;padding:12px 0;font-size:15px;}
+  /* 提示信息 */
+  .bq-form-msg{padding:10px 12px;font-size:13px;}
+}
+</style>
+<script>
+(function(){
+  var form = document.getElementById('bq-contact-form');
+  if(!form) return;
+  var msg = document.createElement('div');
+  msg.className = 'bq-form-msg';
+  form.appendChild(msg);
+  var phoneInput = document.getElementById('bq-phone');
+
+  form.addEventListener('reset', function(){
+    setTimeout(function(){
+      msg.className = 'bq-form-msg';
+      msg.innerHTML = '';
+    }, 0);
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.className = 'bq-form-msg';
+    msg.innerHTML = '';
+    var data = {
+      name: form.querySelector('[name=name]').value.trim(),
+      email: form.querySelector('[name=email]').value.trim(),
+      company: form.querySelector('[name=company]').value.trim(),
+      phone: phoneInput.value.trim(),
+      wechat: form.querySelector('[name=wechat]').value.trim(),
+      whatsapp: form.querySelector('[name=whatsapp]').value.trim(),
+      telegram: form.querySelector('[name=telegram]').value.trim(),
+      content: form.querySelector('[name=content]').value.trim()
+    };
+    // 至少一种联系方式
+    if(!data.email && !data.phone && !data.wechat && !data.whatsapp && !data.telegram){
+      msg.className = 'bq-form-msg err';
+      msg.innerHTML = '请至少填写一种联系方式';
+      return;
+    }
+    $.ajax({
+      url: '{ms:global.contextpath/}/cms/message/post.do',
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function(res){
+        if(res && res.result){
+          msg.className = 'bq-form-msg ok';
+          msg.innerHTML = '✓ 提交成功，我们将在工作时间尽快与您联系！';
+          form.reset();
+        }else{
+          msg.className = 'bq-form-msg err';
+          msg.innerHTML = (res && res.msg) ? res.msg : '提交失败，请稍后重试';
+        }
+      },
+      error: function(){
+        msg.className = 'bq-form-msg err';
+        msg.innerHTML = '网络异常，请稍后重试';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

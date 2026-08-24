@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
+<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
+<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
+<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<!-- Carousel (configurable in backend: content_type='f' articles under the Home Slide column) -->
+<div class="bq-carousel">
+    <div class="bq-track">
+        {ms:arclist typeid="3707212335907000101" size=5}
+        <div class="bq-slide">
+            <img src="{@ms:file field.litpic/}" alt="${field.title}">
+            <div class="cap">
+                <h2>${field.title}</h2>
+                <#if field.shorttitle?? && field.shorttitle?has_content><p>${field.shorttitle}</p></#if>
+                <a class="cta" href="<#if field.outlink?? && field.outlink?has_content>${field.outlink}<#else>/</#if>">Learn More</a>
+            </div>
+        </div>
+        {/ms:arclist}
+    </div>
+    <div class="bq-arrow prev">‹</div>
+    <div class="bq-arrow next">›</div>
+    <div class="bq-dots"></div>
+</div>
+<script>
+(function(){
+  var track = document.querySelector('.bq-track');
+  var slides = document.querySelectorAll('.bq-slide');
+  var dotsWrap = document.querySelector('.bq-dots');
+  if(!track || !slides.length) return;
+  for(var d=0; d<slides.length; d++){ var s=document.createElement('span'); if(d===0) s.className='on'; dotsWrap.appendChild(s); }
+  var dots = dotsWrap.querySelectorAll('span');
+  if(slides.length < 2) return;
+  var i = 0, timer;
+  function go(n){ i=(n+slides.length)%slides.length; track.style.transform='translateX(-'+(i*100)+'%)'; for(var k=0;k<dots.length;k++){ dots[k].className=(k===i)?'on':''; } }
+  function next(){ go(i+1); }
+  function play(){ timer=setInterval(next,4500); }
+  function restart(){ clearInterval(timer); play(); }
+  document.querySelector('.bq-arrow.next').onclick=function(){ next(); restart(); };
+  document.querySelector('.bq-arrow.prev').onclick=function(){ go(i-1); restart(); };
+  for(var k=0;k<dots.length;k++){ dots[k].onclick=(function(k){ return function(){ go(k); restart(); }; })(k); }
+  play();
+})();
+</script>
+
+<!-- Quick links -->
+<div class="bq-quicktabs">
+    <div class="bq-container">
+        <div class="bq-qt-grid">
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style=bioquanti&tmpl=en/search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt=""></span><span class="tt">Featured ELISA Kits<br>One Price</span></a>
+            <a class="bq-qt" href="{ms:global.html/}en/products/antibodies/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt=""></span><span class="tt">Antibody Pairs<br>SALE</span></a>
+            <a class="bq-qt" href="{ms:global.html/}en/products/proteins/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt=""></span><span class="tt">Recombinant Proteins<br>In Stock</span></a>
+            <a class="bq-qt" href="{ms:global.html/}en/tech/index.html"><span class="ico"><img src="/{ms:global.style/}en/images/hexinjishu.jpg" alt=""></span><span class="tt">Protocols<br>Tech Manuals</span></a>
+            <a class="bq-qt" href="{ms:global.html/}en/tech/index.html"><span class="ico"><img src="/{ms:global.style/}en/images/jiance.png" alt=""></span><span class="tt">FAQ</span></a>
+            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_1.png" alt=""></span><span class="tt">Browse<br>All Products</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- Our Products -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>Our Products</h2><span class="en">PRODUCT CATEGORIES</span><span class="bar"></span></div>
+        <div class="bq-catgrid">
+
+            <!-- Kits -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Kits"></div>
+                <h3><a href="{ms:global.html/}en/products/kits/index.html">Kits</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="3707212335907000102" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}en/products/kits/index.html">More Kits →</a>
+            </div>
+
+            <!-- Proteins -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Proteins"></div>
+                <h3><a href="{ms:global.html/}en/products/proteins/index.html">Proteins</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="3707212335907000103" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}en/products/proteins/index.html">More Proteins →</a>
+            </div>
+
+            <!-- Antibodies -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Antibodies"></div>
+                <h3><a href="{ms:global.html/}en/products/antibodies/index.html">Antibodies</a></h3>
+                <ul class="bq-subcats">
+                    {ms:channel typeid="3707212335907000104" type='son' orderby='sort'}
+                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+                    {/ms:channel}
+                </ul>
+                <a class="more" href="{ms:global.html/}en/products/antibodies/index.html">More Antibodies →</a>
+            </div>
+
+            <!-- All Products (others / search entry) -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_2.png" alt="All Products"></div>
+                <h3><a href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">All Products</a></h3>
+                <ul class="bq-subcats">
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style=bioquanti&tmpl=en/search.htm">ELISA Kits</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Protein&style=bioquanti&tmpl=en/search.htm">Recombinant Proteins</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Antibody&style=bioquanti&tmpl=en/search.htm">Antibodies</a></li>
+                    <li><a href="{ms:global.contextpath/}/mcms/search.do?species=Human&style=bioquanti&tmpl=en/search.htm">Human Products</a></li>
+                </ul>
+                <a class="more" href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">Browse All Products →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Hot Products: search entries by application/disease area -->
+<div class="bq-section alt">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>Hot Products</h2><span class="en">APPLICATION AREAS</span><span class="bar"></span></div>
+        <div class="bq-hotcat-grid">
+            <#assign hotCats=[
+                {'title':'Cytokines & Inflammation','tag':'细胞因子&炎症','ico':'icon-ganxibao','sr':'cytokine'},
+                {'title':'Cancer Research','tag':'肿瘤研究','ico':'icon-zhongliuke','sr':'tumor'},
+                {'title':'Chronic Disease & Metabolism','tag':'慢性疾病&生长代谢','ico':'icon-manxingjibing1','sr':'chronic'},
+                {'title':'Neurodegeneration','tag':'神经疾病','ico':'icon-mind','sr':'nerve'},
+                {'title':'Biologics Residuals','tag':'生物制品残留','ico':'icon-weishengwu1','sr':'biologics'},
+                {'title':'Drug Toxicity','tag':'神经疾病','ico':'icon-manxingjibing','sr':'toxicity'},
+                {'title':'Autoimmune Disease','tag':'自身免疫疾病','ico':'icon-bacteria1','sr':'bacteria'},
+                {'title':'Microbial Infection','tag':'微生物感染','ico':'icon-bacteria','sr':'microbial'},
+                {'title':'Easy-Step Kits','tag':'Easy-Step 试剂盒','ico':'icon-shengwu','sr':'bio'},
+                {'title':'Auxiliary Kits','tag':'Easy-Step 试剂盒','ico':'icon-weishengwuxiaoxi','sr':'aux kits'}
+            ]>
+            <#list hotCats as item>
+            <a class="bq-hotcat-card" href="{ms:global.contextpath/}/mcms/search.do?content_tag=${item.tag?url('UTF-8')}&style=bioquanti&tmpl=en/search.htm">
+                <span class="ico"><i class="iconfont ${item.ico}" aria-label="${item.sr}"></i></span>
+                <span class="tt">${item.title}</span>
+            </a>
+            </#list>
+        </div>
+    </div>
+</div>
+
+<!-- Technical -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>Technical Articles</h2><span class="en">TECHNICAL</span><span class="bar"></span></div>
+        <ul class="bq-newslist">
+            {ms:arclist size=4 typeid="3707212335907000005"}
+            <li>
+                <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
+                <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+            </li>
+            {/ms:arclist}
+        </ul>
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

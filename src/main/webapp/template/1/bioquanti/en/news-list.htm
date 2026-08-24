@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.typetitle}</title>
+<meta name="keywords" content="${field.typekeyword}">
+<meta name="description" content="${field.typedescrip}">
+<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
+<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
+<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}en/images/hexinjishu.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>TECHNICAL</p>
+</div>
+
+<div class="bq-container" style="padding:24px 0 40px;">
+    <div class="bq-crumb" style="background:none;border:0;">Home: <a href="{ms:global.html/}en/index.html">Home</a> &gt; ${field.typetitle}</div>
+    <ul class="bq-newslist">
+        {ms:arclist ispaging=true size=20}
+        <li>
+            <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
+            <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+        </li>
+        {/ms:arclist}
+    </ul>
+
+    <div class="bq-pagination">
+        <a href="{ms:global.html/}{ms:page.index/}">First</a>
+        <a href="{ms:global.html/}{ms:page.pre/}">Previous</a>
+        <span class="cur">{ms:page.cur/}</span><span>/ {ms:page.total/}</span>
+        <a href="{ms:global.html/}{ms:page.next/}">Next</a>
+        <a href="{ms:global.html/}{ms:page.last/}">Last</a>
+        <span style="margin-left:10px;color:#999;">{ms:page.rcount/} Articles</span>
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

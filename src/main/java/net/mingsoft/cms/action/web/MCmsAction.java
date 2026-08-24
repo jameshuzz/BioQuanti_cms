@@ -181,6 +181,16 @@ public class MCmsAction extends net.mingsoft.cms.action.BaseAction {
         if (StringUtils.isNotBlank(contentTag)){
             searchMap.put("content_tag", contentTag);
         }
+        // 语言隔离：按当前搜索模板自动限定文章语言，防止中英文章互相串搜
+        // en/ 前缀模板只搜"英文"文章，其余(cn/ 或默认)只搜"中文"文章；请求显式传 content_type 时尊重用户覆盖
+        if (StringUtils.isBlank(BasicUtil.getString("content_type"))) {
+            String currentTmpl = BasicUtil.getString("tmpl", "search.htm");
+            if (currentTmpl.startsWith("en/")) {
+                searchMap.put("content_type", "en");
+            } else {
+                searchMap.put("content_type", "zh");
+            }
+        }
         searchMap.put("categoryIds",categoryIds);
         StringBuilder urlParams = new StringBuilder();
 

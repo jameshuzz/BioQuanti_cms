@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.title}</title>
+<meta name="keywords" content="${field.keyword}">
+<meta name="description" content="${field.descrip}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}cn/css/app.css">
+</head>
+<body>
+<#include "/cn/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}cn/images/hexinjishu.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>TECHNICAL</p>
+</div>
+
+<div class="bq-container bq-detail">
+    <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="{ms:global.html/}cn/index.html">首页</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
+    <h1 class="title">${field.title}</h1>
+    <div class="meta">发布时间：${field.date?string("yyyy-MM-dd")}　|　点击：${field.hit}</div>
+    <div class="content">${field.content}</div>
+</div>
+
+<#include "/cn/footer.htm"/>
+</body>
+</html>

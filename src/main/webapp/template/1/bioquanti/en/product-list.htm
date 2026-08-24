@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.typetitle}</title>
+<meta name="keywords" content="${field.typekeyword}">
+<meta name="description" content="${field.typedescrip}">
+<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
+<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
+<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}en/images/bg-1.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>PRODUCTS</p>
+</div>
+
+<!-- Sub-category tabs -->
+<div class="bq-subnav">
+    <div class="bq-container">
+        <#assign curid = field.typeid>
+        {ms:channel typeid="3707212335907000001" type='son' orderby='sort'}
+        <a href="{ms:global.html/}${field.typelink}" <#if field.typeid == curid>class="cur"</#if>>${field.typetitle}</a>
+        {/ms:channel}
+    </div>
+</div>
+
+<div class="bq-container" style="padding:24px 0 40px;">
+    <div class="bq-crumb" style="background:none;border:0;">Home: <a href="{ms:global.html/}en/index.html">Home</a> &gt; Products &gt; ${field.typetitle}</div>
+    <div class="bq-prodlist">
+        {ms:arclist ispaging=true size=20}
+        <div class="bq-prodrow">
+            <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}"></#if></a></div>
+            <span class="no">${field.shorttitle}</span>
+            <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+            <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
+            <span class="go"><a href="{ms:global.html/}${field.link}">View Details →</a></span>
+        </div>
+        {/ms:arclist}
+    </div>
+
+    <!-- Friendly empty-category tip -->
+    <div id="bq-empty-cat-tip" style="display:none;text-align:center;padding:40px 20px;background:#f8f9fa;border-radius:8px;margin:20px 0;">
+        <p style="font-size:18px;color:#333;margin-bottom:12px;">No products in this category yet</p>
+        <p style="color:#666;">You may be interested in the following categories:</p>
+        <p style="margin-top:16px;">
+            <a href="{ms:global.html/}en/products/kits/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">Kits (1430+)</a>
+            <a href="{ms:global.html/}en/products/proteins/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">Proteins (344+)</a>
+            <a href="{ms:global.html/}en/products/antibodies/index.html" style="display:inline-block;margin:6px 12px;color:#1e6fdb;">Antibodies (391+)</a>
+        </p>
+    </div>
+    <script>
+    (function(){
+        var rows = document.querySelectorAll('.bq-prodrow');
+        if(rows.length === 0){
+            var tip = document.getElementById('bq-empty-cat-tip');
+            if(tip) tip.style.display = 'block';
+        }
+    })();
+    </script>
+
+    <!-- Pagination -->
+    <div class="bq-pagination">
+        <a href="{ms:global.html/}{ms:page.index/}">First</a>
+        <a href="{ms:global.html/}{ms:page.pre/}">Previous</a>
+        <span class="cur">{ms:page.cur/}</span><span>/ {ms:page.total/}</span>
+        <a href="{ms:global.html/}{ms:page.next/}">Next</a>
+        <a href="{ms:global.html/}{ms:page.last/}">Last</a>
+        <span style="margin-left:10px;color:#999;">{ms:page.rcount/} Results</span>
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

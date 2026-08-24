@@ -1,0 +1,41 @@
+<!-- ===== footer ===== -->
+<div class="bq-footer">
+    <div class="bq-container">
+        <div class="cols">
+            <div class="col">
+                <h4>Products</h4>
+                {ms:channel typeid="3707212335907000001" type='son' orderby='sort'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+            </div>
+            <div class="col">
+                <h4>Technical Support</h4>
+                <a href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">Product Search</a>
+                {ms:arclist typeid="3707212335907000005" size=3}
+                <a href="{ms:global.html/}${field.link}">${field.title}</a>
+                {/ms:arclist}
+            </div>
+            <div class="col">
+                <h4>About Us</h4>
+                {ms:channel typeid="3707212335907000006" type='self'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+                {ms:channel typeid="3707212335907000005" type='self'}
+                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                {/ms:channel}
+            </div>
+            <div class="col">
+                <h4>Contact Us</h4>
+                <a href="{ms:global.html/}en/contact/index.html">Online Message</a>
+                <p>Tel: 027-XXX-XXXX</p>
+                <p>Email: sales@bioquanti.com</p>
+                <p>Address: Wuhan · China · Optics Valley</p>
+            </div>
+        </div>
+    </div>
+    <div class="bq-copyright">
+        <div class="bq-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · {ms:global.name/}
+        </div>
+    </div>
+</div>

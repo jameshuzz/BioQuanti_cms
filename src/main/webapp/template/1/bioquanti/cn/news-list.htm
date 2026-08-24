@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.typetitle}</title>
+<meta name="keywords" content="${field.typekeyword}">
+<meta name="description" content="${field.typedescrip}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}cn/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/cn/header.htm"/>
+
+<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}cn/images/hexinjishu.jpg"}')">
+    <h1>${field.typetitle}</h1>
+    <p>TECHNICAL</p>
+</div>
+
+<div class="bq-container" style="padding:24px 0 40px;">
+    <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="{ms:global.html/}cn/index.html">首页</a> &gt; ${field.typetitle}</div>
+    <ul class="bq-newslist">
+        {ms:arclist ispaging=true size=20}
+        <li>
+            <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
+            <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
+        </li>
+        {/ms:arclist}
+    </ul>
+
+    <div class="bq-pagination">
+        <a href="{ms:global.html/}{ms:page.index/}">首页</a>
+        <a href="{ms:global.html/}{ms:page.pre/}">上一页</a>
+        <span class="cur">{ms:page.cur/}</span><span>/ {ms:page.total/}</span>
+        <a href="{ms:global.html/}{ms:page.next/}">下一页</a>
+        <a href="{ms:global.html/}{ms:page.last/}">末页</a>
+        <span style="margin-left:10px;color:#999;">共 {ms:page.rcount/} 条</span>
+    </div>
+</div>
+
+<#include "/cn/footer.htm"/>
+</body>
+</html>

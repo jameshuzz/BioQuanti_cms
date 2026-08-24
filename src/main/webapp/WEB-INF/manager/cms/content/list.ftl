@@ -57,7 +57,7 @@
                 <el-table-column label="编号" width="200" prop="id">
                     <template #header>编号
                         <el-popover placement="top-start" title="提示" trigger="hover" >
-                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html#%E6%96%87%E7%AB%A0%E5%88%97%E8%A1%A8-msarclist" target="_blank">${'$'}{field.id}</a>
+                            标签：${'$'}{field.id}
                             <template #reference>
                                 <i class="el-icon-question"></i>
                             </template>
@@ -92,7 +92,7 @@
                 <el-table-column label="排序" width="75" align="right" prop="contentSort">
                     <template #header>排序
                         <el-popover placement="top-start" title="提示" trigger="hover" >
-                            前台模板标签需设置orderby属性为sort才能生效，<a href="https://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html#orderby%E5%A4%9A%E5%AD%97%E6%AE%B5%E4%BD%BF%E7%94%A8%E6%A0%B7%E4%BE%8B542%E5%8F%8A%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC" target="_blank">参考</a>
+                            前台模板标签需设置orderby属性为sort才能生效，参考
                             <template #reference>
                                 <i class="el-icon-question"></i>
                             </template>
@@ -105,7 +105,7 @@
                 <el-table-column label="点击量" width="90" align="right" prop="contentHit">
                     <template #header>点击量
                         <el-popover placement="top-start" title="提示" trigger="hover" >
-                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html#%E6%96%87%E7%AB%A0%E5%88%97%E8%A1%A8-msarclist" target="_blank">${'$'}{field.hit}</a>
+                            标签：${'$'}{field.hit}
                             <template #reference>
                                 <i class="el-icon-question"></i>
                             </template>

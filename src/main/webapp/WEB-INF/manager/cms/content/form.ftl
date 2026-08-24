@@ -37,7 +37,7 @@
                                                   placeholder="请输入文章标题">
                                         </el-input>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.title}</a>
+                                            标签：${'$'}{field.title}
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -55,7 +55,7 @@
                                                 filterable
                                         ></el-tree-select>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.typetitle}</a>
+                                            标签：${'$'}{field.typetitle}
                                             不能选择单篇、链接类型的栏目，不能选择父栏目
                                         </div>
                                     </el-form-item>
@@ -73,7 +73,7 @@
                                                   placeholder="请输入文章副标题">
                                         </el-input>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.shorttitle}</a>
+                                            标签：${'$'}{field.shorttitle}
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -86,8 +86,7 @@
                                                   placeholder="请输入文章外链接">
                                         </el-input>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html"
-                                                  target="_blank">${'$'}{field.outlink}</a> 文章外链接必须以http或者https等开头
+                                            标签：${'$'}{field.outlink} 文章外链接必须以http或者https等开头
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -108,7 +107,7 @@
                                                        :label="item.dictLabel"></el-option>
                                         </el-select>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{flag}</a>
+                                            标签：${'$'}{flag}
                                             通过自定义字典可扩展，通常用在 arclist标签的flag属性上进行过滤文章
                                         </div>
                                     </el-form-item>
@@ -130,7 +129,7 @@
                                                 type="datetime">
                                         </el-date-picker>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.date?string("yyyy-MM-dd")}</a>
+                                            标签：${'$'}{field.date?string("yyyy-MM-dd")}
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -147,7 +146,7 @@
                                                   placeholder="请输入文章作者">
                                         </el-input>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.author}</a>
+                                            标签：${'$'}{field.author}
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -160,7 +159,7 @@
                                                   placeholder="请输入文章来源">
                                         </el-input>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.source}</a>
+                                            标签：${'$'}{field.source}
                                         </div>
                                     </el-form-item>
                                 </el-col>
@@ -223,7 +222,7 @@
                                             <i class="el-icon-plus"></i>
                                             <template #tip>
                                                 <div class="ms-form-tip">
-                                                    标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'{@ms:file field.litpic/}'}</a><br/>
+                                                    标签：${'{@ms:file field.litpic/}'}<br/>
                                                     一次可上传多张图片，最多可上传10张图片，文章缩略图,支持jpg格式；多图情况下，{@ms:file field.litpic/}会只取第一张缩略图，其他用法参考文档arclist标签
                                                 </div>
                                             </template>
@@ -242,7 +241,7 @@
                                                  placeholder="请选择文章标签">
                                         </ms-dict>
                                         <div class="ms-form-tip">
-                                            标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.tags}</a>
+                                            标签：${'$'}{field.tags}
                                             通过自定义字典可扩展数据；字典类型：文章标签
                                         </div>
                                     </el-form-item>
@@ -260,7 +259,7 @@
                                         placeholder="请输入文章关键字">
                                 </el-input>
                                 <div class="ms-form-tip">
-                                    标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.keyword}</a>，用于SEO优化
+                                    标签：${'$'}{field.keyword}，用于SEO优化
                                 </div>
                             </el-form-item>
                             <el-form-item label="描述" prop="contentDescription">
@@ -274,7 +273,7 @@
                                         placeholder="请输入对该文章的简短描述，以便用户查看文章简略">
                                 </el-input>
                                 <div class="ms-form-tip">
-                                    标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.descrip}</a>，用于SEO优化
+                                    标签：${'$'}{field.descrip}，用于SEO优化
                                 </div>
                             </el-form-item>
                             <el-form-item label="文章内容" prop="contentDetails" v-loading="editorHidden">
@@ -283,8 +282,7 @@
                                                   v-model="form.contentDetails"
                                                   :config="editorConfig"></vue-ueditor-wrap>
                                 <div class="ms-form-tip">
-                                    标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/wen-zhang-lie-biao-ms-arclist.html" target="_blank">${'$'}{field.content}</a> <br/>
-                                    温馨提示：推荐使用高级版本编辑器，<a href='http://store.mingsoft.net/#/detail?id=299&type=plugin' target="_blank">新版富文本编辑器</a>
+                                    标签：${'$'}{field.content}
                                 </div>
                             </el-form-item>
                         </el-form>

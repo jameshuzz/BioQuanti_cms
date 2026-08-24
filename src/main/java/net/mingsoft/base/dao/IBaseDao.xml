@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.mingsoft.base.dao.IBaseDao">
+
+    <!-- 根据sql动态创建表开始 -->
+    <sql id="createTables">
+        CONSTRAINT fk_${table}_id FOREIGN KEY (basicId) REFERENCES basic (basic_id) ON DELETE CASCADE
+    </sql>
+    <update id="createTable" statementType="STATEMENT" databaseId="mysql">
+        CREATE TABLE ${table} (
+        basicId int(11) NOT NULL,
+        PRIMARY KEY (basicId),
+        <include refid="createTables"></include>
+        ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+    </update>
+    <!-- 根据sql动态创建表结束 -->
+    <!-- 根据sql动态更新表开始 -->
+    <sql id="alterTableSql" databaseId="mysql">
+        ALTER TABLE ${table} change ${fileds.fieldOldName}
+        ${fileds.fieldName} ${fileds.fieldType}
+        <if test="fileds.default !=null and fileds.default !=''">default '${fileds.default}'</if>
+    </sql>
+
+    <sql id="alterTableSql" databaseId="sqlserver">
+        ALTER TABLE ${table} change ${fileds.fieldOldName}
+        ${fileds.fieldName} ${fileds.fieldType}
+        <if test="fileds.default !=null and fileds.default !=''">default '${fileds.default}'</if>
+    </sql>
+
+    <sql id="alterTableSql" databaseId="oracle">
+        ALTER TABLE ${table} RENAME TO ${fileds.fieldOldName}
+        ${fileds.fieldName} ${fileds.fieldType}
+        <if test="fileds.default !=null and fileds.default !=''">default '${fileds.default}'</if>
+    </sql>
+
+    <sql id="alterTableAddType">${fileds.fieldType}</sql>
+    <update id="alterTable" statementType="STATEMENT">
+        <choose>
+            <when test="type=='add'">
+                ALTER TABLE ${table} add ${fileds.fieldName}
+                <include refid="alterTableAddType"></include>
+                <if test="fileds.default !=null and fileds.default != ''">default '${fileds.default}'</if>
+            </when>
+            <when test="type=='modify'">
+                <include refid="alterTableSql"></include>
+            </when>
+            <when test="type=='drop'">
+                ALTER TABLE ${table} drop column ${fileds.fieldName}
+            </when>
+        </choose>
+
+    </update>
+    <!-- 根据sql动态更新表结束 alterTable-->
+
+    <!-- 根据sql动态删除表开始 -->
+    <update id="dropTable" statementType="STATEMENT">
+        DROP TABLE ${table}
+    </update>
+    <!-- 根据sql动态删除表结束 -->
+
+    <!-- 根据sql动态删除开始 -->
+    <update id="deleteBySQL">
+        delete from ${table} where
+        <foreach item="item" index="key" collection="wheres" open=""
+                 separator="AND" close=""> ${key} = #{item}
+        </foreach>
+    </update>
+    <!-- 根据sql动态删除结束 -->
+
+    <!-- 根据sql动态新增开始 -->
+    <insert id="insertBySQL">
+        insert into ${table}
+        <foreach item="field" index="key" collection="fields" open="("
+                 separator="," close=")">${key}
+        </foreach>
+        values
+        <foreach item="field" index="key" collection="fields" open="("
+                 separator="," close=")">#{field}
+        </foreach>
+    </insert>
+    <!-- 根据sql动态新增结束 -->
+
+    <!-- mysql或SqlServer根据sql动态更新开始 -->
+    <update id="updateBySQL">
+        update ${table} set
+        <foreach item="field" index="name" collection="fields" open=""
+                 separator="," close="">
+            ${name}=#{field}
+        </foreach>
+        <where>
+            <foreach item="item" index="key" collection="wheres" open=""
+                     separator="AND" close=""> ${key} = #{item}
+            </foreach>
+        </where>
+    </update>
+    <!-- mysql或SqlServer根据sql动态更新结束 -->
+
+    <!-- 导入sql语句 -->
+    <select id="excuteSql" parameterType="String" statementType="STATEMENT" resultType="java.util.Map">
+        ${sql}
+    </select>
+
+    <!-- 高级筛选 -->
+    <sql id="sqlWhere">
+        <if test="sqlWhereList != null">
+            <foreach collection="sqlWhereList" item="item" index="index"
+                     open="and( " separator=" " close=" )">
+
+                <if test="item.el == 'eq'">
+                    <choose>
+                        <when test="item.multiple != null and item.multiple == true">
+                            FIND_IN_SET(#{item.value}, ${item.field})>0
+                        </when>
+                        <otherwise>
+                            ${item.field} = #{item.value}
+                        </otherwise>
+                    </choose>
+                </if>
+                <if test="item.el == 'gt'">
+                    ${item.field} &gt; #{item.value}
+                </if>
+                <if test="item.el == 'gte'">
+                    ${item.field} &gt;= #{item.value}
+                </if>
+                <if test="item.el == 'lt'">
+                    ${item.field} &lt; #{item.value}
+                </if>
+                <if test="item.el == 'lte'">
+                    ${item.field} &lt;= #{item.value}
+                </if>
+                <if test="item.el == 'like'">
+                    ${item.field} like #{item.value}
+                </if>
+                <if test="item.el == 'likeLeft'">
+                    ${item.field} like #{item.value}
+                </if>
+                <if test="item.el == 'likeRight'">
+                    ${item.field} like #{item.value}
+                </if>
+                <if test="item.el == 'in'">
+                    <if test="item.value != null and item.value.size > 0">
+                        ${item.field} in
+                        <foreach item="val" collection="item.value" open="(" separator="," close=")">
+                            #{val}
+                        </foreach>
+                    </if>
+                </if>
+                <if test="item.el == 'range'">
+                    <if test="item.type=='time'">
+                        ${item.field} BETWEEN #{item.value[0]} AND #{item.value[1]}
+                    </if>
+                    <if test="item.type=='date'">
+                        ${item.field} BETWEEN #{item.value[0]} AND #{item.value[1]}
+                    </if>
+                </if>
+
+                <if test="index != (sqlWhereList.size() - 1)">
+                    <choose>
+                        <!--防注入-->
+                        <when test="item.action == 'and' or item.action == 'or'">
+                            ${item.action}
+                        </when>
+                        <otherwise>
+                            and
+                        </otherwise>
+                    </choose>
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+
+</mapper>

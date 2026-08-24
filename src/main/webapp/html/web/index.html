@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti</title>
+<meta name="keywords" content="BioQuanti,ELISA试剂盒,重组蛋白,抗体对,生命科学研究试剂">
+<meta name="description" content="BioQuanti 专注于生命科学研究试剂，提供 ELISA 试剂盒、重组蛋白与配对抗体，覆盖免疫学、肿瘤研究、神经生物学等研究领域。">
+<link rel="stylesheet" href="/template/1/bioquanti/css/app.css">
+</head>
+<body>
+<!-- ===== 顶头区：LOGO(左) + 搜索(右,语言切换在搜索右侧同一行) ===== -->
+<div class="bq-tophead">
+    <div class="bq-container">
+        <div class="bq-header-flex">
+            <div class="bq-logo-col">
+                <a class="bq-logo" href="/"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            </div>
+            <div class="bq-search-col">
+                <div class="bq-search-row">
+                    <form class="bq-search" action="/mcms/search.do" method="post" id="bq-search-form">
+                        <select name="species" id="bq-species-select">
+                            <option value="">-No Special-</option>
+                            <option value="Bovine">Bovine</option>
+                            <option value="Canine">Canine</option>
+                            <option value="Chicken">Chicken</option>
+                            <option value="Goat">Goat</option>
+                            <option value="Guinea">Guinea</option>
+                            <option value="Hamster">Hamster</option>
+                            <option value="Horse">Horse</option>
+                            <option value="Human">Human</option>
+                            <option value="Monkey">Monkey</option>
+                            <option value="Mouse">Mouse</option>
+                            <option value="Multi-species">Multi-species</option>
+                            <option value="Porcine">Porcine</option>
+                            <option value="Rabbit">Rabbit</option>
+                            <option value="Rat">Rat</option>
+                            <option value="Sheep">Sheep</option>
+                            <option value="Easy-Step">Easy-Step</option>
+                        </select>
+                        <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入产品名称 / 货号 / 靶标" value="">
+                        <input type="hidden" name="style" value="bioquanti">
+                        <input type="hidden" name="tmpl" value="search.htm">
+                        <button type="submit"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg></button>
+                    </form>
+                    <div class="bq-lang">
+                        <svg class="bq-globe" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="cur">中文简体</span><span class="sep">|</span>
+                        <a href="#" title="英文站建设中">English</a>
+                    </div>
+                </div>
+                <p class="bq-hot-links">
+                    热门搜索：
+                    <a href="/mcms/search.do?content_title=IL-6&style=bioquanti&tmpl=search.htm">IL-6</a>
+                    <a href="/mcms/search.do?content_title=TNF&style=bioquanti&tmpl=search.htm">TNF-α</a>
+                    <a href="/mcms/search.do?content_title=Leptin&style=bioquanti&tmpl=search.htm">Leptin</a>
+                    <a href="/mcms/search.do?content_title=HSP70&style=bioquanti&tmpl=search.htm">HSP70</a>
+                    <a href="/mcms/search.do?content_title=Interferon&style=bioquanti&tmpl=search.htm">Interferon</a>
+                </p>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<!-- ===== 主导航(独立蓝条, 移动端汉堡菜单) ===== -->
+<nav class="bq-navbar">
+    <div class="bq-container">
+        <button type="button" class="bq-nav-toggle" id="bq-nav-toggle" aria-label="菜单">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+        <ul id="bq-nav-menu">
+            <li class="active"><a href="/">首页</a></li>
+            <li >
+                <a href="/html/web/bq-products/bq-kit/index.html" class="bq-drop-toggle">产品中心 <span class="caret">▾</span></a>
+                <div class="bq-dropdown">
+                    <a href="/html/web/bq-products/bq-kit/index.html">试剂盒</a>
+                    <a href="/html/web/bq-products/bq-protein-m/index.html">蛋白</a>
+                    <a href="/html/web/bq-products/bq-antibody-m/index.html">抗体</a>
+                    <a href="/html/web/bq-products/bq-other/index.html">其他</a>
+                </div>
+            </li>
+            <li ><a href="/html/web/bq-service/index.html">其他服务</a></li>
+            <li ><a href="/html/web/bq-tech/index.html">技术专栏</a></li>
+            <li ><a href="/html/web/bq-about/index.html">关于公司</a></li>
+            <li ><a href="/html/web/bq-contact/index.html">联系我们</a></li>
+        </ul>
+    </div>
+</nav>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  // 搜索：关键词与物种完全独立，互不影响；选择物种只作为筛选条件
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = '请输入产品名称 / 货号 / 靶标';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在 ' + spText + ' 产品中搜索（例如：HSP70）';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    // 下拉改变只更新 placeholder/提示，不污染关键词输入框
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      // 让关键词框重新获得焦点，方便用户继续输入
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<!-- 轮播(后台可配置: 首页幻灯片栏目下 content_type='f' 的文章) -->
+<div class="bq-carousel">
+    <div class="bq-track">
+        <div class="bq-slide">
+            <img src="/upload/1/bioquanti/swip/2.jfif" alt="武汉光谷高新技术开发区">
+            <div class="cap">
+                <h2>武汉光谷高新技术开发区</h2>
+                <p>位于国家级生物医药产业基地 · 专注ELISA试剂盒研发生产及销售</p>
+                <a class="cta" href="/html/web/bq-about/index.html">了解更多</a>
+            </div>
+        </div>
+        <div class="bq-slide">
+            <img src="/upload/1/bioquanti/swip/n1.png" alt="为什么选择 Bioquanti Technology">
+            <div class="cap">
+                <h2>为什么选择 Bioquanti Technology</h2>
+                <p>1400+品种选择 · 覆盖多物种 · 多研究领域</p>
+                <a class="cta" href="/html/web/bq-about/index.html">了解更多</a>
+            </div>
+        </div>
+        <div class="bq-slide">
+            <img src="/upload/1/bioquanti/swip/n2.png" alt="Easy-Step ELISA Kit">
+            <div class="cap">
+                <h2>Easy-Step ELISA Kit</h2>
+                <p>操作简便省时 · 上样50ul · 高灵敏度高特异性</p>
+                <a class="cta" href="/html/web/bq-products/bq-elisa/index.html">了解更多</a>
+            </div>
+        </div>
+    </div>
+    <div class="bq-arrow prev">‹</div>
+    <div class="bq-arrow next">›</div>
+    <div class="bq-dots"></div>
+</div>
+<script>
+(function(){
+  var track = document.querySelector('.bq-track');
+  var slides = document.querySelectorAll('.bq-slide');
+  var dotsWrap = document.querySelector('.bq-dots');
+  if(!track || !slides.length) return;
+  for(var d=0; d<slides.length; d++){ var s=document.createElement('span'); if(d===0) s.className='on'; dotsWrap.appendChild(s); }
+  var dots = dotsWrap.querySelectorAll('span');
+  if(slides.length < 2) return;
+  var i = 0, timer;
+  function go(n){ i=(n+slides.length)%slides.length; track.style.transform='translateX(-'+(i*100)+'%)'; for(var k=0;k<dots.length;k++){ dots[k].className=(k===i)?'on':''; } }
+  function next(){ go(i+1); }
+  function play(){ timer=setInterval(next,4500); }
+  function restart(){ clearInterval(timer); play(); }
+  document.querySelector('.bq-arrow.next').onclick=function(){ next(); restart(); };
+  document.querySelector('.bq-arrow.prev').onclick=function(){ go(i-1); restart(); };
+  for(var k=0;k<dots.length;k++){ dots[k].onclick=(function(k){ return function(){ go(k); restart(); }; })(k); }
+  play();
+})();
+</script>
+
+<!-- 快捷入口(促销文字介绍) -->
+<div class="bq-quicktabs">
+    <div class="bq-container">
+        <div class="bq-qt-grid">
+            <a class="bq-qt" href="/mcms/search.do?content_title=ELISA&style=&tmpl=search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt=""></span><span class="tt">精选ELISA kit<br>一口价</span></a>
+            <a class="bq-qt" href="/html/web/bq-products/bq-antibody/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt=""></span><span class="tt">抗体对<br>限时特惠</span></a>
+            <a class="bq-qt" href="/html/web/bq-products/bq-protein/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt=""></span><span class="tt">重组蛋白<br>现货供应</span></a>
+            <a class="bq-qt" href="/html/web/bq-tech/index.html"><span class="ico"><img src="/template/1/bioquanti/images/hexinjishu.jpg" alt=""></span><span class="tt">实验指南<br>技术手册</span></a>
+            <a class="bq-qt" href="/html/web/bq-tech/index.html"><span class="ico"><img src="/template/1/bioquanti/images/jiance.png" alt=""></span><span class="tt">常见问题<br>FAQ</span></a>
+            <a class="bq-qt" href="/mcms/search.do?style=&tmpl=search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_1.png" alt=""></span><span class="tt">全部产品<br>浏览</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- 我们的产品(产品中心 -> 4大主分类 -> 子类列表; 非嵌套写法保证稳定渲染) -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>我们的产品</h2><span class="en">OUR PRODUCTS</span><span class="bar"></span></div>
+        <div class="bq-catgrid">
+
+            <!-- 试剂盒 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="试剂盒"></div>
+                <h3><a href="/html/web/bq-products/bq-kit/index.html">试剂盒</a></h3>
+                <ul class="bq-subcats">
+                    <li><a href="/html/web/bq-products/bq-elisa/index.html">酶联免疫试剂盒</a></li>
+                    <li><a href="/html/web/bq-products/bq-exosome/index.html">外泌体提取试剂盒</a></li>
+                    <li><a href="/html/web/bq-products/bq-food/index.html">食品安全及药物残留酶联免疫试剂盒</a></li>
+                    <li><a href="/html/web/bq-products/bq-plasmid/index.html">质粒DNA大量抽提试剂盒</a></li>
+                    <li><a href="/html/web/bq-products/bq-hcp/index.html">HCP检测ELISA试剂盒</a></li>
+                </ul>
+                <a class="more" href="/html/web/bq-products/bq-kit/index.html">更多试剂盒产品 →</a>
+            </div>
+
+            <!-- 蛋白 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="蛋白"></div>
+                <h3><a href="/html/web/bq-products/bq-protein-m/index.html">蛋白</a></h3>
+                <ul class="bq-subcats">
+                    <li><a href="/html/web/bq-products/bq-nprotein/index.html">天然蛋白</a></li>
+                    <li><a href="/html/web/bq-products/bq-rprotein/index.html">重组蛋白</a></li>
+                    <li><a href="/html/web/bq-products/bq-aprotein/index.html">活性蛋白</a></li>
+                    <li><a href="/html/web/bq-products/bq-tmprotein/index.html">跨膜蛋白</a></li>
+                </ul>
+                <a class="more" href="/html/web/bq-products/bq-protein-m/index.html">更多蛋白产品 →</a>
+            </div>
+
+            <!-- 抗体 -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="抗体"></div>
+                <h3><a href="/html/web/bq-products/bq-antibody-m/index.html">抗体</a></h3>
+                <ul class="bq-subcats">
+                    <li><a href="/html/web/bq-products/bq-polyab/index.html">多克隆抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-secab/index.html">二抗</a></li>
+                    <li><a href="/html/web/bq-products/bq-mab/index.html">单克隆抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-tagab/index.html">标签抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-smallab/index.html">小分子抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-chipab/index.html">ChIP抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-rab/index.html">重组抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-histab/index.html">组蛋白修饰抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-biosab/index.html">科研级生物类似抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-houseab/index.html">内参抗体</a></li>
+                    <li><a href="/html/web/bq-products/bq-antibody/index.html">抗体对</a></li>
+                </ul>
+                <a class="more" href="/html/web/bq-products/bq-antibody-m/index.html">更多抗体产品 →</a>
+            </div>
+
+            <!-- 全部产品（其他父级下无产品，改为全站搜索入口） -->
+            <div class="bq-catcard">
+                <div class="pic"><img src="/upload/1/bioquanti/pimg_2.png" alt="全部产品"></div>
+                <h3><a href="/mcms/search.do?style=template/1/bioquanti/&tmpl=search.htm">全部产品</a></h3>
+                <ul class="bq-subcats">
+                    <li><a href="/mcms/search.do?content_title=ELISA&style=template/1/bioquanti/&tmpl=search.htm">ELISA 试剂盒</a></li>
+                    <li><a href="/mcms/search.do?content_title=Protein&style=template/1/bioquanti/&tmpl=search.htm">重组蛋白</a></li>
+                    <li><a href="/mcms/search.do?content_title=Antibody&style=template/1/bioquanti/&tmpl=search.htm">抗体</a></li>
+                    <li><a href="/mcms/search.do?species=Human&style=template/1/bioquanti/&tmpl=search.htm">Human 产品</a></li>
+                </ul>
+                <a class="more" href="/mcms/search.do?style=template/1/bioquanti/&tmpl=search.htm">浏览全部产品 →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 热门产品：按应用/疾病领域的搜索入口，每个入口对应一个核心关键词，点击跳转搜索结果 -->
+<div class="bq-section alt">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>热门产品</h2><span class="en">HOT PRODUCTS</span><span class="bar"></span></div>
+        <div class="bq-hotcat-grid">
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E7%BB%86%E8%83%9E%E5%9B%A0%E5%AD%90%26%E7%82%8E%E7%97%87&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-ganxibao" aria-label="肝细胞"></i></span>
+                <span class="tt">细胞因子&炎症</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E8%82%BF%E7%98%A4%E7%A0%94%E7%A9%B6&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-zhongliuke" aria-label="肿瘤"></i></span>
+                <span class="tt">肿瘤研究</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E6%85%A2%E6%80%A7%E7%96%BE%E7%97%85%26%E7%94%9F%E9%95%BF%E4%BB%A3%E8%B0%A2&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-manxingjibing1" aria-label="慢性病"></i></span>
+                <span class="tt">慢性疾病&生长代谢</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E7%A5%9E%E7%BB%8F%E7%96%BE%E7%97%85&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-mind" aria-label="神经"></i></span>
+                <span class="tt">神经疾病</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E7%94%9F%E7%89%A9%E5%88%B6%E5%93%81%E6%AE%8B%E7%95%99&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-weishengwu1" aria-label="生物制品"></i></span>
+                <span class="tt">生物制品残留</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E7%A5%9E%E7%BB%8F%E7%96%BE%E7%97%85&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-manxingjibing" aria-label="毒性"></i></span>
+                <span class="tt">药物毒性评估</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E8%87%AA%E8%BA%AB%E5%85%8D%E7%96%AB%E7%96%BE%E7%97%85&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-bacteria1" aria-label="细菌"></i></span>
+                <span class="tt">自身免疫疾病</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=%E5%BE%AE%E7%94%9F%E7%89%A9%E6%84%9F%E6%9F%93&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-bacteria" aria-label="微生物"></i></span>
+                <span class="tt">微生物感染</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=Easy-Step%20%E8%AF%95%E5%89%82%E7%9B%92&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-shengwu" aria-label="生物"></i></span>
+                <span class="tt">Easy-Step 试剂盒</span>
+            </a>
+            <a class="bq-hotcat-card" href="/mcms/search.do?content_tag=Easy-Step%20%E8%AF%95%E5%89%82%E7%9B%92&style=bioquanti&tmpl=search.htm">
+                <span class="ico"><i class="iconfont icon-weishengwuxiaoxi" aria-label="微生物消息"></i></span>
+                <span class="tt">辅助试剂盒</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 技术专栏 -->
+<div class="bq-section">
+    <div class="bq-container">
+        <div class="bq-sec-title"><h2>技术专栏</h2><span class="en">TECHNICAL</span><span class="bar"></span></div>
+        <ul class="bq-newslist">
+            <li>
+                <span class="dt">2026-08-20</span>
+                <span class="tt"><a href="/html/web/bq-tech/1787212335907002180.html">ELISA 实验操作要点与常见问题排查</a></span>
+            </li>
+            <li>
+                <span class="dt">2026-08-19</span>
+                <span class="tt"><a href="/html/web/bq-tech/1787212335907002181.html">重组蛋白复溶与保存指南</a></span>
+            </li>
+            <li>
+                <span class="dt">2026-08-18</span>
+                <span class="tt"><a href="/html/web/bq-tech/1787212335907002182.html">抗体对（ELISA Pair Set）使用说明</a></span>
+            </li>
+            <li>
+                <span class="dt">2026-08-17</span>
+                <span class="tt"><a href="/html/web/bq-tech/1787212335907002183.html">BioQuanti 产品线更新公告</a></span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- ===== footer ===== -->
+<div class="bq-footer">
+    <div class="bq-container">
+        <div class="cols">
+            <div class="col">
+                <h4>产品中心</h4>
+                <a href="/html/web/bq-products/bq-kit/index.html">试剂盒</a>
+                <a href="/html/web/bq-products/bq-protein-m/index.html">蛋白</a>
+                <a href="/html/web/bq-products/bq-antibody-m/index.html">抗体</a>
+                <a href="/html/web/bq-products/bq-other/index.html">其他</a>
+            </div>
+            <div class="col">
+                <h4>技术支持</h4>
+                <a href="/mcms/search.do?style=&tmpl=search.htm">产品搜索</a>
+                <a href="/html/web/bq-tech/1787212335907002180.html">ELISA 实验操作要点与常见问题排查</a>
+                <a href="/html/web/bq-tech/1787212335907002181.html">重组蛋白复溶与保存指南</a>
+                <a href="/html/web/bq-tech/1787212335907002182.html">抗体对（ELISA Pair Set）使用说明</a>
+            </div>
+            <div class="col">
+                <h4>关于我们</h4>
+                <a href="/html/web/bq-about/index.html">关于公司</a>
+                <a href="/html/web/bq-tech/index.html">技术专栏</a>
+            </div>
+            <div class="col">
+                <h4>联系我们</h4>
+                <a href="/html/web/bq-contact/index.html">在线留言</a>
+                <p>电话：027-XXX-XXXX</p>
+                <p>邮箱：sales@bioquanti.com</p>
+                <p>地址：中国 · 武汉 · 光谷</p>
+            </div>
+        </div>
+    </div>
+    <div class="bq-copyright">
+        <div class="bq-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti-联系我们</title>
+<meta name="keywords" content="BioQuanti,ELISA试剂盒,重组蛋白,抗体对,生命科学研究试剂">
+<meta name="description" content="BioQuanti 专注于生命科学研究试剂，提供 ELISA 试剂盒、重组蛋白与配对抗体，覆盖免疫学、肿瘤研究、神经生物学等研究领域。">
+<link rel="stylesheet" href="/template/1/bioquanti/css/app.css">
+<script src="/static/plugins/jquery/3.6.3/jquery-3.6.3.min.js"></script>
+</head>
+<body>
+<!-- ===== 顶头区：LOGO(左) + 搜索(右,语言切换在搜索右侧同一行) ===== -->
+<div class="bq-tophead">
+    <div class="bq-container">
+        <div class="bq-header-flex">
+            <div class="bq-logo-col">
+                <a class="bq-logo" href="/"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            </div>
+            <div class="bq-search-col">
+                <div class="bq-search-row">
+                    <form class="bq-search" action="/mcms/search.do" method="post" id="bq-search-form">
+                        <select name="species" id="bq-species-select">
+                            <option value="">-No Special-</option>
+                            <option value="Bovine">Bovine</option>
+                            <option value="Canine">Canine</option>
+                            <option value="Chicken">Chicken</option>
+                            <option value="Goat">Goat</option>
+                            <option value="Guinea">Guinea</option>
+                            <option value="Hamster">Hamster</option>
+                            <option value="Horse">Horse</option>
+                            <option value="Human">Human</option>
+                            <option value="Monkey">Monkey</option>
+                            <option value="Mouse">Mouse</option>
+                            <option value="Multi-species">Multi-species</option>
+                            <option value="Porcine">Porcine</option>
+                            <option value="Rabbit">Rabbit</option>
+                            <option value="Rat">Rat</option>
+                            <option value="Sheep">Sheep</option>
+                            <option value="Easy-Step">Easy-Step</option>
+                        </select>
+                        <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入产品名称 / 货号 / 靶标" value="">
+                        <input type="hidden" name="style" value="bioquanti">
+                        <input type="hidden" name="tmpl" value="search.htm">
+                        <button type="submit"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg></button>
+                    </form>
+                    <div class="bq-lang">
+                        <svg class="bq-globe" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="cur">中文简体</span><span class="sep">|</span>
+                        <a href="#" title="英文站建设中">English</a>
+                    </div>
+                </div>
+                <p class="bq-hot-links">
+                    热门搜索：
+                    <a href="/mcms/search.do?content_title=IL-6&style=bioquanti&tmpl=search.htm">IL-6</a>
+                    <a href="/mcms/search.do?content_title=TNF&style=bioquanti&tmpl=search.htm">TNF-α</a>
+                    <a href="/mcms/search.do?content_title=Leptin&style=bioquanti&tmpl=search.htm">Leptin</a>
+                    <a href="/mcms/search.do?content_title=HSP70&style=bioquanti&tmpl=search.htm">HSP70</a>
+                    <a href="/mcms/search.do?content_title=Interferon&style=bioquanti&tmpl=search.htm">Interferon</a>
+                </p>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<!-- ===== 主导航(独立蓝条, 移动端汉堡菜单) ===== -->
+<nav class="bq-navbar">
+    <div class="bq-container">
+        <button type="button" class="bq-nav-toggle" id="bq-nav-toggle" aria-label="菜单">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+        <ul id="bq-nav-menu">
+            <li ><a href="/">首页</a></li>
+            <li >
+                <a href="/html/web/bq-products/bq-kit/index.html" class="bq-drop-toggle">产品中心 <span class="caret">▾</span></a>
+                <div class="bq-dropdown">
+                    <a href="/html/web/bq-products/bq-kit/index.html">试剂盒</a>
+                    <a href="/html/web/bq-products/bq-protein-m/index.html">蛋白</a>
+                    <a href="/html/web/bq-products/bq-antibody-m/index.html">抗体</a>
+                    <a href="/html/web/bq-products/bq-other/index.html">其他</a>
+                </div>
+            </li>
+            <li ><a href="/html/web/bq-service/index.html">其他服务</a></li>
+            <li ><a href="/html/web/bq-tech/index.html">技术专栏</a></li>
+            <li ><a href="/html/web/bq-about/index.html">关于公司</a></li>
+            <li class="active"><a href="/html/web/bq-contact/index.html">联系我们</a></li>
+        </ul>
+    </div>
+</nav>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  // 搜索：关键词与物种完全独立，互不影响；选择物种只作为筛选条件
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = '请输入产品名称 / 货号 / 靶标';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在 ' + spText + ' 产品中搜索（例如：HSP70）';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    // 下拉改变只更新 placeholder/提示，不污染关键词输入框
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      // 让关键词框重新获得焦点，方便用户继续输入
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<div class="bq-pagebanner" style="background-image:url('/template/1/bioquanti/images/bg-1.jpg')">
+    <h1>联系我们</h1>
+    <p>CONTACT US</p>
+</div>
+
+<div class="bq-container bq-contact">
+    <div class="bq-contact-grid">
+        <!-- ===== 左侧：联系信息 ===== -->
+        <div class="bq-contact-info">
+            <div class="bq-ci-title">联系信息</div>
+            <div class="bq-ci-block">
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">地址</span>
+                    <span class="bq-ci-value">武汉市江夏区光谷生物城（BioQuanti Technology）</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">电话</span>
+                    <span class="bq-ci-value">027-XXXXXXXX</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">传真</span>
+                    <span class="bq-ci-value">027-XXXXXXXX</span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">邮箱</span>
+                    <span class="bq-ci-value"><a href="mailto:service@bioquanti.com">service@bioquanti.com</a></span>
+                </div>
+                <div class="bq-ci-row">
+                    <span class="bq-ci-label">邮编</span>
+                    <span class="bq-ci-value">430075</span>
+                </div>
+            </div>
+            <div class="bq-ci-note">工作时间：周一至周五 9:00 - 18:00<br>我们将在收到留言后尽快与您联系。</div>
+        </div>
+
+        <!-- ===== 右侧：在线留言 ===== -->
+        <div class="bq-contact-form">
+            <div class="bq-cf-title">在线留言</div>
+            <form class="bq-form" id="bq-contact-form">
+                <div class="bq-form-row">
+                    <label class="bq-form-label">姓名<em>*</em></label>
+                    <div class="bq-form-item">
+                        <input type="text" name="name" required maxlength="100" placeholder="请输入您的姓名" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">邮箱<em>*</em></label>
+                    <div class="bq-form-item">
+                        <input type="email" name="email" required maxlength="150" placeholder="请输入您的邮箱" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">公司/单位</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="company" maxlength="150" placeholder="请输入您的公司/单位（选填）" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">电话</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="phone" id="bq-phone" maxlength="50" class="bq-form-text" placeholder="请输入您的联系电话（含国际区号）">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">微信</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="wechat" maxlength="100" placeholder="请输入您的微信号（选填）" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">WhatsApp</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="whatsapp" maxlength="50" placeholder="WhatsApp number (e.g. +1 555 123 4567)" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">Telegram</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="telegram" maxlength="100" placeholder="Telegram username" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">需求留言<em>*</em></label>
+                    <div class="bq-form-item">
+                        <textarea name="content" required rows="5" placeholder="请输入您的需求留言" class="bq-form-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="bq-form-submit">
+                    <button type="submit" class="bq-btn-submit">提交留言</button>
+                    <button type="reset" class="bq-btn-reset">重新填写</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===== footer ===== -->
+<div class="bq-footer">
+    <div class="bq-container">
+        <div class="cols">
+            <div class="col">
+                <h4>产品中心</h4>
+                <a href="/html/web/bq-products/bq-kit/index.html">试剂盒</a>
+                <a href="/html/web/bq-products/bq-protein-m/index.html">蛋白</a>
+                <a href="/html/web/bq-products/bq-antibody-m/index.html">抗体</a>
+                <a href="/html/web/bq-products/bq-other/index.html">其他</a>
+            </div>
+            <div class="col">
+                <h4>技术支持</h4>
+                <a href="/mcms/search.do?style=&tmpl=search.htm">产品搜索</a>
+                <a href="/html/web/bq-tech/1787212335907002180.html">ELISA 实验操作要点与常见问题排查</a>
+                <a href="/html/web/bq-tech/1787212335907002181.html">重组蛋白复溶与保存指南</a>
+                <a href="/html/web/bq-tech/1787212335907002182.html">抗体对（ELISA Pair Set）使用说明</a>
+            </div>
+            <div class="col">
+                <h4>关于我们</h4>
+                <a href="/html/web/bq-about/index.html">关于公司</a>
+                <a href="/html/web/bq-tech/index.html">技术专栏</a>
+            </div>
+            <div class="col">
+                <h4>联系我们</h4>
+                <a href="/html/web/bq-contact/index.html">在线留言</a>
+                <p>电话：027-XXX-XXXX</p>
+                <p>邮箱：sales@bioquanti.com</p>
+                <p>地址：中国 · 武汉 · 光谷</p>
+            </div>
+        </div>
+    </div>
+    <div class="bq-copyright">
+        <div class="bq-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</div>
+
+<style>
+/* 联系我们页 */
+.bq-contact{padding:40px 0 60px;}
+.bq-contact-grid{display:flex;gap:30px;align-items:flex-start;}
+.bq-contact-info{flex:0 0 360px;background:#f7fafd;border:1px solid #e6edf5;border-radius:8px;padding:28px 26px;}
+.bq-ci-title,.bq-cf-title{font-size:20px;color:#29568F;font-weight:bold;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #e6edf5;}
+.bq-ci-row{display:flex;margin-bottom:16px;line-height:1.6;}
+.bq-ci-label{flex:0 0 64px;color:#999;font-size:14px;}
+.bq-ci-value{flex:1;color:#333;font-size:14px;word-break:break-all;}
+.bq-ci-value a{color:#29568F;text-decoration:none;}
+.bq-ci-value a:hover{text-decoration:underline;}
+.bq-ci-note{margin-top:20px;padding-top:16px;border-top:1px dashed #d8e2ee;color:#888;font-size:13px;line-height:1.8;}
+.bq-contact-form{flex:1;min-width:0;background:#fff;border:1px solid #e6edf5;border-radius:8px;padding:28px 30px;}
+.bq-form-row{display:flex;align-items:flex-start;margin-bottom:18px;}
+.bq-form-label{flex:0 0 110px;padding-top:8px;color:#333;font-size:14px;text-align:right;padding-right:14px;}
+.bq-form-label em{color:#f60;font-style:normal;margin-left:2px;}
+.bq-form-item{flex:1;min-width:0;}
+.bq-form-text,.bq-form-textarea{width:100%;border:1px solid #d8e2ee;border-radius:4px;padding:9px 12px;font-size:14px;color:#333;box-sizing:border-box;outline:none;transition:border-color .2s;}
+.bq-form-text:focus,.bq-form-textarea:focus{border-color:#29568F;}
+.bq-form-textarea{resize:vertical;min-height:110px;}
+.bq-form-submit{display:flex;gap:12px;padding-left:124px;}
+.bq-btn-submit,.bq-btn-reset{border:none;border-radius:4px;padding:10px 34px;font-size:14px;cursor:pointer;transition:opacity .2s;}
+.bq-btn-submit{background:#29568F;color:#fff;}
+.bq-btn-submit:hover{opacity:.85;}
+.bq-btn-reset{background:#eef2f7;color:#666;}
+.bq-btn-reset:hover{opacity:.85;}
+/* 提示信息 */
+.bq-form-msg{margin-top:14px;padding:10px 14px;border-radius:4px;font-size:14px;display:none;}
+.bq-form-msg.ok{display:block;background:#f0f9f0;color:#2e7d32;border:1px solid #cde8cd;}
+.bq-form-msg.err{display:block;background:#fdf0f0;color:#c62828;border:1px solid #f0cdcd;}
+/* 响应式 */
+@media (max-width:768px){
+  /* 整体间距 */
+  .bq-contact{padding:20px 0 40px;}
+  /* 整体单列 */
+  .bq-contact-grid{flex-direction:column;gap:16px;}
+  /* 联系信息卡片：占满宽 */
+  .bq-contact-info{flex:auto;width:100%;padding:18px 16px;}
+  .bq-ci-title,.bq-cf-title{font-size:18px;margin-bottom:14px;padding-bottom:8px;}
+  /* 联系信息行：字段名+值上下排 */
+  .bq-ci-row{flex-direction:column;margin-bottom:12px;line-height:1.5;}
+  .bq-ci-label{flex:auto;color:#999;font-size:13px;margin-bottom:2px;}
+  .bq-ci-value{font-size:14px;}
+  /* 表单卡片：占满宽 */
+  .bq-contact-form{flex:auto;width:100%;padding:20px 16px;}
+  /* 表单行：label+输入框上下排 */
+  .bq-form-row{flex-direction:column;margin-bottom:14px;}
+  .bq-form-label{flex:auto;text-align:left;padding:0 0 6px;font-size:13px;}
+  .bq-form-label em{font-size:13px;}
+  .bq-form-item{flex:1;width:100%;}
+  .bq-form-text,.bq-form-textarea{font-size:14px;padding:10px 12px;}
+  .bq-form-textarea{min-height:100px;}
+  /* 提交按钮区：占满宽，按钮堆叠 */
+  .bq-form-submit{flex-direction:column;gap:10px;padding-left:0;}
+  .bq-btn-submit,.bq-btn-reset{width:100%;padding:12px 0;font-size:15px;}
+  /* 提示信息 */
+  .bq-form-msg{padding:10px 12px;font-size:13px;}
+}
+</style>
+<script>
+(function(){
+  var form = document.getElementById('bq-contact-form');
+  if(!form) return;
+  var msg = document.createElement('div');
+  msg.className = 'bq-form-msg';
+  form.appendChild(msg);
+  var phoneInput = document.getElementById('bq-phone');
+
+  form.addEventListener('reset', function(){
+    setTimeout(function(){
+      msg.className = 'bq-form-msg';
+      msg.innerHTML = '';
+    }, 0);
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.className = 'bq-form-msg';
+    msg.innerHTML = '';
+    var data = {
+      name: form.querySelector('[name=name]').value.trim(),
+      email: form.querySelector('[name=email]').value.trim(),
+      company: form.querySelector('[name=company]').value.trim(),
+      phone: phoneInput.value.trim(),
+      wechat: form.querySelector('[name=wechat]').value.trim(),
+      whatsapp: form.querySelector('[name=whatsapp]').value.trim(),
+      telegram: form.querySelector('[name=telegram]').value.trim(),
+      content: form.querySelector('[name=content]').value.trim()
+    };
+    // 至少一种联系方式
+    if(!data.email && !data.phone && !data.wechat && !data.whatsapp && !data.telegram){
+      msg.className = 'bq-form-msg err';
+      msg.innerHTML = '请至少填写一种联系方式';
+      return;
+    }
+    $.ajax({
+      url: '/cms/message/post.do',
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function(res){
+        if(res && res.result){
+          msg.className = 'bq-form-msg ok';
+          msg.innerHTML = '✓ 提交成功，我们将在工作时间尽快与您联系！';
+          form.reset();
+        }else{
+          msg.className = 'bq-form-msg err';
+          msg.innerHTML = (res && res.msg) ? res.msg : '提交失败，请稍后重试';
+        }
+      },
+      error: function(){
+        msg.className = 'bq-form-msg err';
+        msg.innerHTML = '网络异常，请稍后重试';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -50,29 +50,47 @@
         <!-- ===== 右侧：在线留言 ===== -->
         <div class="bq-contact-form">
             <div class="bq-cf-title">在线留言</div>
-            <form class="bq-form" action="{ms:global.contextpath/}/mdiy/form/data/save.do" method="post" id="bq-contact-form">
+            <form class="bq-form" id="bq-contact-form">
                 <div class="bq-form-row">
                     <label class="bq-form-label">姓名<em>*</em></label>
                     <div class="bq-form-item">
-                        <input type="text" name="username" required maxlength="255" placeholder="请输入您的姓名" class="bq-form-text">
+                        <input type="text" name="name" required maxlength="100" placeholder="请输入您的姓名" class="bq-form-text">
                     </div>
                 </div>
                 <div class="bq-form-row">
                     <label class="bq-form-label">邮箱<em>*</em></label>
                     <div class="bq-form-item">
-                        <input type="text" name="email" required maxlength="255" placeholder="请输入您的邮箱" class="bq-form-text">
+                        <input type="email" name="email" required maxlength="150" placeholder="请输入您的邮箱" class="bq-form-text">
                     </div>
                 </div>
                 <div class="bq-form-row">
-                    <label class="bq-form-label">电话<em>*</em></label>
+                    <label class="bq-form-label">公司/单位</label>
                     <div class="bq-form-item">
-                        <input type="text" name="tel" required maxlength="255" placeholder="请输入您的联系电话" class="bq-form-text">
+                        <input type="text" name="company" maxlength="150" placeholder="请输入您的公司/单位（选填）" class="bq-form-text">
                     </div>
                 </div>
                 <div class="bq-form-row">
-                    <label class="bq-form-label">地区单位</label>
+                    <label class="bq-form-label">电话</label>
                     <div class="bq-form-item">
-                        <input type="text" name="country" maxlength="255" placeholder="请输入您所在的地区/单位（选填）" class="bq-form-text">
+                        <input type="text" name="phone" id="bq-phone" maxlength="50" class="bq-form-text" placeholder="请输入您的联系电话（含国际区号）">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">微信</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="wechat" maxlength="100" placeholder="请输入您的微信号（选填）" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">WhatsApp</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="whatsapp" maxlength="50" placeholder="WhatsApp number (e.g. +1 555 123 4567)" class="bq-form-text">
+                    </div>
+                </div>
+                <div class="bq-form-row">
+                    <label class="bq-form-label">Telegram</label>
+                    <div class="bq-form-item">
+                        <input type="text" name="telegram" maxlength="100" placeholder="Telegram username" class="bq-form-text">
                     </div>
                 </div>
                 <div class="bq-form-row">
@@ -81,7 +99,6 @@
                         <textarea name="content" required rows="5" placeholder="请输入您的需求留言" class="bq-form-textarea"></textarea>
                     </div>
                 </div>
-                <input type="hidden" name="modelName" value="liuyan">
                 <div class="bq-form-submit">
                     <button type="submit" class="bq-btn-submit">提交留言</button>
                     <button type="reset" class="bq-btn-reset">重新填写</button>
@@ -159,18 +176,40 @@
   var msg = document.createElement('div');
   msg.className = 'bq-form-msg';
   form.appendChild(msg);
+  var phoneInput = document.getElementById('bq-phone');
+
+  form.addEventListener('reset', function(){
+    setTimeout(function(){
+      msg.className = 'bq-form-msg';
+      msg.innerHTML = '';
+    }, 0);
+  });
+
   form.addEventListener('submit', function(e){
-    // 浏览器原生 required 校验通过后，改用 ajax 提交
     e.preventDefault();
-    var fd = new FormData(form);
     msg.className = 'bq-form-msg';
     msg.innerHTML = '';
+    var data = {
+      name: form.querySelector('[name=name]').value.trim(),
+      email: form.querySelector('[name=email]').value.trim(),
+      company: form.querySelector('[name=company]').value.trim(),
+      phone: phoneInput.value.trim(),
+      wechat: form.querySelector('[name=wechat]').value.trim(),
+      whatsapp: form.querySelector('[name=whatsapp]').value.trim(),
+      telegram: form.querySelector('[name=telegram]').value.trim(),
+      content: form.querySelector('[name=content]').value.trim()
+    };
+    // 至少一种联系方式
+    if(!data.email && !data.phone && !data.wechat && !data.whatsapp && !data.telegram){
+      msg.className = 'bq-form-msg err';
+      msg.innerHTML = '请至少填写一种联系方式';
+      return;
+    }
     $.ajax({
-      url: form.action,
+      url: '{ms:global.contextpath/}/cms/message/post.do',
       type: 'POST',
-      data: fd,
-      processData: false,
-      contentType: false,
+      data: JSON.stringify(data),
+      contentType: 'application/json',
       dataType: 'json',
       success: function(res){
         if(res && res.result){

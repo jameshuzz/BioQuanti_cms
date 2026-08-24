@@ -33,8 +33,7 @@
                                               placeholder="请输入栏目名称">
                                     </el-input>
                                     <div class="ms-form-tip">
-                                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                              target="_blank">${'$'}{field.typetitle}</a>
+                                        标签：${'$'}{field.typetitle}
                                     </div>
                                 </el-form-item>
                             </el-col>
@@ -67,8 +66,7 @@
                                               placeholder="请输入栏目副标题">
                                     </el-input>
                                     <div class="ms-form-tip">
-                                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                              target="_blank">${'$'}{field.typeshorttitle}</a>
+                                        标签：${'$'}{field.typeshorttitle}
                                     </div>
                                 </el-form-item>
                             </el-col>
@@ -177,7 +175,7 @@
                                                    :label="item.modelName"></el-option>
                                     </el-select>
                                     <div class="ms-form-tip">
-                                        如果发布时候文章字段信息不够，可以采用铭飞代码生成器生成自定义模型，再通过“自定义模块->自定义模型->导入”功能导入模型，注意类型是文章。如果栏目下有文章则不允许修改绑定的模型
+                                        如果发布时候文章字段信息不够，可以通过“自定义模块->自定义模型->导入”功能导入模型，注意类型是文章。如果栏目下有文章则不允许修改绑定的模型
                                     </div>
                                 </el-form-item>
 
@@ -208,8 +206,7 @@
                                             placeholder="请输入自定义链接">
                                     </el-input>
                                     <div class="ms-form-tip">
-                                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                              target="_blank">${'$'}{field.typeurl}</a>，自定义链接不能包含标签
+                                        标签：${'$'}{field.typeurl}，自定义链接不能包含标签
                                     </div>
                                 </el-form-item>
                             </el-col>
@@ -277,8 +274,7 @@
                                     placeholder="关键字，有助于搜索">
                             </el-input>
                             <div class="ms-form-tip">
-                                标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                      target="_blank">${'$'}{field.typekeyword}</a>，
+                                标签：${'$'}{field.typekeyword}，
                                 用于SEO优化
                             </div>
                         </el-form-item>
@@ -293,8 +289,7 @@
                                     placeholder="栏目描述，有助于搜索">
                             </el-input>
                             <div class="ms-form-tip">
-                                标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                      target="_blank">${'$'}{field.typedescrip}</a>
+                                标签：${'$'}{field.typedescrip}
                                 用于SEO优化
                             </div>
                         </el-form-item>
@@ -318,8 +313,7 @@
                                 <template #tip>
                                     <div class="ms-form-tip">
                                         只能上传1张图片
-                                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                              target="_blank"><#noparse>{@ms:file field.typelitpic/}</#noparse></a><br/>
+                                        标签：<#noparse>{@ms:file field.typelitpic/}</#noparse><br/>
                                     </div>
                                 </template>
                             </el-upload>
@@ -343,8 +337,7 @@
                                 <template #tip>
                                     <div class="ms-form-tip">
                                         只能上传1张图片
-                                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                                              target="_blank"><#noparse>{@ms:file field.typeico/}</#noparse></a><br/>
+                                        标签：<#noparse>{@ms:file field.typeico/}</#noparse><br/>
                                     </div>
                                 </template>
                             </el-upload>

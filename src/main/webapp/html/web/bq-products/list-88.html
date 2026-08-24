@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti-产品中心</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" href="/template/1/bioquanti/css/app.css">
+<script>
+    //当前列表路径，方便第三方插件调用
+    function pageurl(val) {
+			var basePath = "/html/web/bq-products";
+            // 普通分页方式
+            if (val == 1) {
+                return basePath + "/index.html";
+            } else {
+                return basePath + "/list-" + val + ".html";
+            }
+    }
+</script>
+</head>
+<body>
+<!-- ===== 顶头区：LOGO(左,下方slogan) + 搜索(右,语言切换在搜索右侧同一行) ===== -->
+<div class="bq-tophead">
+    <div class="bq-container">
+        <div class="bq-header-flex">
+            <div class="bq-logo-col">
+                <a class="bq-logo" href="/"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+                <p class="bq-slogan">Your Good Partner in Biology Research</p>
+            </div>
+            <div class="bq-search-col">
+                <div class="bq-search-row">
+                    <form class="bq-search" action="/mcms/search.do" method="post">
+                        <select name="categoryIds">
+                            <option value="">所有产品</option>
+                            <option value="1787212335907000002">ELISA试剂盒</option>
+                            <option value="1787212335907000003">重组蛋白</option>
+                            <option value="1787212335907000004">抗体对</option>
+                        </select>
+                        <input type="text" name="content_title" placeholder="输入产品名 / 货号 / 靶标，如：IL-6 或 BQE-B0004" value="">
+                        <input type="hidden" name="style" value="template/1/bioquanti/">
+                        <input type="hidden" name="tmpl" value="搜索.htm">
+                        <button type="submit"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg></button>
+                    </form>
+                    <div class="bq-lang">
+                        <svg class="bq-globe" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="cur">中文简体</span><span class="sep">|</span>
+                        <a href="#" title="英文站建设中">English</a>
+                    </div>
+                </div>
+                <p class="bq-hot-links">
+                    热门搜索：
+                    <a href="/mcms/search.do?content_title=IL-6&style=&tmpl=%E6%90%9C%E7%B4%A2.htm">IL-6</a>
+                    <a href="/mcms/search.do?content_title=TNF&style=&tmpl=%E6%90%9C%E7%B4%A2.htm">TNF-α</a>
+                    <a href="/mcms/search.do?content_title=Leptin&style=&tmpl=%E6%90%9C%E7%B4%A2.htm">Leptin</a>
+                    <a href="/mcms/search.do?content_title=HSP70&style=&tmpl=%E6%90%9C%E7%B4%A2.htm">HSP70</a>
+                    <a href="/mcms/search.do?content_title=Interferon&style=&tmpl=%E6%90%9C%E7%B4%A2.htm">Interferon</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ===== 主导航(独立蓝条, 按实际栏目) ===== -->
+<nav class="bq-navbar">
+    <div class="bq-container">
+        <ul>
+            <li ><a href="/">首页</a></li>
+            <li class="active">
+                    <a href="/html/web/bq-products/bq-elisa/index.html">产品中心 <span class="caret">▾</span></a>
+                    <div class="bq-dropdown">
+                        <a href="/html/web/bq-products/bq-elisa/index.html">ELISA试剂盒</a>
+                        <a href="/html/web/bq-products/bq-protein/index.html">蛋白</a>
+                        <a href="/html/web/bq-products/bq-antibody/index.html">抗体对</a>
+                        <a href="/html/web/bq-products/bq-hot/index.html">热门产品</a>
+                    </div>
+            </li>
+            <li >
+                    <a href="/html/web/bq-service/index.html">其他服务</a>
+            </li>
+            <li >
+                    <a href="/html/web/bq-tech/index.html">技术专栏</a>
+            </li>
+            <li >
+                    <a href="/html/web/bq-about/index.html">关于公司</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="bq-pagebanner">
+    <h1>产品中心</h1>
+    <p>PRODUCTS</p>
+</div>
+
+<!-- 子栏目标签 -->
+<div class="bq-subnav">
+    <div class="bq-container">
+        <a href="/html/web/bq-products/bq-elisa/index.html" >ELISA试剂盒</a>
+        <a href="/html/web/bq-products/bq-hot/index.html" >热门产品</a>
+        <a href="/html/web/bq-products/bq-protein/index.html" >蛋白</a>
+        <a href="/html/web/bq-products/bq-antibody/index.html" >抗体对</a>
+    </div>
+</div>
+
+<div class="bq-container" style="padding:24px 0 40px;">
+    <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="/">首页</a> &gt; 产品中心 &gt; 产品中心</div>
+    <div class="bq-prodlist">
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000509.html"><img src="/upload/1/bioquanti/yangben.webp" alt="人P62/SQSTM1（底物结合蛋白1）ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0459</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000509.html">人P62/SQSTM1（底物结合蛋白1）ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000509.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001230.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="前列腺素E2 (PGE2) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0043</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001230.html">前列腺素E2 (PGE2) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001230.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000510.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="人PADI4（肽基精氨酸脱亚胺酶IV型）ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0460</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000510.html">人PADI4（肽基精氨酸脱亚胺酶IV型）ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000510.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001231.html"><img src="/upload/1/bioquanti/2.jpg" alt="孕烯醇酮 (Pregnenolone) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0044</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001231.html">孕烯醇酮 (Pregnenolone) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001231.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000511.html"><img src="/upload/1/bioquanti/2.jpg" alt="人血小板激活因子(PAF) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0461</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000511.html">人血小板激活因子(PAF) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000511.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001232.html"><img src="/upload/1/bioquanti/yangben.webp" alt="1-磷酸鞘氨醇 (S1P) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0045</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001232.html">1-磷酸鞘氨醇 (S1P) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001232.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000512.html"><img src="/upload/1/bioquanti/yangben.webp" alt="人蛋白酶激活受体2(PAR2) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0462</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000512.html">人蛋白酶激活受体2(PAR2) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000512.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001233.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="精胺 ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0046</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001233.html">精胺 ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001233.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000513.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="人聚[ADP-核糖]聚合酶1(PARP1) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0463</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000513.html">人聚[ADP-核糖]聚合酶1(PARP1) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000513.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001234.html"><img src="/upload/1/bioquanti/2.jpg" alt="睾酮 (T) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0047</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001234.html">睾酮 (T) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001234.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000514.html"><img src="/upload/1/bioquanti/2.jpg" alt="人降钙素原(PCT) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0464</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000514.html">人降钙素原(PCT) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000514.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001235.html"><img src="/upload/1/bioquanti/yangben.webp" alt="甲状腺素 (T4) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0048</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001235.html">甲状腺素 (T4) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001235.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000515.html"><img src="/upload/1/bioquanti/yangben.webp" alt="人程序性细胞死亡蛋白1(PD-1/PDCD1) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0465</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000515.html">人程序性细胞死亡蛋白1(PD-1/PDCD1) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000515.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001236.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="总同型半胱氨酸 (Total HCY) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0049</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001236.html">总同型半胱氨酸 (Total HCY) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001236.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000516.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="人程序性细胞死亡蛋白1配体1(PDCD1LG1) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0466</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000516.html">人程序性细胞死亡蛋白1配体1(PDCD1LG1) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000516.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001237.html"><img src="/upload/1/bioquanti/2.jpg" alt="血栓烷B2 (TXB2) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0050</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001237.html">血栓烷B2 (TXB2) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001237.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000517.html"><img src="/upload/1/bioquanti/2.jpg" alt="人血小板源性生长因子(PDGF) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0467</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000517.html">人血小板源性生长因子(PDGF) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000517.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001238.html"><img src="/upload/1/bioquanti/yangben.webp" alt="血管升压素 (Vasopressin) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0051</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001238.html">血管升压素 (Vasopressin) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001238.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907000518.html"><img src="/upload/1/bioquanti/yangben.webp" alt="人血小板源性生长因子-BB(PDGF-BB) ELISA试剂盒"></a></div>
+            <span class="no">BQE-H0468</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907000518.html">人血小板源性生长因子-BB(PDGF-BB) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907000518.html">查看详情 →</a></span>
+        </div>
+        <div class="bq-prodrow">
+            <div class="pic"><a href="/html/web/bq-products/bq-elisa/1787212335907001239.html"><img src="/upload/1/bioquanti/shengwu_shengchan.webp" alt="维生素B12 (VB12) ELISA试剂盒"></a></div>
+            <span class="no">BQE-MS0052</span>
+            <span class="tt"><a href="/html/web/bq-products/bq-elisa/1787212335907001239.html">维生素B12 (VB12) ELISA试剂盒</a></span>
+            <span class="dt">2026-07-30</span>
+            <span class="go"><a href="/html/web/bq-products/bq-elisa/1787212335907001239.html">查看详情 →</a></span>
+        </div>
+    </div>
+
+    <!-- 分页 -->
+    <div class="bq-pagination">
+        <a href="/html/web/bq-products/index.html">首页</a>
+        <a href="/html/web/bq-products/list-87.html">上一页</a>
+        <span class="cur">88</span><span>/ 109</span>
+        <a href="/html/web/bq-products/list-89.html">下一页</a>
+        <a href="/html/web/bq-products/list-109.html">末页</a>
+        <span style="margin-left:10px;color:#999;">共 2173 条</span>
+    </div>
+</div>
+
+<!-- ===== footer ===== -->
+<div class="bq-footer">
+    <div class="bq-container">
+        <div class="cols">
+            <div class="col">
+                <h4>产品中心</h4>
+                <a href="/html/web/bq-products/bq-elisa/index.html">ELISA试剂盒</a>
+                <a href="/html/web/bq-products/bq-hot/index.html">热门产品</a>
+                <a href="/html/web/bq-products/bq-protein/index.html">蛋白</a>
+                <a href="/html/web/bq-products/bq-antibody/index.html">抗体对</a>
+            </div>
+            <div class="col">
+                <h4>技术支持</h4>
+                <a href="/mcms/search.do?style=&tmpl=%E6%90%9C%E7%B4%A2.htm">产品搜索</a>
+                <a href="/html/web/bq-tech/1787212335907002180.html">ELISA 实验操作要点与常见问题排查</a>
+                <a href="/html/web/bq-tech/1787212335907002181.html">重组蛋白复溶与保存指南</a>
+                <a href="/html/web/bq-tech/1787212335907002182.html">抗体对（ELISA Pair Set）使用说明</a>
+            </div>
+            <div class="col">
+                <h4>关于我们</h4>
+                <a href="/html/web/bq-about/index.html">关于公司</a>
+                <a href="/html/web/bq-tech/index.html">技术专栏</a>
+            </div>
+            <div class="col">
+                <h4>联系我们</h4>
+                <p>电话：027-XXX-XXXX</p>
+                <p>邮箱：sales@bioquanti.com</p>
+                <p>地址：中国 · 武汉 · 光谷</p>
+            </div>
+        </div>
+    </div>
+    <div class="bq-copyright">
+        <div class="bq-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</div>
+</body>
+</html>

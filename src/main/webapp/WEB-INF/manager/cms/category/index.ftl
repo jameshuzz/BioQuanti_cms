@@ -36,8 +36,7 @@
             <el-table-column label="编号" width="100" prop="id" show-overflow-tooltip>
                 <template #title>编号
                     <el-popover placement="top-start" title="提示" trigger="hover">
-                        标签：<a href="http://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html"
-                              target="_blank">${'$'}{field.id}</a>
+                        标签：${'$'}{field.id}
                         <template #reference>
                             <i class="el-icon-question" ></i>
                         </template>
@@ -57,7 +56,7 @@
             <el-table-column label="排序" align="center" prop="categorySort" width="75">
                 <template #header>排序
                     <el-popover placement="top-start" title="提示" trigger="hover" >
-                        前台模板标签需设置orderby属性为sort才能生效，<a href="https://doc.mingsoft.net/mcms/biao-qian/lan-mu-lie-biao-ms-channel.html#orderby-%E7%A4%BA%E4%BE%8B" target="_blank">参考</a>
+                        前台模板标签需设置orderby属性为sort才能生效，参考
                         <template #reference>
                             <i class="el-icon-question"></i>
                         </template>

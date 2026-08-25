@@ -14,7 +14,7 @@
 <body>
 <#include "/en/header.htm"/>
 
-<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}en/images/bg-1.jpg"}')">
+<div class="bq-pagebanner" style="background-image:url('<#if field.categoryImg?? && field.categoryImg?has_content && field.categoryImg != '[]'>{@ms:file field.categoryImg/}<#else>/{ms:global.style/}en/images/bg-1.jpg</#if>')">
     <h1>${field.typetitle}</h1>
     <p>ABOUT US</p>
 </div>

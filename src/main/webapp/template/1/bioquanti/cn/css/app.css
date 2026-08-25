@@ -183,6 +183,43 @@ img{border:0;max-width:100%;}
 .bq-spec th{width:180px;color:#333;font-weight:normal;background:#f4f8fc;}
 .bq-spec td{color:#555;}
 
+/* ===== 产品详情：自定义模型区块 ===== */
+/* 属性条（货号|反应性|检测范围|灵敏度） */
+.bq-spec-bar{display:flex;flex-wrap:wrap;gap:10px 26px;background:#f4f8fc;border:1px solid #e0e6ef;border-radius:6px;padding:12px 16px;margin-bottom:22px;}
+.bq-spec-bar .item{font-size:13px;color:#888;}
+.bq-spec-bar .item em{font-style:normal;margin-right:6px;}
+.bq-spec-bar .item b{font-weight:600;color:#29568F;font-family:Consolas,monospace;}
+/* 图文信息区 */
+.bq-prod-info{display:flex;gap:24px;margin-bottom:26px;}
+.bq-prod-info .bq-prod-img{flex:0 0 300px;margin-bottom:0;}
+.bq-prod-spec{flex:1;min-width:0;}
+/* 价格卡片 */
+.bq-price-card{border:1px solid #e0e6ef;border-radius:6px;padding:16px 18px;margin-bottom:16px;background:#fff;}
+.bq-price-card .price{font-size:26px;color:#F60;font-weight:600;margin-bottom:8px;}
+.bq-price-card .meta{font-size:13px;color:#888;margin-bottom:14px;}
+.bq-price-card .meta span{margin-right:16px;}
+.bq-btn-inquiry{display:inline-block;background:#F60;color:#fff;font-size:14px;padding:9px 26px;border-radius:4px;text-decoration:none;}
+.bq-btn-inquiry:hover{background:#e65c00;color:#fff;}
+/* 规格属性表 */
+.bq-spec-table{border-collapse:collapse;width:100%;}
+.bq-spec-table th,.bq-spec-table td{border:1px solid #e0e6ef;padding:8px 12px;font-size:13px;text-align:left;vertical-align:top;}
+.bq-spec-table th{width:110px;color:#333;font-weight:normal;background:#f4f8fc;}
+.bq-spec-table td{color:#555;}
+.bq-spec-table tr.last th,.bq-spec-table tr.last td{border-bottom:1px solid #e0e6ef;}
+/* Tab 区 */
+.bq-tabs{margin-top:6px;}
+.bq-tab-nav{display:flex;border-bottom:2px solid #29568F;margin-bottom:20px;}
+.bq-tab-nav span{display:inline-block;padding:10px 24px;font-size:15px;color:#666;cursor:pointer;background:#f4f8fc;border:1px solid #e0e6ef;border-bottom:0;margin-right:4px;border-radius:4px 4px 0 0;}
+.bq-tab-nav span.on{background:#29568F;color:#fff;border-color:#29568F;font-weight:600;}
+.bq-tab-pane{display:none;}
+.bq-tab-pane.on{display:block;}
+.bq-tab-pane .content{line-height:1.9;font-size:14px;color:#444;overflow-x:auto;}
+.bq-literature{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:14px;line-height:2;color:#555;background:#fafcff;border:1px solid #eef2f8;border-radius:6px;padding:16px 20px;margin:0;}
+@media (max-width:990px){
+    .bq-prod-info{flex-direction:column;}
+    .bq-prod-info .bq-prod-img{flex:none;}
+}
+
 /* ===== 搜索页 ===== */
 .bq-searchpage{padding:30px 0 50px;}
 .bq-searchbar{display:flex;justify-content:center;margin-bottom:26px;}

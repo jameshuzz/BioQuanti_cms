@@ -11,7 +11,7 @@
 <body>
 <#include "/cn/header.htm"/>
 
-<div class="bq-pagebanner" style="background-image:url('${(field.categoryImg)!"/{ms:global.style/}cn/images/bg-1.jpg"}')">
+<div class="bq-pagebanner" style="background-image:url('<#if field.categoryImg?? && field.categoryImg?has_content && field.categoryImg != '[]'>{@ms:file field.categoryImg/}<#else>/{ms:global.style/}cn/images/bg-1.jpg</#if>')">
     <h1>${field.typetitle}</h1>
     <p>PRODUCT DETAIL</p>
 </div>
@@ -19,11 +19,11 @@
 <div class="bq-detail-wrap">
     <div class="bq-container">
         <div class="bq-detail-grid">
-            <!-- 左侧热门产品（取 ELISA 试剂盒叶子栏目最新 10 条，避免空栏目） -->
+            <!-- 左侧热门产品 -->
             <aside class="bq-sidebar">
                 <div class="side-title">热门产品</div>
                 <div class="side-body">
-                    {ms:arclist size=10 typeid="2787212335907000201"}
+                    {ms:arclist size=10 orderby='hit'}
                     <div class="hot-item">
                         <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/product/1.png" alt="${field.title}"></#if></a></div>
                         <div>
@@ -38,24 +38,137 @@
             <div class="bq-detail-main">
                 <div class="bq-crumb" style="background:none;border:0;">当前位置：<a href="{ms:global.html/}cn/index.html">首页</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
                 <h1 class="title">${field.title}</h1>
-                <div class="meta">
-                    货号：<#if field.shorttitle?has_content>${field.shorttitle}<#else>-</#if>　|　
-                    发布时间：${field.date?string("yyyy-MM-dd")}　|　
-                    点击：${field.hit}
+
+                <#-- 自定义模型：产品规格属性条（无模型数据的文章自动隐藏） -->
+                <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
+                <div class="bq-spec-bar">
+                    <span class="item"><em>货号</em><b>${field.CATALOG_NO}</b></span>
+                    <#if field.SPECIES?? && field.SPECIES?has_content><span class="item"><em>反应性</em><b>${field.SPECIES}</b></span></#if>
+                    <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><span class="item"><em>检测范围</em><b>${field.DETECT_RANGE}</b></span></#if>
+                    <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><span class="item"><em>灵敏度</em><b>${field.SENSITIVITY}</b></span></#if>
                 </div>
-                <div class="bq-prod-img">
-                    <#if field.litpic?? && field.litpic?has_content>
-                    <img src="{@ms:file field.litpic/}" alt="${field.title}">
-                    <#else>
-                    <img src="/{ms:global.style/}cn/images/product/1.png" alt="${field.title}">
-                    </#if>
+                </#if>
+
+                <div class="bq-prod-info">
+                    <div class="bq-prod-img">
+                        <#if field.litpic?? && field.litpic?has_content>
+                        <img src="{@ms:file field.litpic/}" alt="${field.title}">
+                        <#else>
+                        <img src="/{ms:global.style/}cn/images/product/1.png" alt="${field.title}">
+                        </#if>
+                    </div>
+                    <div class="bq-prod-spec">
+                        <#-- 价格卡片 -->
+                        <div class="bq-price-card">
+                            <div class="price"><#if field.PRICE?? && field.PRICE?has_content>${field.PRICE}<#else>询价</#if></div>
+                            <div class="meta">
+                                <#if field.SPEC?? && field.SPEC?has_content><span>规格：${field.SPEC}</span></#if>
+                                <#if field.LEAD_TIME?? && field.LEAD_TIME?has_content><span>货期：${field.LEAD_TIME}</span></#if>
+                            </div>
+                            <a href="{ms:global.html/}cn/contact-us.html" class="bq-btn-inquiry">询价 / 咨询</a>
+                        </div>
+                        <#-- 规格属性表 -->
+                        <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
+                        <table class="bq-spec-table">
+                            <tr><th>别称</th><td>${(field.ALIAS)!''}</td></tr>
+                            <tr><th>UniProt No.</th><td>${(field.UNIPROT)!''}</td></tr>
+                            <tr><th>样本类型</th><td>${(field.SAMPLE_TYPE)!''}</td></tr>
+                            <tr><th>检测方法</th><td>${(field.METHOD)!''}</td></tr>
+                            <tr><th>检测波长</th><td>${(field.WAVELENGTH)!''}</td></tr>
+                            <tr><th>反应时间</th><td>${(field.REACTION_TIME)!''}</td></tr>
+                            <tr><th>存储条件</th><td>${(field.STORAGE)!''}</td></tr>
+                            <tr class="last"><th>特异性</th><td>${(field.SPECIFICITY)!''}</td></tr>
+                        </table>
+                        </#if>
+                    </div>
                 </div>
-                <div class="content">${field.content}</div>
+
+                <#-- Tab 内容区：产品介绍（富文本 H3 自动分 Tab）+ 相关文献 -->
+                <div class="bq-tabs" id="bqTabs">
+                    <div class="bq-tab-nav" id="bqTabNav">
+                        <span class="on">产品介绍</span>
+                        <#if field.LITERATURE?? && field.LITERATURE?has_content><span>相关文献</span></#if>
+                    </div>
+                    <div class="bq-tab-body">
+                        <div class="bq-tab-pane on"><div class="content" id="bqIntro">${field.content}</div></div>
+                        <#if field.LITERATURE?? && field.LITERATURE?has_content>
+                        <div class="bq-tab-pane"><pre class="bq-literature">${field.LITERATURE?html}</pre></div>
+                        </#if>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <#include "/cn/footer.htm"/>
+
+<script>
+(function(){
+    var tabNav = document.getElementById('bqTabNav');
+    var tabWrap = document.getElementById('bqTabs');
+    if (!tabNav || !tabWrap) return;
+
+    function switchTab(span, pane) {
+        var allS = tabNav.getElementsByTagName('span');
+        var allP = tabWrap.querySelectorAll('.bq-tab-pane');
+        for (var j = 0; j < allS.length; j++) { allS[j].className = ''; allP[j].className = 'bq-tab-pane'; }
+        span.className = 'on';
+        pane.className = 'bq-tab-pane on';
+    }
+
+    <#-- 富文本 H3 自动分段成 Tab：H3 作为 Tab 标题，其后内容归入该 Tab -->
+    var intro = document.getElementById('bqIntro');
+    var h3Tabs = [];
+    if (intro && intro.querySelector('h3')) {
+        var nodes = Array.prototype.slice.call(intro.children);
+        var tabs = [{title:'产品介绍', frag: document.createElement('div')}];
+        nodes.forEach(function(n){
+            if (n.tagName === 'H3' && n.textContent.trim()) {
+                tabs.push({title: n.textContent.trim(), frag: document.createElement('div')});
+            } else {
+                tabs[tabs.length - 1].frag.appendChild(n);
+            }
+        });
+        if (tabs.length > 1) {
+            <#-- 有实际分段：重建导航和面板，文献 Tab 保留在最后 -->
+            var litPane = tabWrap.querySelectorAll('.bq-tab-pane')[1];
+            var firstPane = tabWrap.querySelector('.bq-tab-pane.on');
+            tabNav.innerHTML = '';
+            h3Tabs = tabs.map(function(t, i){
+                var s = document.createElement('span');
+                s.textContent = t.title;
+                if (i === 0) s.className = 'on';
+                tabNav.appendChild(s);
+                var p = document.createElement('div');
+                p.className = 'bq-tab-pane' + (i === 0 ? ' on' : '');
+                p.appendChild(t.frag);
+                tabWrap.querySelector('.bq-tab-body').insertBefore(p, firstPane);
+                s.onclick = function(){ switchTab(s, p); };
+                return s;
+            });
+            <#-- 相关文献 Tab 重建到导航末尾 -->
+            if (litPane) {
+                var litSpan = document.createElement('span');
+                litSpan.textContent = '相关文献';
+                tabNav.appendChild(litSpan);
+                litSpan.onclick = function(){ switchTab(litSpan, litPane); };
+            }
+            firstPane.parentNode.removeChild(firstPane);
+        }
+    }
+
+    <#-- 基础 Tab 切换（未触发 H3 拆分时） -->
+    if (h3Tabs.length === 0) {
+        var spans = tabNav.getElementsByTagName('span');
+        var panes = tabWrap.querySelectorAll('.bq-tab-pane');
+        for (var i = 0; i < spans.length; i++) {
+            (function(idx){
+                spans[idx].onclick = function(){ switchTab(this, panes[idx]); };
+            })(i);
+        }
+    }
+})();
+</script>
 </body>
 </html>

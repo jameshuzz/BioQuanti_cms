@@ -67,17 +67,38 @@ java -version   # openjdk version "17.x.x"
 
 ## 四、安装并配置 MySQL 8
 
-### 4.1 关键前置：lower_case_table_names=1
+### 4.1 核心陷阱：lower_case_table_names 必须在初始化前配置
 
-铭飞官方明确要求 MySQL 开启忽略表名大小写（Windows 默认开启，Linux 默认关闭）。
-**MySQL 8 只允许在数据目录初始化之前设置该参数，初始化后无法修改**。因此必须在 `mysqld` 首次启动前写好配置；若已初始化过，需要停库、清空数据目录重新初始化。
+铭飞官方明确要求 MySQL 开启忽略表名大小写（Windows 默认开启，Linux 默认关闭），否则应用查询表时会因大小写不一致报"表不存在"。
 
-### 4.2 安装（以 CentOS Stream / yum 方式为例）
+**MySQL 8 的坑**：该参数在数据目录初始化时写进数据字典，**初始化之后改配置会导致 MySQL 直接启动失败**，典型报错：
+
+```
+[ERROR] [MY-011087] Different lower_case_table_names settings for server ('1') and data dictionary ('0').
+```
+
+所以正确的顺序是：**装包（不启动）→ 写配置 → 首次启动（此时才初始化数据目录）**。
+`yum install` 本身不会初始化数据目录，只要中间没有执行过 `systemctl start mysqld` 就安全。
+
+**如果 mysqld 已经被启动过（数据目录已初始化）**，只能清空数据目录重来：
 
 ```bash
+systemctl stop mysqld
+rm -rf /var/lib/mysql/*        # 危险操作：清空全部数据库数据，仅在全新安装阶段允许执行！
+systemctl start mysqld         # 带上正确配置重新初始化
+```
+
+### 4.2 安装（CentOS Stream 8/9 方式）
+
+```bash
+# 1. 安装（不会自动启动，安全）
 yum install -y mysql-server
 
-# 初始化前先写配置（重点！）
+# 2. 确认装的是 MySQL 8 而不是 MariaDB（CentOS 默认模块可能拉 MariaDB）
+rpm -qa | grep -Ei 'mysql|mariadb'
+mysqld --version               # 应显示 Ver 8.0.x；若显示 MariaDB 说明装错了
+
+# 3. 启动前写配置（重点！顺序不能反）
 cat >> /etc/my.cnf <<'EOF'
 [mysqld]
 lower_case_table_names=1
@@ -87,21 +108,58 @@ default-time-zone='+8:00'
 max_connections=1000
 EOF
 
-# 首次启动（此时完成数据目录初始化，lower_case_table_names 生效）
+# 4. 首次启动（此时完成数据目录初始化，lower_case_table_names=1 生效）
 systemctl enable --now mysqld
 
-# 安全初始化（设置 root 密码等）
-mysql_secure_installation
+# 5. 确认启动成功、参数正确（任何一步不对都回头按 4.1 的恢复流程处理）
+mysql -uroot -e "SHOW VARIABLES LIKE 'lower_case_table_names';"   # 必须为 1（AppStream 版 root 初始为空密码）
+mysql -uroot -e "SHOW VARIABLES LIKE 'character%';"              # utf8mb4
 
-# 验证
-mysql -uroot -p -e "SHOW VARIABLES LIKE 'lower_case_table_names';"   # 必须为 1
-mysql -uroot -p -e "SHOW VARIABLES LIKE 'character%';"              # utf8mb4
+# 6. 安全初始化（设置 root 密码、删测试库、禁远程 root）
+mysql_secure_installation
 ```
 
-> CentOS 7 无 mysql-server（是 mariadb），需先安装 MySQL 官方 yum 源：
-> `yum install -y https://repo.mysql.com/mysql80-community-release-el7-11.noarch.rpm` 后再执行上述步骤。
+> AppStream 的 mysql-server 首次启动后 root 为**空密码**，直接回车即可登录；`mysql_secure_installation` 中按提示设置 root 强密码。
 
-### 4.3 建库、建账号、导入数据
+### 4.3 安装（CentOS 7 方式）
+
+CentOS 7 已于 2024-06 停止维护，且默认源里没有 MySQL（是 MariaDB），需要处理两个前置问题：
+
+```bash
+# 0a. 官方镜像已失效，yum 报 mirrorlist 错误时，先切到 vault 归档源
+sed -i -e 's|^mirrorlist=|#mirrorlist=|' \
+       -e 's|^#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|' \
+       /etc/yum.repos.d/CentOS-*.repo
+
+# 0b. 安装 MySQL 官方 yum 源（8.0 社区版）
+yum install -y https://repo.mysql.com/mysql80-community-release-el7-11.noarch.rpm
+# GPG 校验失败时导入新密钥（2023 年官方换过密钥）
+rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+
+# 1. 安装社区版服务端
+yum install -y mysql-community-server
+
+# 2. 同样：启动前先写配置（内容同 4.2 第 3 步）
+# 3. 首次启动
+systemctl enable --now mysqld
+```
+
+**社区版的坑：root 是随机临时密码**（不是空密码），必须先从日志取出来：
+
+```bash
+# 取临时密码
+grep 'temporary password' /var/log/mysqld.log
+# 形如：A temporary password is generated for root@localhost: xxxxxx
+
+# 用临时密码登录后必须先改密码，否则任何 SQL 都会被拒绝
+mysql -uroot -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY '新的强密码';
+# 注意：社区版默认启用 validate_password 组件，密码必须包含大小写、数字、特殊字符
+```
+
+之后同样执行 `mysql_secure_installation` 和参数验证（同 4.2 第 5、6 步）。
+
+### 4.4 建库、建账号、导入数据
 
 ```bash
 mysql -uroot -p <<'EOF'

@@ -30,8 +30,8 @@
                 <!-- 每天滚动一次 -->
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
-            <!-- 最多保留15个归档文件 -->
-            <DefaultRolloverStrategy max="15"/>
+            <!-- 最多保留90个归档文件（约三个月） -->
+            <DefaultRolloverStrategy max="90"/>
         </RollingFile>
 
         <!--错误日志：按天滚动，不压缩-->
@@ -41,7 +41,7 @@
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
-            <DefaultRolloverStrategy max="15"/>
+            <DefaultRolloverStrategy max="90"/>
         </RollingFile>
 
     </appenders>

@@ -67,23 +67,24 @@
                             </div>
                             <a href="{ms:global.html/}cn/contact-us.html" class="bq-btn-inquiry">询价 / 咨询</a>
                         </div>
-                        <#-- 规格属性表 -->
+                        <#-- 规格属性表（空字段行自动隐藏） -->
                         <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
                         <table class="bq-spec-table">
-                            <tr><th>别称</th><td>${(field.ALIAS)!''}</td></tr>
-                            <tr><th>UniProt No.</th><td>${(field.UNIPROT)!''}</td></tr>
-                            <tr><th>样本类型</th><td>${(field.SAMPLE_TYPE)!''}</td></tr>
-                            <tr><th>检测方法</th><td>${(field.METHOD)!''}</td></tr>
-                            <tr><th>检测波长</th><td>${(field.WAVELENGTH)!''}</td></tr>
-                            <tr><th>反应时间</th><td>${(field.REACTION_TIME)!''}</td></tr>
-                            <tr><th>存储条件</th><td>${(field.STORAGE)!''}</td></tr>
-                            <tr class="last"><th>特异性</th><td>${(field.SPECIFICITY)!''}</td></tr>
+                            <#if field.ALIAS?? && field.ALIAS?has_content><tr><th>别称</th><td>${field.ALIAS}</td></tr></#if>
+                            <#if field.UNIPROT?? && field.UNIPROT?has_content><tr><th>UniProt No.</th><td>${field.UNIPROT}</td></tr></#if>
+                            <#if field.SAMPLE_TYPE?? && field.SAMPLE_TYPE?has_content><tr><th>样本类型</th><td>${field.SAMPLE_TYPE}</td></tr></#if>
+                            <#if field.METHOD?? && field.METHOD?has_content><tr><th>检测方法</th><td>${field.METHOD}</td></tr></#if>
+                            <#if field.WAVELENGTH?? && field.WAVELENGTH?has_content><tr><th>检测波长</th><td>${field.WAVELENGTH}</td></tr></#if>
+                            <#if field.REACTION_TIME?? && field.REACTION_TIME?has_content><tr><th>反应时间</th><td>${field.REACTION_TIME}</td></tr></#if>
+                            <#if field.STORAGE?? && field.STORAGE?has_content><tr><th>存储条件</th><td>${field.STORAGE}</td></tr></#if>
+                            <#if field.SPECIFICITY?? && field.SPECIFICITY?has_content><tr class="last"><th>特异性</th><td>${field.SPECIFICITY}</td></tr></#if>
                         </table>
                         </#if>
                     </div>
                 </div>
 
-                <#-- Tab 内容区：产品介绍（富文本 H3 自动分 Tab）+ 相关文献 -->
+                <#-- Tab 内容区：产品介绍（富文本 H3 自动分 Tab）+ 相关文献；正文为空时整个隐藏 -->
+                <#if field.content?? && field.content?trim?has_content>
                 <div class="bq-tabs" id="bqTabs">
                     <div class="bq-tab-nav" id="bqTabNav">
                         <span class="on">产品介绍</span>
@@ -96,6 +97,7 @@
                         </#if>
                     </div>
                 </div>
+                </#if>
             </div>
         </div>
     </div>

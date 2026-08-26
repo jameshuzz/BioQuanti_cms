@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mcms?useUnicode=true&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: mcms
+    password: Bq#Cms2026@App
+    type: com.alibaba.druid.pool.DruidDataSource
+
+# 生产安全项（覆盖 application.yml 中的开发配置）
+springdoc:
+  api-docs:
+    enabled: false      # 生产关闭 swagger 接口文档
+  swagger-ui:
+    enabled: false
+
+ms:
+  manager:
+    check-code: true    # 生产开启后台登录验证码

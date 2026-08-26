@@ -37,6 +37,18 @@ setenforce 0
 # 防火墙只放行 80/443，SSH 按需限制来源 IP
 firewall-cmd --permanent --add-service=http --add-service=https
 firewall-cmd --reload
+
+# 小内存服务器（2G）加 2G swap 兜底，防瞬时尖峰直接 OOM 杀进程
+# （云服务器若用云盘可选关机直接扩容内存代替；已有 swap 可跳过）
+swapon --show    # 若无输出则执行下面命令
+dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+# 降低 swap 使用倾向（内存充足时尽量不用 swap）
+echo 'vm.swappiness=10' >> /etc/sysctl.conf
+sysctl -p
 ```
 
 ---
@@ -99,13 +111,16 @@ rpm -qa | grep -Ei 'mysql|mariadb'
 mysqld --version               # 应显示 Ver 8.0.x；若显示 MariaDB 说明装错了
 
 # 3. 启动前写配置（重点！顺序不能反）
+#    注: innodb_buffer_pool_size / max_connections 为小内存机器（2核2G）约束值；
+#    4G 以上机器可放宽为 innodb_buffer_pool_size=512M~1G、max_connections=500
 cat >> /etc/my.cnf <<'EOF'
 [mysqld]
 lower_case_table_names=1
 character-set-server=utf8mb4
 collation-server=utf8mb4_general_ci
 default-time-zone='+8:00'
-max_connections=1000
+innodb_buffer_pool_size=256M
+max_connections=200
 EOF
 
 # 4. 首次启动（此时完成数据目录初始化，lower_case_table_names=1 生效）
@@ -262,7 +277,8 @@ JAR_FILE="$APP_DIR/ms-mcms.jar"
 # nohup 标准输出重定向到单独的 stdout.log，避免与 log4j 混写同一文件
 LOG_FILE="$APP_DIR/log/stdout.log"
 PID_FILE="$APP_DIR/mcms.pid"
-JAVA_OPTS="-Xms512m -Xmx2g -Duser.timezone=Asia/Shanghai"
+# JVM 内存: 2G 内存服务器用 512m（防 OOM）; 4G 及以上可放宽到 -Xms1g -Xmx2g
+JAVA_OPTS="-Xms256m -Xmx512m -XX:MaxMetaspaceSize=192m -Duser.timezone=Asia/Shanghai"
 
 # 取进程 PID：优先读 pid 文件，失效则用 jps 兜底
 get_pid() {
@@ -351,6 +367,39 @@ chmod +x /opt/mcms/mcms.sh
 tail -f /opt/mcms/log/mcms.log
 ```
 
+### 6.1 小内存服务器（2核2G）内存控制要点
+
+2G 内存同机部署（系统+MySQL+Java+Nginx）属于压线运行，以下三项已在文档各章节落实，此处汇总便于检查：
+
+| 组件 | 控制项 | 值 | 位置 |
+|---|---|---|---|
+| Java | 堆内存 `-Xmx512m`，元空间上限 192m | 进程总内存约 700~800MB | mcms.sh 的 `JAVA_OPTS` |
+| MySQL | `innodb_buffer_pool_size=256M`、`max_connections=200` | 进程总内存约 400~500MB | /etc/my.cnf |
+| 系统 | 2G swap + `vm.swappiness=10` | 瞬时尖峰兜底 | 第二章基础准备 |
+
+**验证内存水位（部署完成后执行）：**
+
+```bash
+# 总览：available 长期低于 200MB 就要警惕
+free -h
+
+# 各进程实际占用（Java 进程 RSS 应在 800MB 以内，MySQL 500MB 以内）
+ps aux --sort=-%mem | head -6
+
+# swap 使用量（USED 持续增长说明内存不足，偶尔几十 MB 属正常）
+free -h | grep -i swap
+```
+
+**内存不足的典型征兆与处理：**
+
+| 征兆 | 原因 | 处理 |
+|---|---|---|
+| 后台批量静态化时卡死/进程消失 | JVM OOM（2000+ 页面生成内存尖峰） | 分批静态化（按栏目逐个生成）；仍不行则升配 4G |
+| 站点整体变慢、磁盘 IO 高 | 开始频繁用 swap | 检查 `free -h`，考虑升配 |
+| MySQL 自动重启 | 被 OOM killer 杀掉 | `dmesg | grep -i kill` 确认，降低 buffer pool 或升配 |
+
+> 日常对外是纯静态站（Nginx 直接吐 HTML），2核2G 扛几千日 PV 无压力；瓶颈只出现在后台批量静态化和 MySQL 并发时刻。升配 4G 后，把 mcms.sh 的 JAVA_OPTS 放宽到 `-Xms1g -Xmx2g`、my.cnf 的 buffer pool 调到 512M~1G 即可。
+
 ---
 
 ## 七、安装配置 Nginx（动静分离 + 反向代理）
@@ -362,6 +411,12 @@ yum install -y nginx
 创建 `/etc/nginx/conf.d/mcms.conf`：
 
 ```nginx
+# 按浏览器 Accept-Language 头映射语言目录：zh 开头 → cn，其余 → en
+map $http_accept_language $lang {
+    default en;
+    ~*^zh     cn;
+}
+
 server {
     listen 80;
     server_name 你的域名或公网IP;
@@ -379,10 +434,10 @@ server {
     location /upload/   { alias /opt/mcms/upload/; }
     location /static/   { alias /opt/mcms/static/; }
 
-    # 网站根路径：返回 html/web/index.html（中英文跳转页）
+    # 网站根路径：302 按浏览器语言跳中/英文首页（不依赖物理跳转页，
+    # 后台重新生成静态页清空 html 目录也不受影响）
     location = / {
-        root /opt/mcms/html/web;
-        try_files /index.html =404;
+        return 302 /html/web/$lang/index.html;
     }
 
     # ---- 动态请求反代到 Spring Boot ----

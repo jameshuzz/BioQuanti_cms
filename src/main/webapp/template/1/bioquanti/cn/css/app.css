@@ -206,6 +206,15 @@ img{border:0;max-width:100%;}
 .bq-spec-table th{width:110px;color:#333;font-weight:normal;background:#f4f8fc;}
 .bq-spec-table td{color:#555;}
 .bq-spec-table tr.last th,.bq-spec-table tr.last td{border-bottom:1px solid #e0e6ef;}
+/* 资料下载区（自定义模型附件字段） */
+.bq-manual{border:1px solid #e0e6ef;border-radius:6px;overflow:hidden;margin-top:16px;}
+.bq-manual-t{font-size:15px;color:#29568F;background:#f4f8fc;padding:12px 16px;border-bottom:1px solid #e0e6ef;}
+.bq-manual-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #edf1f7;font-size:13px;color:#555;}
+.bq-manual-item:last-child{border-bottom:none;}
+.bq-manual-item:hover{background:#f8fafd;}
+.bq-manual-item .name{color:#29568F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bq-manual-item .dl{flex-shrink:0;margin-left:16px;color:#fff;background:#29568F;border-radius:3px;padding:3px 12px;}
+.bq-manual-item:hover .dl{background:#F60;}
 /* Tab 区 */
 .bq-tabs{margin-top:6px;}
 .bq-tab-nav{display:flex;border-bottom:2px solid #29568F;margin-bottom:20px;}

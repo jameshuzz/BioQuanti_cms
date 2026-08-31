@@ -43,7 +43,6 @@
                 <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
                 <div class="bq-spec-bar">
                     <span class="item"><em>货号</em><b>${field.CATALOG_NO}</b></span>
-                    <#if field.SPECIES?? && field.SPECIES?has_content><span class="item"><em>反应性</em><b>${field.SPECIES}</b></span></#if>
                     <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><span class="item"><em>检测范围</em><b>${field.DETECT_RANGE}</b></span></#if>
                     <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><span class="item"><em>灵敏度</em><b>${field.SENSITIVITY}</b></span></#if>
                 </div>
@@ -60,25 +59,34 @@
                     <div class="bq-prod-spec">
                         <#-- 价格卡片 -->
                         <div class="bq-price-card">
-                            <div class="price"><#if field.PRICE?? && field.PRICE?has_content>${field.PRICE}<#else>询价</#if></div>
+                            <div class="price">询价</div>
                             <div class="meta">
                                 <#if field.SPEC?? && field.SPEC?has_content><span>规格：${field.SPEC}</span></#if>
-                                <#if field.LEAD_TIME?? && field.LEAD_TIME?has_content><span>货期：${field.LEAD_TIME}</span></#if>
                             </div>
                             <a href="{ms:global.html/}cn/contact-us.html" class="bq-btn-inquiry">询价 / 咨询</a>
                         </div>
                         <#-- 规格属性表（空字段行自动隐藏） -->
                         <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
                         <table class="bq-spec-table">
-                            <#if field.ALIAS?? && field.ALIAS?has_content><tr><th>别称</th><td>${field.ALIAS}</td></tr></#if>
-                            <#if field.UNIPROT?? && field.UNIPROT?has_content><tr><th>UniProt No.</th><td>${field.UNIPROT}</td></tr></#if>
-                            <#if field.SAMPLE_TYPE?? && field.SAMPLE_TYPE?has_content><tr><th>样本类型</th><td>${field.SAMPLE_TYPE}</td></tr></#if>
-                            <#if field.METHOD?? && field.METHOD?has_content><tr><th>检测方法</th><td>${field.METHOD}</td></tr></#if>
-                            <#if field.WAVELENGTH?? && field.WAVELENGTH?has_content><tr><th>检测波长</th><td>${field.WAVELENGTH}</td></tr></#if>
-                            <#if field.REACTION_TIME?? && field.REACTION_TIME?has_content><tr><th>反应时间</th><td>${field.REACTION_TIME}</td></tr></#if>
-                            <#if field.STORAGE?? && field.STORAGE?has_content><tr><th>存储条件</th><td>${field.STORAGE}</td></tr></#if>
-                            <#if field.SPECIFICITY?? && field.SPECIFICITY?has_content><tr class="last"><th>特异性</th><td>${field.SPECIFICITY}</td></tr></#if>
+                            <#if field.PRODUCT_CN?? && field.PRODUCT_CN?has_content><tr><th>产品名称</th><td>${field.PRODUCT_CN}</td></tr></#if>
+                            <#if field.PRODUCT_EN?? && field.PRODUCT_EN?has_content><tr><th>英文名称</th><td>${field.PRODUCT_EN}</td></tr></#if>
+                            <#if field.STD_TOP?? && field.STD_TOP?has_content><tr class="last"><th>标准品最高浓度</th><td>${field.STD_TOP}</td></tr></#if>
                         </table>
+                        </#if>
+                        <#-- 说明书下载：优先动态模板生成（绑定模板后实时渲染PDF，换模板无需重生成）；否则回落MANUAL静态附件 -->
+                        <#if field.TEMPLATE_ID?? && field.TEMPLATE_ID?has_content>
+                        <div class="bq-manual">
+                            <div class="bq-manual-t">资料下载</div>
+                            <a class="bq-manual-item" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)"><span class="name">产品说明书</span><span class="dl">下载</span></a>
+                        </div>
+                        <#elseif field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
+                        <#assign manuals=field.MANUAL?eval>
+                        <div class="bq-manual">
+                            <div class="bq-manual-t">资料下载</div>
+                            <#list manuals as m>
+                            <a class="bq-manual-item" href="${m.url}" target="_blank"><span class="name">${m.name}</span><span class="dl">下载</span></a>
+                            </#list>
+                        </div>
                         </#if>
                     </div>
                 </div>
@@ -171,6 +179,37 @@
         }
     }
 })();
+</script>
+<script>
+<#-- 说明书下载：当前页fetch，成功触发浏览器下载，失败弹提示（不开新窗口） -->
+function bqDownloadManual(url, a) {
+    var dl = a ? a.querySelector('.dl') : null;
+    var old = dl ? dl.textContent : '';
+    if (dl) { dl.textContent = '...'; }
+    fetch(url).then(function (res) {
+        if (!res.ok) {
+            return res.text().then(function (t) { throw new Error(t || '下载失败'); });
+        }
+        return res.blob().then(function (blob) {
+            var cd = res.headers.get('Content-Disposition') || '';
+            var m = cd.match(/filename\*=UTF-8''([^;]+)/);
+            var name = '说明书.pdf';
+            if (m) { try { name = decodeURIComponent(m[1]); } catch (e) {} }
+            var u = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = u;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
+        });
+    }).catch(function (err) {
+        alert(err.message || '下载失败，请稍后再试');
+    }).finally(function () {
+        if (dl) { dl.textContent = old; }
+    });
+}
 </script>
 </body>
 </html>

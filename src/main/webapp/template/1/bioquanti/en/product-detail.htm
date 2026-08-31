@@ -46,6 +46,14 @@
                     Published: ${field.date?string("yyyy-MM-dd")}　|　
                     Hits: ${field.hit}
                 </div>
+                <#-- Custom model: spec bar (auto hidden for articles without model data) -->
+                <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
+                <div class="bq-spec-bar">
+                    <span class="item"><em>Catalog No.</em><b>${field.CATALOG_NO}</b></span>
+                    <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><span class="item"><em>Detection Range</em><b>${field.DETECT_RANGE}</b></span></#if>
+                    <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><span class="item"><em>Sensitivity</em><b>${field.SENSITIVITY}</b></span></#if>
+                </div>
+                </#if>
                 <div class="bq-prod-img">
                     <#if field.litpic?? && field.litpic?has_content>
                     <img src="{@ms:file field.litpic/}" alt="${field.title}">
@@ -53,12 +61,67 @@
                     <img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}">
                     </#if>
                 </div>
+                <#-- Spec table (empty field rows auto hidden) -->
+                <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
+                <table class="bq-spec-table">
+                    <#if field.PRODUCT_EN?? && field.PRODUCT_EN?has_content><tr><th>Product Name</th><td>${field.PRODUCT_EN}</td></tr></#if>
+                    <#if field.PRODUCT_CN?? && field.PRODUCT_CN?has_content><tr><th>Product Name (CN)</th><td>${field.PRODUCT_CN}</td></tr></#if>
+                    <#if field.SPEC?? && field.SPEC?has_content><tr><th>Size</th><td>${field.SPEC}</td></tr></#if>
+                    <#if field.STD_TOP?? && field.STD_TOP?has_content><tr class="last"><th>Top Standard</th><td>${field.STD_TOP}</td></tr></#if>
+                </table>
+                </#if>
                 <div class="content">${field.content}</div>
+                <#-- Manual download: dynamic template-generated PDF first (real-time render, template swap needs no regen); fallback to MANUAL static attachment -->
+                <#if field.TEMPLATE_ID?? && field.TEMPLATE_ID?has_content>
+                <div class="bq-manual">
+                    <div class="bq-manual-t">Downloads</div>
+                    <a class="bq-manual-item" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)"><span class="name">Product Manual</span><span class="dl">Download</span></a>
+                </div>
+                <#elseif field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
+                <#assign manuals=field.MANUAL?eval>
+                <div class="bq-manual">
+                    <div class="bq-manual-t">Downloads</div>
+                    <#list manuals as m>
+                    <a class="bq-manual-item" href="${m.url}" target="_blank"><span class="name">${m.name}</span><span class="dl">Download</span></a>
+                    </#list>
+                </div>
+                </#if>
             </div>
         </div>
     </div>
 </div>
 
 <#include "/en/footer.htm"/>
+<script>
+<#-- Manual download: fetch on current page, trigger browser download on success, alert on failure (no new window) -->
+function bqDownloadManual(url, a) {
+    var dl = a ? a.querySelector('.dl') : null;
+    var old = dl ? dl.textContent : '';
+    if (dl) { dl.textContent = '...'; }
+    fetch(url).then(function (res) {
+        if (!res.ok) {
+            return res.text().then(function (t) { throw new Error(t || 'Download failed'); });
+        }
+        return res.blob().then(function (blob) {
+            var cd = res.headers.get('Content-Disposition') || '';
+            var m = cd.match(/filename\*=UTF-8''([^;]+)/);
+            var name = 'manual.pdf';
+            if (m) { try { name = decodeURIComponent(m[1]); } catch (e) {} }
+            var u = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = u;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
+        });
+    }).catch(function (err) {
+        alert(err.message || 'Download failed, please try again later');
+    }).finally(function () {
+        if (dl) { dl.textContent = old; }
+    });
+}
+</script>
 </body>
 </html>

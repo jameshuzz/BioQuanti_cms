@@ -55,22 +55,24 @@
                 </div>
                 </#if>
 
-                <#-- Product image slideshow: PICS multi-image field first, fallback to litpic -->
+                <#-- Product image slideshow: article thumbnail litpic (multi-upload JSON array); slider when multiple, plain image otherwise -->
                 <#assign picList=[]>
-                <#if field.PICS?? && field.PICS?has_content && field.PICS?starts_with("[")>
-                <#assign picList=field.PICS?eval>
+                <#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")>
+                <#assign picList=field.litpic?eval>
                 </#if>
 
                 <div class="bq-prod-info">
                     <div class="bq-prod-img">
-                        <#if picList?size gt 0>
-                        <div class="bq-slider" id="bqSlider" data-pics='${field.PICS?js_string}'>
+                        <#if picList?size gt 1>
+                        <div class="bq-slider" id="bqSlider" data-pics='${field.litpic?js_string}'>
                             <div class="bq-slider-main">
                                 <button type="button" class="bq-slider-arrow prev" aria-label="Previous">&#10094;</button>
                                 <img class="bq-slider-img" src="${picList[0].url}" alt="${field.title}">
                                 <button type="button" class="bq-slider-arrow next" aria-label="Next">&#10095;</button>
                             </div>
                         </div>
+                        <#elseif picList?size == 1>
+                        <img src="${picList[0].url}" alt="${field.title}">
                         <#elseif field.litpic?? && field.litpic?has_content>
                         <img src="{@ms:file field.litpic/}" alt="${field.title}">
                         <#else>

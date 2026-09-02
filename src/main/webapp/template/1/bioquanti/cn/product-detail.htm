@@ -48,22 +48,24 @@
                 </div>
                 </#if>
 
-                <#-- 产品图片幻灯片数据：PICS多图字段优先，无则退化为litpic单图 -->
+                <#-- 产品图片幻灯片数据：文章缩略图litpic（后台可传多张，JSON数组），多张时启用幻灯片，单张/无图时退化为普通图片 -->
                 <#assign picList=[]>
-                <#if field.PICS?? && field.PICS?has_content && field.PICS?starts_with("[")>
-                <#assign picList=field.PICS?eval>
+                <#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")>
+                <#assign picList=field.litpic?eval>
                 </#if>
 
                 <div class="bq-prod-info">
                     <div class="bq-prod-img">
-                        <#if picList?size gt 0>
-                        <div class="bq-slider" id="bqSlider" data-pics='${field.PICS?js_string}'>
+                        <#if picList?size gt 1>
+                        <div class="bq-slider" id="bqSlider" data-pics='${field.litpic?js_string}'>
                             <div class="bq-slider-main">
                                 <button type="button" class="bq-slider-arrow prev" aria-label="上一张">&#10094;</button>
                                 <img class="bq-slider-img" src="${picList[0].url}" alt="${field.title}">
                                 <button type="button" class="bq-slider-arrow next" aria-label="下一张">&#10095;</button>
                             </div>
                         </div>
+                        <#elseif picList?size == 1>
+                        <img src="${picList[0].url}" alt="${field.title}">
                         <#elseif field.litpic?? && field.litpic?has_content>
                         <img src="{@ms:file field.litpic/}" alt="${field.title}">
                         <#else>

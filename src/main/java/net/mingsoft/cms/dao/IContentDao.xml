@@ -363,6 +363,16 @@
 
 	</select>
 
+	<!-- 按文章id集合查询静态化所需数据（栏目模板/栏目路径/模型编号等），用于指定文章的定向静态化 -->
+	<select id="queryBeansByArticleIds" resultMap="resultBean" >
+		select
+		ct.id article_id,ct.content_img litpic,c.*,ct.update_date as content_update_date
+		FROM cms_content ct
+		LEFT JOIN cms_category c ON ct.category_id = c.id
+		where ct.del=0 and ct.content_display='0' and c.category_display='enable'
+		and ct.id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</select>
 
 	<!-- 根据站点编号、开始、结束时间和栏目编号查询文章编号集合,不包括单篇 -->
 	<select id="queryIdsByCategoryIdForParserAndNotCover" resultMap="resultBean" >

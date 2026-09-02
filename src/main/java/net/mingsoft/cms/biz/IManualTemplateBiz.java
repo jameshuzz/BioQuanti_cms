@@ -81,6 +81,49 @@ public interface IManualTemplateBiz extends IBaseBiz<ManualTemplateEntity> {
 	Map<String, Object> renderManual(String linkId, String templateId);
 
 	/**
+	 * 预览模板本身：占位符不替换（{{X}}原样显示），用于查看模板原始效果，无需绑定产品
+	 * @param templateId 模板id
+	 * @return {pdf:PDF字节, fileName:预览文件名}
+	 */
+	Map<String, Object> previewTemplate(String templateId);
+
+	/**
+	 * 读取模板HTML内容（在线编辑用）
+	 * @param templateId 模板id
+	 * @return 模板HTML全文
+	 */
+	String getTemplateContent(String templateId);
+
+	/**
+	 * 保存在线编辑的模板内容（覆写模板文件并刷新占位符/大小/更新时间，绑定产品下次下载即生效）
+	 * @param templateId 模板id
+	 * @param html 编辑后的模板HTML全文
+	 */
+	void updateTemplateContent(String templateId, String html);
+
+	/**
+	 * 下载模板HTML源文件
+	 * @param templateId 模板id
+	 * @return {bytes:文件字节, fileName:下载文件名}
+	 */
+	Map<String, Object> downloadTemplate(String templateId);
+
+	/**
+	 * 一键生成附件：对该模板已绑定的全部产品批量生成说明书PDF（写入upload目录），
+	 * 回填产品规格模型的MANUAL附件字段，并对这些产品定向静态化（页面立即生效）
+	 * @param templateId 模板id
+	 * @return {total:绑定产品数, success:成功数, pages:静态化页面数, errors:失败明细}
+	 */
+	Map<String, Object> generateAttachments(String templateId);
+
+	/**
+	 * 读取产品已生成的说明书静态附件（前台下载接口用，替代实时渲染）
+	 * @param linkId 文章id
+	 * @return {bytes:PDF字节, fileName:下载文件名}
+	 */
+	Map<String, Object> getManualAttachment(String linkId);
+
+	/**
 	 * 说明书目录扫描（孤儿文件检测）
 	 * @return {templates:模板文件数, templateSize:字节数, orphans:[{name,size,lastModified}], orphanSize}
 	 */

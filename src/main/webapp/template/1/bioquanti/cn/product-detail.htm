@@ -48,64 +48,90 @@
                 </div>
                 </#if>
 
+                <#-- 产品图片幻灯片数据：PICS多图字段优先，无则退化为litpic单图 -->
+                <#assign picList=[]>
+                <#if field.PICS?? && field.PICS?has_content && field.PICS?starts_with("[")>
+                <#assign picList=field.PICS?eval>
+                </#if>
+
                 <div class="bq-prod-info">
                     <div class="bq-prod-img">
-                        <#if field.litpic?? && field.litpic?has_content>
+                        <#if picList?size gt 0>
+                        <div class="bq-slider" id="bqSlider" data-pics='${field.PICS?js_string}'>
+                            <div class="bq-slider-main">
+                                <button type="button" class="bq-slider-arrow prev" aria-label="上一张">&#10094;</button>
+                                <img class="bq-slider-img" src="${picList[0].url}" alt="${field.title}">
+                                <button type="button" class="bq-slider-arrow next" aria-label="下一张">&#10095;</button>
+                            </div>
+                        </div>
+                        <#elseif field.litpic?? && field.litpic?has_content>
                         <img src="{@ms:file field.litpic/}" alt="${field.title}">
                         <#else>
                         <img src="/{ms:global.style/}cn/images/product/1.png" alt="${field.title}">
                         </#if>
                     </div>
-                    <div class="bq-prod-spec">
-                        <#-- 价格卡片 -->
-                        <div class="bq-price-card">
-                            <div class="price">询价</div>
-                            <div class="meta">
-                                <#if field.SPEC?? && field.SPEC?has_content><span>规格：${field.SPEC}</span></#if>
-                            </div>
-                            <a href="{ms:global.html/}cn/contact-us.html" class="bq-btn-inquiry">询价 / 咨询</a>
-                        </div>
-                        <#-- 规格属性表（空字段行自动隐藏） -->
-                        <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
-                        <table class="bq-spec-table">
-                            <#if field.PRODUCT_CN?? && field.PRODUCT_CN?has_content><tr><th>产品名称</th><td>${field.PRODUCT_CN}</td></tr></#if>
-                            <#if field.PRODUCT_EN?? && field.PRODUCT_EN?has_content><tr><th>英文名称</th><td>${field.PRODUCT_EN}</td></tr></#if>
-                            <#if field.STD_TOP?? && field.STD_TOP?has_content><tr class="last"><th>标准品最高浓度</th><td>${field.STD_TOP}</td></tr></#if>
-                        </table>
-                        </#if>
-                        <#-- 说明书下载：优先动态模板生成（绑定模板后实时渲染PDF，换模板无需重生成）；否则回落MANUAL静态附件 -->
-                        <#if field.TEMPLATE_ID?? && field.TEMPLATE_ID?has_content>
-                        <div class="bq-manual">
-                            <div class="bq-manual-t">资料下载</div>
-                            <a class="bq-manual-item" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)"><span class="name">产品说明书</span><span class="dl">下载</span></a>
-                        </div>
-                        <#elseif field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
-                        <#assign manuals=field.MANUAL?eval>
-                        <div class="bq-manual">
-                            <div class="bq-manual-t">资料下载</div>
-                            <#list manuals as m>
-                            <a class="bq-manual-item" href="${m.url}" target="_blank"><span class="name">${m.name}</span><span class="dl">下载</span></a>
-                            </#list>
-                        </div>
-                        </#if>
-                    </div>
                 </div>
 
-                <#-- Tab 内容区：产品介绍（富文本 H3 自动分 Tab）+ 相关文献；正文为空时整个隐藏 -->
-                <#if field.content?? && field.content?trim?has_content>
-                <div class="bq-tabs" id="bqTabs">
-                    <div class="bq-tab-nav" id="bqTabNav">
-                        <span class="on">产品介绍</span>
-                        <#if field.LITERATURE?? && field.LITERATURE?has_content><span>相关文献</span></#if>
+                <#-- 资料按钮行：说明书（后台生成附件后显示）+ MSDS固定文件 -->
+                <div class="bq-doc-btns">
+                    <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
+                    <a class="bq-doc-btn" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>说明书</span>
+                    </a>
+                    </#if>
+                    <a class="bq-doc-btn msds" href="/{ms:global.style/}files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>MSDS</span>
+                    </a>
+                </div>
+
+                <#-- 四大固定模块：锚点导航 -->
+                <div class="bq-modnav" id="bqModNav">
+                    <a href="#bq-mod-intro" class="on">产品简介</a>
+                    <a href="#bq-mod-protocol">实验方案</a>
+                    <a href="#bq-mod-lit">引用文献</a>
+                    <a href="#bq-mod-related">相关产品</a>
+                </div>
+
+                <div class="bq-mods">
+                    <#-- 模块1：产品简介（标题与内容均来自富文本H3分段） -->
+                    <div class="bq-mod-sec" id="bq-mod-intro">
+                        <div class="content bq-mod-body" id="bqIntro">${field.content!''}</div>
                     </div>
-                    <div class="bq-tab-body">
-                        <div class="bq-tab-pane on"><div class="content" id="bqIntro">${field.content}</div></div>
-                        <#if field.LITERATURE?? && field.LITERATURE?has_content>
-                        <div class="bq-tab-pane"><pre class="bq-literature">${field.LITERATURE?html}</pre></div>
-                        </#if>
+
+                    <#-- 模块2：实验方案（富文本H3"实验方案"及其后内容由JS移入，无则整块隐藏） -->
+                    <div class="bq-mod-sec" id="bq-mod-protocol" style="display:none;">
+                        <div class="bq-mod-body" id="bqProtocolBody"></div>
+                    </div>
+
+                    <#-- 模块3：引用文献（富文本H3"引用文献"及其后内容由JS移入，无则整块隐藏） -->
+                    <div class="bq-mod-sec" id="bq-mod-lit" style="display:none;">
+                        <div class="bq-mod-body" id="bqLitBody"></div>
+                    </div>
+
+                    <#-- 模块4：相关产品（同栏目，排除当前文章） -->
+                    <div class="bq-mod-sec" id="bq-mod-related">
+                        <h2 class="bq-mod-h">相关产品</h2>
+                        <div class="bq-mod-body">
+                            <div class="bq-related-grid">
+                                <#assign curId=field.id?string>
+                                <#-- 同栏目最新10篇，排除自己后取前9，保证九宫格正好满格 -->
+                                <#assign shown=0>
+                                {ms:arclist size=10 typeid=field.typeid}
+                                <#if field.id?string != curId && shown lt 9>
+                                <#assign shown=shown+1>
+                                <a class="bq-related-item" href="{ms:global.html/}${field.link}">
+                                    <div class="pic"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/product/1.png" alt="${field.title}"></#if></div>
+                                    <div class="no">${field.shorttitle}</div>
+                                    <div class="tt">${field.title}</div>
+                                </a>
+                                </#if>
+                                {/ms:arclist}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </#if>
             </div>
         </div>
     </div>
@@ -114,76 +140,97 @@
 <#include "/cn/footer.htm"/>
 
 <script>
+<#-- 幻灯片：左右箭头切换（图片列表来自data-pics属性） -->
 (function(){
-    var tabNav = document.getElementById('bqTabNav');
-    var tabWrap = document.getElementById('bqTabs');
-    if (!tabNav || !tabWrap) return;
-
-    function switchTab(span, pane) {
-        var allS = tabNav.getElementsByTagName('span');
-        var allP = tabWrap.querySelectorAll('.bq-tab-pane');
-        for (var j = 0; j < allS.length; j++) { allS[j].className = ''; allP[j].className = 'bq-tab-pane'; }
-        span.className = 'on';
-        pane.className = 'bq-tab-pane on';
+    var slider = document.getElementById('bqSlider');
+    if (!slider) return;
+    var img = slider.querySelector('.bq-slider-img');
+    var prev = slider.querySelector('.bq-slider-arrow.prev');
+    var next = slider.querySelector('.bq-slider-arrow.next');
+    if (!img) return;
+    var urls = [];
+    try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
+    if (urls.length === 0) { urls = [img.getAttribute('src')]; }
+    var cur = 0;
+    function show(i) {
+        cur = (i + urls.length) % urls.length;
+        img.src = urls[cur];
     }
-
-    <#-- 富文本 H3 自动分段成 Tab：H3 作为 Tab 标题，其后内容归入该 Tab -->
+    if (prev) prev.onclick = function(){ show(cur - 1); };
+    if (next) next.onclick = function(){ show(cur + 1); };
+})();
+</script>
+<script>
+<#-- 四大模块：富文本H3路由（"实验方案"/"引用文献"移入对应模块）+ 导航高亮 -->
+(function(){
     var intro = document.getElementById('bqIntro');
-    var h3Tabs = [];
-    if (intro && intro.querySelector('h3')) {
+    var protocolSec = document.getElementById('bq-mod-protocol');
+    var protocolBody = document.getElementById('bqProtocolBody');
+    var litSec = document.getElementById('bq-mod-lit');
+    var litBody = document.getElementById('bqLitBody');
+    if (intro) {
         var nodes = Array.prototype.slice.call(intro.children);
-        var tabs = [{title:'产品介绍', frag: document.createElement('div')}];
+        var bucket = intro;
         nodes.forEach(function(n){
-            if (n.tagName === 'H3' && n.textContent.trim()) {
-                tabs.push({title: n.textContent.trim(), frag: document.createElement('div')});
-            } else {
-                tabs[tabs.length - 1].frag.appendChild(n);
+            if (n.tagName === 'H3' || n.tagName === 'H2') {
+                var t = n.textContent.trim();
+                if (t.indexOf('实验方案') > -1 && protocolBody) {
+                    bucket = protocolBody;
+                    protocolSec.style.display = '';
+                } else if (t.indexOf('引用文献') > -1 && litBody) {
+                    bucket = litBody;
+                    litSec.style.display = '';
+                }
+            }
+            <#-- 命中分段后，标题与其后内容整体移入对应模块（标题保留，随富文本走） -->
+            if (bucket !== intro && n.parentNode === intro) {
+                bucket.appendChild(n);
             }
         });
-        if (tabs.length > 1) {
-            <#-- 有实际分段：重建导航和面板，文献 Tab 保留在最后 -->
-            var litPane = tabWrap.querySelectorAll('.bq-tab-pane')[1];
-            var firstPane = tabWrap.querySelector('.bq-tab-pane.on');
-            tabNav.innerHTML = '';
-            h3Tabs = tabs.map(function(t, i){
-                var s = document.createElement('span');
-                s.textContent = t.title;
-                if (i === 0) s.className = 'on';
-                tabNav.appendChild(s);
-                var p = document.createElement('div');
-                p.className = 'bq-tab-pane' + (i === 0 ? ' on' : '');
-                p.appendChild(t.frag);
-                tabWrap.querySelector('.bq-tab-body').insertBefore(p, firstPane);
-                s.onclick = function(){ switchTab(s, p); };
-                return s;
-            });
-            <#-- 相关文献 Tab 重建到导航末尾 -->
-            if (litPane) {
-                var litSpan = document.createElement('span');
-                litSpan.textContent = '相关文献';
-                tabNav.appendChild(litSpan);
-                litSpan.onclick = function(){ switchTab(litSpan, litPane); };
-            }
-            firstPane.parentNode.removeChild(firstPane);
-        }
     }
-
-    <#-- 基础 Tab 切换（未触发 H3 拆分时） -->
-    if (h3Tabs.length === 0) {
-        var spans = tabNav.getElementsByTagName('span');
-        var panes = tabWrap.querySelectorAll('.bq-tab-pane');
-        for (var i = 0; i < spans.length; i++) {
-            (function(idx){
-                spans[idx].onclick = function(){ switchTab(this, panes[idx]); };
-            })(i);
+    <#-- 实验方案/引用文献为空时隐藏对应导航项 -->
+    var nav = document.getElementById('bqModNav');
+    if (nav) {
+        if (protocolSec && protocolSec.style.display === 'none') { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
+        if (litSec && litSec.style.display === 'none') { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
+    }
+    <#-- 导航点击切换高亮 + 滚动高亮（scrollspy） -->
+    if (nav) {
+        var links = nav.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            (function(a){
+                a.onclick = function(){
+                    for (var j = 0; j < links.length; j++) links[j].className = '';
+                    a.className = 'on';
+                };
+            })(links[i]);
         }
+        var secs = [];
+        for (var m = 0; m < links.length; m++) {
+            var id = links[m].getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) secs.push({a: links[m], el: el});
+        }
+        function spy() {
+            var top = window.scrollY + 120;
+            var hit = secs[0];
+            for (var s = 0; s < secs.length; s++) {
+                if (secs[s].el.getBoundingClientRect().top + window.scrollY <= top) hit = secs[s];
+            }
+            if (hit) {
+                for (var j = 0; j < links.length; j++) links[j].className = '';
+                hit.a.className = 'on';
+            }
+        }
+        window.addEventListener('scroll', spy);
+        spy();
     }
 })();
 </script>
 <script>
 <#-- 说明书下载：当前页fetch，成功触发浏览器下载，失败弹提示（不开新窗口） -->
 function bqDownloadManual(url, a) {
-    var dl = a ? a.querySelector('.dl') : null;
+    var dl = a ? a.querySelector('span') : null;
     var old = dl ? dl.textContent : '';
     if (dl) { dl.textContent = '...'; }
     fetch(url).then(function (res) {

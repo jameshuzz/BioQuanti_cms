@@ -60,6 +60,32 @@ public class ManualAction extends BaseAction {
 	}
 
 	/**
+	 * 一键生成附件：对该模板已绑定的全部产品生成说明书PDF附件（回填MANUAL字段）并定向静态化产品页面
+	 */
+	@Operation(summary = "一键生成说明书附件")
+	@PostMapping("/attach/generate")
+	@ResponseBody
+	@LogAnn(title = "一键生成说明书附件", businessType = BusinessTypeEnum.UPDATE)
+	@RequiresPermissions("cms:manual:bind")
+	public ResultData generateAttach(@RequestParam String templateId) {
+		Map<String, Object> result = manualTemplateBiz.generateAttachments(templateId);
+		// 失败明细放msg，成功数放data
+		List<String> errors = (List<String>) result.get("errors");
+		if (errors != null && !errors.isEmpty()) {
+			StringBuilder msg = new StringBuilder("共" + result.get("total") + "个产品，成功" + result.get("success")
+					+ "个，失败" + errors.size() + "个：");
+			for (int i = 0; i < errors.size() && i < 10; i++) {
+				msg.append("[").append(errors.get(i)).append("]");
+			}
+			if (errors.size() > 10) {
+				msg.append("等");
+			}
+			return ResultData.build().error(msg.toString());
+		}
+		return ResultData.build().success(result);
+	}
+
+	/**
 	 * 新建模板
 	 */
 	@Operation(summary = "新建模板")
@@ -148,14 +174,63 @@ public class ManualAction extends BaseAction {
 	}
 
 	/**
-	 * 模板预览：选一个产品实时渲染PDF（验证模板效果的主要手段）
+	 * 模板预览：原始模板转PDF（占位符{{X}}原样显示，无需绑定产品）
 	 */
 	@Operation(summary = "模板预览")
 	@GetMapping("/preview")
 	@RequiresPermissions("cms:manual:view")
-	public void preview(@RequestParam String templateId, @RequestParam String productId, HttpServletResponse response) {
-		Map<String, Object> result = manualTemplateBiz.renderManual(productId, templateId);
+	public void preview(@RequestParam String templateId, HttpServletResponse response) {
+		Map<String, Object> result = manualTemplateBiz.previewTemplate(templateId);
 		writePdf(response, result, true);
+	}
+
+	/**
+	 * 读取模板HTML内容（在线编辑）
+	 */
+	@Operation(summary = "读取模板内容")
+	@GetMapping("/content")
+	@ResponseBody
+	@RequiresPermissions("cms:manual:view")
+	public ResultData getContent(@RequestParam String id) {
+		return ResultData.build().success(manualTemplateBiz.getTemplateContent(id));
+	}
+
+	/**
+	 * 下载模板HTML源文件
+	 */
+	@Operation(summary = "下载模板文件")
+	@GetMapping("/download")
+	@RequiresPermissions("cms:manual:view")
+	public void download(@RequestParam String templateId, HttpServletResponse response) {
+		Map<String, Object> result = manualTemplateBiz.downloadTemplate(templateId);
+		byte[] bytes = (byte[]) result.get("bytes");
+		String fileName = String.valueOf(result.get("fileName"));
+		try {
+			response.reset();
+			response.setContentType("text/html;charset=UTF-8");
+			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''"
+					+ URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+			response.setContentLength(bytes.length);
+			try (OutputStream os = response.getOutputStream()) {
+				os.write(bytes);
+				os.flush();
+			}
+		} catch (Exception e) {
+			throw new BusinessException(BundleUtil.getBaseString("err.error", new String[]{e.getMessage()}));
+		}
+	}
+
+	/**
+	 * 保存在线编辑的模板内容（干跑校验后覆写文件，绑定产品下次下载即生效）
+	 */
+	@Operation(summary = "保存模板内容")
+	@PostMapping("/content/save")
+	@ResponseBody
+	@LogAnn(title = "在线编辑说明书模板", businessType = BusinessTypeEnum.UPDATE)
+	@RequiresPermissions("cms:manual:template")
+	public ResultData saveContent(@RequestParam String id, @RequestParam String content) {
+		manualTemplateBiz.updateTemplateContent(id, content);
+		return ResultData.build().success();
 	}
 
 	/**

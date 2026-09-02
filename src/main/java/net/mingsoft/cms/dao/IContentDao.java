@@ -28,6 +28,13 @@ public interface IContentDao extends IBaseDao<ContentEntity> {
     public List<CategoryBean> queryIdsByCategoryIdForParser(ContentBean contentBean);
 
     /**
+     * 按文章id集合查询静态化所需数据（栏目模板/栏目路径/模型编号等），用于指定文章的定向静态化
+     * @param ids 文章id集合
+     * @return CategoryBean集合
+     */
+    public List<CategoryBean> queryBeansByArticleIds(@Param("ids") List<String> ids);
+
+    /**
      * 查询文章编号集合,不包括单篇
      * @contentBean
      * @return

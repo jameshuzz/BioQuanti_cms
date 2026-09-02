@@ -174,7 +174,7 @@ img{border:0;max-width:100%;}
 .bq-detail-main .meta{font-size:12px;color:#999;border-bottom:1px solid #eee;padding-bottom:14px;margin-bottom:22px;}
 .bq-detail-main .content{line-height:1.9;font-size:14px;color:#444;overflow-x:auto;}
 .bq-detail-main .bq-prod-img{margin-bottom:22px;text-align:center;}
-.bq-detail-main .bq-prod-img img{max-width:100%;max-height:420px;object-fit:contain;border:1px solid #e8edf4;border-radius:6px;}
+.bq-detail-main .bq-prod-img img{width:100%;height:460px;object-fit:cover;display:block;border:1px solid #e8edf4;border-radius:6px;}
 
 /* 产品规格表 */
 .bq-spec h3{font-size:16px;font-weight:normal;color:#29568F;border-left:4px solid #F60;padding-left:10px;margin:0 0 14px;}
@@ -189,44 +189,41 @@ img{border:0;max-width:100%;}
 .bq-spec-bar .item{font-size:13px;color:#888;}
 .bq-spec-bar .item em{font-style:normal;margin-right:6px;}
 .bq-spec-bar .item b{font-weight:600;color:#29568F;font-family:Consolas,monospace;}
-/* 图文信息区 */
-.bq-prod-info{display:flex;gap:24px;margin-bottom:26px;}
-.bq-prod-info .bq-prod-img{flex:0 0 300px;margin-bottom:0;}
-.bq-prod-spec{flex:1;min-width:0;}
-/* 价格卡片 */
-.bq-price-card{border:1px solid #e0e6ef;border-radius:6px;padding:16px 18px;margin-bottom:16px;background:#fff;}
-.bq-price-card .price{font-size:26px;color:#F60;font-weight:600;margin-bottom:8px;}
-.bq-price-card .meta{font-size:13px;color:#888;margin-bottom:14px;}
-.bq-price-card .meta span{margin-right:16px;}
-.bq-btn-inquiry{display:inline-block;background:#F60;color:#fff;font-size:14px;padding:9px 26px;border-radius:4px;text-decoration:none;}
-.bq-btn-inquiry:hover{background:#e65c00;color:#fff;}
-/* 规格属性表 */
-.bq-spec-table{border-collapse:collapse;width:100%;}
-.bq-spec-table th,.bq-spec-table td{border:1px solid #e0e6ef;padding:8px 12px;font-size:13px;text-align:left;vertical-align:top;}
-.bq-spec-table th{width:110px;color:#333;font-weight:normal;background:#f4f8fc;}
-.bq-spec-table td{color:#555;}
-.bq-spec-table tr.last th,.bq-spec-table tr.last td{border-bottom:1px solid #e0e6ef;}
-/* 资料下载区（自定义模型附件字段） */
-.bq-manual{border:1px solid #e0e6ef;border-radius:6px;overflow:hidden;margin-top:16px;}
-.bq-manual-t{font-size:15px;color:#29568F;background:#f4f8fc;padding:12px 16px;border-bottom:1px solid #e0e6ef;}
-.bq-manual-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #edf1f7;font-size:13px;color:#555;}
-.bq-manual-item:last-child{border-bottom:none;}
-.bq-manual-item:hover{background:#f8fafd;}
-.bq-manual-item .name{color:#29568F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bq-manual-item .dl{flex-shrink:0;margin-left:16px;color:#fff;background:#29568F;border-radius:3px;padding:3px 12px;}
-.bq-manual-item:hover .dl{background:#F60;}
-/* Tab 区 */
-.bq-tabs{margin-top:6px;}
-.bq-tab-nav{display:flex;border-bottom:2px solid #29568F;margin-bottom:20px;}
-.bq-tab-nav span{display:inline-block;padding:10px 24px;font-size:15px;color:#666;cursor:pointer;background:#f4f8fc;border:1px solid #e0e6ef;border-bottom:0;margin-right:4px;border-radius:4px 4px 0 0;}
-.bq-tab-nav span.on{background:#29568F;color:#fff;border-color:#29568F;font-weight:600;}
-.bq-tab-pane{display:none;}
-.bq-tab-pane.on{display:block;}
-.bq-tab-pane .content{line-height:1.9;font-size:14px;color:#444;overflow-x:auto;}
-.bq-literature{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:14px;line-height:2;color:#555;background:#fafcff;border:1px solid #eef2f8;border-radius:6px;padding:16px 20px;margin:0;}
+/* 图文信息区（图片通栏铺满，固定高度不随图片尺寸变化） */
+.bq-prod-info{margin-bottom:26px;}
+/* 资料按钮行（说明书/MSDS，仿fn-test蓝色按钮） */
+.bq-doc-btns{display:flex;gap:14px;margin:4px 0 22px;}
+.bq-doc-btn{display:inline-flex;align-items:center;gap:8px;background:#2563EB;color:#fff;font-size:14px;line-height:1;padding:11px 22px;border-radius:4px;text-decoration:none;border:1px solid #2563EB;}
+.bq-doc-btn:hover{background:#1D4ED8;color:#fff;}
+/* 产品图片幻灯片 */
+.bq-slider-main{position:relative;}
+.bq-slider-img{width:100%;height:460px;object-fit:cover;display:block;border:1px solid #e8edf4;border-radius:6px;}
+.bq-slider-arrow{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;line-height:30px;border:none;border-radius:50%;background:rgba(41,86,143,.75);color:#fff;font-size:14px;cursor:pointer;padding:0;}
+.bq-slider-arrow.prev{left:10px;}
+.bq-slider-arrow.next{right:10px;}
+.bq-slider-arrow:hover{background:#29568F;}
+/* 四大固定模块（锚点导航） */
+.bq-modnav{position:sticky;top:0;z-index:30;display:flex;border-bottom:2px solid #29568F;background:#fff;}
+.bq-modnav a{display:inline-block;padding:10px 24px;font-size:15px;color:#666;text-decoration:none;background:#f4f8fc;border:1px solid #e0e6ef;border-bottom:0;margin-right:4px;border-radius:4px 4px 0 0;}
+.bq-modnav a.on{background:#29568F;color:#fff;border-color:#29568F;font-weight:600;}
+.bq-mods{margin-top:24px;}
+.bq-mod-sec{margin-bottom:36px;scroll-margin-top:56px;}
+.bq-mod-h{font-size:17px;color:#29568F;border-left:4px solid #F60;padding-left:10px;margin:0 0 16px;}
+.bq-mod-body{line-height:1.9;font-size:14px;color:#444;overflow-x:auto;}
+.bq-mod-body h3{font-size:17px;color:#29568F;border-left:4px solid #F60;padding-left:10px;margin:22px 0 14px;}
+.bq-mod-body h3:first-child{margin-top:0;}
+/* 相关产品 */
+.bq-related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.bq-related-item{display:block;border:1px solid #e0e6ef;border-radius:6px;padding:14px;text-decoration:none;background:#fff;transition:box-shadow .2s;}
+.bq-related-item:hover{box-shadow:0 2px 12px rgba(41,86,143,.15);}
+.bq-related-item .pic{margin-bottom:10px;text-align:center;}
+.bq-related-item .pic img{max-width:100%;max-height:110px;object-fit:contain;}
+.bq-related-item .no{font-size:12px;color:#29568F;font-family:Consolas,monospace;margin-bottom:4px;}
+.bq-related-item .tt{font-size:13px;color:#555;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.bq-related-item:hover .tt{color:#29568F;}
 @media (max-width:990px){
-    .bq-prod-info{flex-direction:column;}
-    .bq-prod-info .bq-prod-img{flex:none;}
+    .bq-slider-img,.bq-detail-main .bq-prod-img img{height:300px;}
+    .bq-related-grid{grid-template-columns:repeat(2,1fr);}
 }
 
 /* ===== 搜索页 ===== */

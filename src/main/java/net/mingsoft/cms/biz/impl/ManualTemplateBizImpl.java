@@ -51,6 +51,15 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 	@Autowired
 	private IManualTemplateDao manualTemplateDao;
 
+	@Autowired
+	private net.mingsoft.cms.dao.IContentDao contentDao;
+
+	/**
+	 * 静态页面输出目录（与静态化模块一致）
+	 */
+	@org.springframework.beans.factory.annotation.Value("${ms.diy.html-dir:html}")
+	private String htmlDir;
+
 	@Override
 	protected IBaseDao getDao() {
 		return manualTemplateDao;
@@ -233,10 +242,18 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			// 绑定的模板必须存在且启用
 			getTemplate(templateId);
 		}
-		// 一个产品只能绑一个模板：直接覆盖更新（后保存覆盖先保存）
+		// 一个产品只能绑一个模板：直接覆盖更新（后保存覆盖先保存）；解绑时同步清空MANUAL附件（前台下载按钮随之消失）
 		String placeholders = productIds.stream().map(p -> "?").collect(Collectors.joining(","));
-		int rows = update("UPDATE " + SPEC_TABLE + " SET TEMPLATE_ID = ?, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
-				buildBindParams(templateId, productIds));
+		int rows;
+		if (StringUtils.isBlank(templateId)) {
+			rows = update("UPDATE " + SPEC_TABLE + " SET TEMPLATE_ID = NULL, MANUAL = NULL, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
+					productIds.toArray());
+			// 解绑后MANUAL字段已清空，对应PDF成为孤儿文件，立即删除避免残留（文件名=文章id，与模板无关）
+			deletePdfFiles(productIds);
+		} else {
+			rows = update("UPDATE " + SPEC_TABLE + " SET TEMPLATE_ID = ?, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
+					buildBindParams(templateId, productIds));
+		}
 		// 刷新文章更新时间：首次绑定/解绑影响静态页下载按钮显示，可通过"生成文章"按时间重新生成
 		update("UPDATE cms_content SET UPDATE_DATE = NOW() WHERE ID IN (" + placeholders + ")", productIds.toArray());
 		return rows;
@@ -281,6 +298,155 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		return result;
 	}
 
+	@Override
+	public Map<String, Object> previewTemplate(String templateId) {
+		ManualTemplateEntity entity = getTemplate(templateId);
+		// 原始模板直接转PDF，占位符{{X}}原样显示（不填值）
+		String html = readTemplateContent(entity.getTemplateUrl());
+		File templateFile = resolveUrl(entity.getTemplateUrl());
+		String baseUri = templateFile.getParentFile().toURI().toString();
+		byte[] pdf = ManualRenderUtil.htmlToPdf(html, baseUri);
+		Map<String, Object> result = new HashMap<>();
+		result.put("pdf", pdf);
+		result.put("fileName", entity.getTemplateName() + "-模板预览.pdf");
+		return result;
+	}
+
+	@Override
+	public String getTemplateContent(String templateId) {
+		ManualTemplateEntity entity = getTemplate(templateId);
+		return readTemplateContent(entity.getTemplateUrl());
+	}
+
+	@Override
+	public Map<String, Object> downloadTemplate(String templateId) {
+		ManualTemplateEntity entity = getTemplate(templateId);
+		String html = readTemplateContent(entity.getTemplateUrl());
+		Map<String, Object> result = new HashMap<>();
+		result.put("bytes", html.getBytes(StandardCharsets.UTF_8));
+		// 文件名取模板名（去空格）+.html
+		String safeName = entity.getTemplateName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+		result.put("fileName", safeName + ".html");
+		return result;
+	}
+
+	@Override
+	public void updateTemplateContent(String templateId, String html) {
+		if (StringUtils.isBlank(html)) {
+			throw new BusinessException("模板内容不能为空");
+		}
+		ManualTemplateEntity entity = getTemplate(templateId);
+		// 保存前干跑一次HTML转PDF：语法错误直接抛出，避免写坏模板导致前台下载500
+		File templateFile = resolveUrl(entity.getTemplateUrl());
+		String baseUri = templateFile.getParentFile().toURI().toString();
+		ManualRenderUtil.htmlToPdf(html, baseUri);
+		try {
+			FileUtils.writeStringToFile(templateFile, html, StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			throw new BusinessException("模板文件写入失败:" + e.getMessage());
+		}
+		entity.setTemplateSize(html.getBytes(StandardCharsets.UTF_8).length);
+		entity.setPlaceholders(extractPlaceholders(html));
+		entity.setUpdateDate(new Date());
+		if (BasicUtil.getManager() != null) {
+			entity.setUpdateBy(String.valueOf(BasicUtil.getManager().getId()));
+		}
+		this.updateById(entity);
+	}
+
+	// ==================== 一键生成附件（静态化说明书） ====================
+
+	@Override
+	public Map<String, Object> generateAttachments(String templateId) {
+		ManualTemplateEntity entity = getTemplate(templateId);
+		if (!"1".equals(entity.getStatus())) {
+			throw new BusinessException("说明书模板已停用");
+		}
+		// 绑定的产品（仅已发布、未删除且栏目启用的才生成）
+		List<Map<String, Object>> products = queryForList(
+				"SELECT s.LINK_ID AS linkId, s.CATALOG_NO AS catalogNo FROM " + SPEC_TABLE + " s "
+						+ "INNER JOIN cms_content c ON c.ID = s.LINK_ID "
+						+ "LEFT JOIN cms_category ca ON ca.ID = c.CATEGORY_ID "
+						+ "WHERE s.TEMPLATE_ID = ? AND c.del = 0 AND c.content_display = '0' AND ca.category_display = 'enable'",
+				templateId);
+		Map<String, Object> result = new HashMap<>();
+		result.put("total", products.size());
+		if (products.isEmpty()) {
+			result.put("success", 0);
+			result.put("pages", 0);
+			result.put("errors", new ArrayList<>());
+			return result;
+		}
+		File dir = manualDir();
+		List<String> okIds = new ArrayList<>();
+		List<String> errors = new ArrayList<>();
+		for (Map<String, Object> p : products) {
+			String linkId = String.valueOf(p.get("linkId"));
+			String catalogNo = String.valueOf(p.get("catalogNo"));
+			try {
+				// 1. 渲染PDF并落盘（文件名用文章id，重复生成直接覆盖不产生垃圾文件）
+				Map<String, Object> rendered = renderManual(linkId, templateId);
+				File pdfFile = new File(dir, linkId + ".pdf");
+				FileUtils.writeByteArrayToFile(pdfFile, (byte[]) rendered.get("pdf"));
+				// 2. 回填MANUAL附件字段（前台详情页"资料下载"读取此字段）
+				String displayName = String.valueOf(rendered.get("fileName"));
+				String url = toUrl(pdfFile);
+				String json = "[{\"url\":\"" + url + "\",\"name\":\"" + displayName.replace("\\", "\\\\").replace("\"", "\\\"") + "\"}]";
+				update("UPDATE " + SPEC_TABLE + " SET MANUAL = ? WHERE LINK_ID = ?", json, linkId);
+				okIds.add(linkId);
+			} catch (Exception e) {
+				errors.add(catalogNo + "/" + linkId + ": " + e.getMessage());
+				LOG.error("说明书附件生成失败 linkId={}", linkId, e);
+			}
+		}
+		// 3. 对生成成功的产品定向静态化（复用栏目静态化管线，仅生成选中的文章）
+		int pages = 0;
+		if (!okIds.isEmpty()) {
+			List<net.mingsoft.cms.bean.CategoryBean> beans = contentDao.queryBeansByArticleIds(okIds);
+			net.mingsoft.cms.util.CmsParserUtil.generateBasic(beans, htmlDir, null);
+			pages = beans.size();
+		}
+		result.put("success", okIds.size());
+		result.put("pages", pages);
+		result.put("errors", errors);
+		return result;
+	}
+
+	@Override
+	public Map<String, Object> getManualAttachment(String linkId) {
+		if (StringUtils.isBlank(linkId)) {
+			throw new BusinessException("产品编号不能为空");
+		}
+		List<Map<String, Object>> specRows = queryForList(
+				"SELECT MANUAL FROM " + SPEC_TABLE + " WHERE LINK_ID = ?", linkId);
+		if (specRows.isEmpty() || specRows.get(0).get("MANUAL") == null) {
+			throw new BusinessException("该产品未生成说明书附件");
+		}
+		// MANUAL字段为JSON数组，取第一个附件
+		List<Map> manuals;
+		try {
+			manuals = JSONUtil.toList(String.valueOf(specRows.get(0).get("MANUAL")), Map.class);
+		} catch (Exception e) {
+			throw new BusinessException("说明书附件数据异常");
+		}
+		if (manuals == null || manuals.isEmpty() || manuals.get(0).get("url") == null) {
+			throw new BusinessException("该产品未生成说明书附件");
+		}
+		File f = resolveUrl(String.valueOf(manuals.get(0).get("url")));
+		if (!f.exists()) {
+			throw new BusinessException("说明书附件文件不存在，请在后台重新生成");
+		}
+		Map<String, Object> result = new HashMap<>();
+		try {
+			result.put("bytes", FileUtils.readFileToByteArray(f));
+		} catch (Exception e) {
+			throw new BusinessException("说明书附件读取失败:" + e.getMessage());
+		}
+		String name = String.valueOf(manuals.get(0).get("name"));
+		result.put("fileName", StringUtils.isBlank(name) || "null".equals(name) ? f.getName() : name);
+		return result;
+	}
+
 	// ==================== 磁盘治理 ====================
 
 	@Override
@@ -289,13 +455,49 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		List<Map<String, Object>> orphans = new ArrayList<>();
 		long templateSize = 0, orphanSize = 0;
 		int templates = 0;
+		// 数据库中模板文件URL集合：HTML按此判定是否孤儿
 		Set<String> dbUrls = this.list().stream()
 				.map(ManualTemplateEntity::getTemplateUrl).collect(Collectors.toSet());
+		// 数据库中仍被MANUAL字段引用的PDF文件名集合（文件名=文章id.pdf）
+		Set<String> referencedPdfs = queryForList("SELECT DISTINCT MANUAL FROM " + SPEC_TABLE + " WHERE MANUAL IS NOT NULL")
+				.stream()
+				.map(r -> String.valueOf(r.get("MANUAL")))
+				.filter(m -> StringUtils.isNotBlank(m) && !"null".equals(m))
+				.flatMap(m -> {
+					// MANUAL为JSON数组[{"url":"...","name":"..."}]，提取url的文件名部分
+					try {
+						return cn.hutool.json.JSONUtil.toList(m, Map.class).stream()
+								.map(x -> String.valueOf(x.get("url")))
+								.filter(u -> u.toLowerCase().endsWith(".pdf"))
+								.map(u -> u.substring(u.lastIndexOf('/') + 1));
+					} catch (Exception e) {
+						return java.util.stream.Stream.empty();
+					}
+				})
+				.collect(Collectors.toSet());
 		File[] files = dir.listFiles();
 		if (files != null) {
 			for (File f : files) {
-				// 只治理模板HTML文件；图片等资源文件（模板引用）跳过
-				if (!f.isFile() || !f.getName().toLowerCase().endsWith(".html")) {
+				String lower = f.getName().toLowerCase();
+				if (!f.isFile()) {
+					continue;
+				}
+				// 说明书PDF附件：文件名=文章id.pdf，DB无MANUAL引用即为孤儿（解绑/换绑残留），同样防误杀刚生成的文件
+				if (lower.endsWith(".pdf")) {
+					if (referencedPdfs.contains(f.getName())) {
+						templateSize += f.length();
+					} else if (System.currentTimeMillis() - f.lastModified() > 24L * 3600 * 1000) {
+						Map<String, Object> o = new HashMap<>();
+						o.put("name", f.getName());
+						o.put("size", f.length());
+						o.put("lastModified", new Date(f.lastModified()));
+						orphans.add(o);
+						orphanSize += f.length();
+					}
+					continue;
+				}
+				// 模板HTML文件；图片等资源文件（模板引用）跳过
+				if (!lower.endsWith(".html")) {
 					continue;
 				}
 				String url = toUrl(f);
@@ -440,6 +642,20 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		File f = resolveUrl(url);
 		if (f.exists() && !f.delete()) {
 			LOG.warn("模板文件删除失败:{}", url);
+		}
+	}
+
+	/**
+	 * 删除产品说明书PDF附件（解绑时调用：MANUAL字段已清空，PDF成为孤儿文件）
+	 * 文件名=文章id.pdf，与模板无关；不存在则跳过（从未生成过附件的产品）
+	 */
+	private void deletePdfFiles(List<String> linkIds) {
+		File dir = manualDir();
+		for (String linkId : linkIds) {
+			File pdf = new File(dir, linkId + ".pdf");
+			if (pdf.exists() && !pdf.delete()) {
+				LOG.warn("说明书PDF删除失败:{}", pdf.getAbsolutePath());
+			}
 		}
 	}
 

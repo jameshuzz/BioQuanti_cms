@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 前台说明书下载接口（匿名）
- * 动态生成PDF：模板+产品规格数据实时渲染，不落盘不缓存
+ * 静态附件下载：读取后台"一键生成"落盘的PDF附件（不再实时渲染）
  * 限流：同一产品+同一IP 60秒内仅允许下载1次
  * @version
- * 版本号：1.0.0<br/>
+ * 版本号：1.1.0<br/>
  * 创建日期：2026-08-30<br/>
  */
 @Tag(name = "前端-说明书下载接口")
@@ -51,7 +51,7 @@ public class ManualDownloadAction {
 	@Autowired
 	private IContentBiz contentBiz;
 
-	@Operation(summary = "按需生成并下载产品说明书PDF")
+	@Operation(summary = "下载产品说明书静态附件PDF")
 	@GetMapping("/{productId}.do")
 	public void download(@PathVariable("productId") String productId, HttpServletRequest request, HttpServletResponse response) {
 		// 1. 参数校验：仅允许数字id
@@ -75,17 +75,17 @@ public class ManualDownloadAction {
 			return;
 		}
 
-		// 4. 实时渲染PDF（全内存）
+		// 4. 读取静态附件PDF（后台一键生成时落盘，无附件则404引导）
 		Map<String, Object> result;
 		try {
-			result = manualTemplateBiz.renderManual(productId, null);
+			result = manualTemplateBiz.getManualAttachment(productId);
 		} catch (BusinessException e) {
 			sendError(response, HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 			return;
 		}
-		byte[] pdf = (byte[]) result.get("pdf");
+		byte[] pdf = (byte[]) result.get("bytes");
 
-		// 5. PDF生成成功后才记录限流（失败重试不受1分钟限制）
+		// 5. 附件读取成功后才记录限流（失败重试不受1分钟限制）
 		if (rateLimitMap.size() > 10_000) {
 			rateLimitMap.entrySet().removeIf(e -> now - e.getValue() > RATE_LIMIT_MILLIS);
 		}

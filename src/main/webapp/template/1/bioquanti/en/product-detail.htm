@@ -54,48 +54,187 @@
                     <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><span class="item"><em>Sensitivity</em><b>${field.SENSITIVITY}</b></span></#if>
                 </div>
                 </#if>
-                <div class="bq-prod-img">
-                    <#if field.litpic?? && field.litpic?has_content>
-                    <img src="{@ms:file field.litpic/}" alt="${field.title}">
-                    <#else>
-                    <img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}">
+
+                <#-- Product image slideshow: PICS multi-image field first, fallback to litpic -->
+                <#assign picList=[]>
+                <#if field.PICS?? && field.PICS?has_content && field.PICS?starts_with("[")>
+                <#assign picList=field.PICS?eval>
+                </#if>
+
+                <div class="bq-prod-info">
+                    <div class="bq-prod-img">
+                        <#if picList?size gt 0>
+                        <div class="bq-slider" id="bqSlider" data-pics='${field.PICS?js_string}'>
+                            <div class="bq-slider-main">
+                                <button type="button" class="bq-slider-arrow prev" aria-label="Previous">&#10094;</button>
+                                <img class="bq-slider-img" src="${picList[0].url}" alt="${field.title}">
+                                <button type="button" class="bq-slider-arrow next" aria-label="Next">&#10095;</button>
+                            </div>
+                        </div>
+                        <#elseif field.litpic?? && field.litpic?has_content>
+                        <img src="{@ms:file field.litpic/}" alt="${field.title}">
+                        <#else>
+                        <img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}">
+                        </#if>
+                    </div>
+                </div>
+
+                <#-- Document buttons: Manual (static attachment) + MSDS fixed file -->
+                <div class="bq-doc-btns">
+                    <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
+                    <a class="bq-doc-btn" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Manual</span>
+                    </a>
                     </#if>
+                    <a class="bq-doc-btn msds" href="/{ms:global.style/}files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>MSDS</span>
+                    </a>
                 </div>
-                <#-- Spec table (empty field rows auto hidden) -->
-                <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
-                <table class="bq-spec-table">
-                    <#if field.PRODUCT_EN?? && field.PRODUCT_EN?has_content><tr><th>Product Name</th><td>${field.PRODUCT_EN}</td></tr></#if>
-                    <#if field.PRODUCT_CN?? && field.PRODUCT_CN?has_content><tr><th>Product Name (CN)</th><td>${field.PRODUCT_CN}</td></tr></#if>
-                    <#if field.SPEC?? && field.SPEC?has_content><tr><th>Size</th><td>${field.SPEC}</td></tr></#if>
-                    <#if field.STD_TOP?? && field.STD_TOP?has_content><tr class="last"><th>Top Standard</th><td>${field.STD_TOP}</td></tr></#if>
-                </table>
-                </#if>
-                <div class="content">${field.content}</div>
-                <#-- Manual download: dynamic template-generated PDF first (real-time render, template swap needs no regen); fallback to MANUAL static attachment -->
-                <#if field.TEMPLATE_ID?? && field.TEMPLATE_ID?has_content>
-                <div class="bq-manual">
-                    <div class="bq-manual-t">Downloads</div>
-                    <a class="bq-manual-item" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)"><span class="name">Product Manual</span><span class="dl">Download</span></a>
+
+                <#-- Four fixed modules: anchor nav -->
+                <div class="bq-modnav" id="bqModNav">
+                    <a href="#bq-mod-intro" class="on">Product Overview</a>
+                    <a href="#bq-mod-protocol">Protocol</a>
+                    <a href="#bq-mod-lit">References</a>
+                    <a href="#bq-mod-related">Related Products</a>
                 </div>
-                <#elseif field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
-                <#assign manuals=field.MANUAL?eval>
-                <div class="bq-manual">
-                    <div class="bq-manual-t">Downloads</div>
-                    <#list manuals as m>
-                    <a class="bq-manual-item" href="${m.url}" target="_blank"><span class="name">${m.name}</span><span class="dl">Download</span></a>
-                    </#list>
+
+                <div class="bq-mods">
+                    <#-- Module 1: Product Overview (title & content from rich text H3) -->
+                    <div class="bq-mod-sec" id="bq-mod-intro">
+                        <div class="content bq-mod-body" id="bqIntro">${field.content!''}</div>
+                    </div>
+
+                    <#-- Module 2: Protocol (body H3 section moved in by JS, hidden if absent) -->
+                    <div class="bq-mod-sec" id="bq-mod-protocol" style="display:none;">
+                        <div class="bq-mod-body" id="bqProtocolBody"></div>
+                    </div>
+
+                    <#-- Module 3: References (body H3 section moved in by JS, hidden if absent) -->
+                    <div class="bq-mod-sec" id="bq-mod-lit" style="display:none;">
+                        <div class="bq-mod-body" id="bqLitBody"></div>
+                    </div>
+
+                    <#-- Module 4: Related Products (same category, exclude current) -->
+                    <div class="bq-mod-sec" id="bq-mod-related">
+                        <h2 class="bq-mod-h">Related Products</h2>
+                        <div class="bq-mod-body">
+                            <div class="bq-related-grid">
+                                <#assign curId=field.id?string>
+                                <#-- Latest 10 in same category, exclude current, cap at 9 for a full grid -->
+                                <#assign shown=0>
+                                {ms:arclist size=10 typeid=field.typeid}
+                                <#if field.id?string != curId && shown lt 9>
+                                <#assign shown=shown+1>
+                                <a class="bq-related-item" href="{ms:global.html/}${field.link}">
+                                    <div class="pic"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}"></#if></div>
+                                    <div class="no">${field.shorttitle}</div>
+                                    <div class="tt">${field.title}</div>
+                                </a>
+                                </#if>
+                                {/ms:arclist}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                </#if>
             </div>
         </div>
     </div>
 </div>
 
 <#include "/en/footer.htm"/>
+
+<script>
+<#-- Slideshow: arrow navigation (image list from data-pics attribute) -->
+(function(){
+    var slider = document.getElementById('bqSlider');
+    if (!slider) return;
+    var img = slider.querySelector('.bq-slider-img');
+    var prev = slider.querySelector('.bq-slider-arrow.prev');
+    var next = slider.querySelector('.bq-slider-arrow.next');
+    if (!img) return;
+    var urls = [];
+    try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
+    if (urls.length === 0) { urls = [img.getAttribute('src')]; }
+    var cur = 0;
+    function show(i) {
+        cur = (i + urls.length) % urls.length;
+        img.src = urls[cur];
+    }
+    if (prev) prev.onclick = function(){ show(cur - 1); };
+    if (next) next.onclick = function(){ show(cur + 1); };
+})();
+</script>
+<script>
+<#-- Four modules: body H3 routing ("Protocol"/"实验方案", "References"/"引用文献") + nav highlight -->
+(function(){
+    var intro = document.getElementById('bqIntro');
+    var protocolSec = document.getElementById('bq-mod-protocol');
+    var protocolBody = document.getElementById('bqProtocolBody');
+    var litSec = document.getElementById('bq-mod-lit');
+    var litBody = document.getElementById('bqLitBody');
+    if (intro) {
+        var nodes = Array.prototype.slice.call(intro.children);
+        var bucket = intro;
+        nodes.forEach(function(n){
+            if (n.tagName === 'H3' || n.tagName === 'H2') {
+                var t = n.textContent.trim();
+                if ((t.indexOf('Protocol') > -1 || t.indexOf('实验方案') > -1) && protocolBody) {
+                    bucket = protocolBody;
+                    protocolSec.style.display = '';
+                } else if ((t.indexOf('References') > -1 || t.indexOf('引用文献') > -1) && litBody) {
+                    bucket = litBody;
+                    litSec.style.display = '';
+                }
+            }
+            if (bucket !== intro && n.parentNode === intro) {
+                bucket.appendChild(n);
+            }
+        });
+    }
+    var nav = document.getElementById('bqModNav');
+    if (nav) {
+        if (protocolSec && protocolSec.style.display === 'none') { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
+        if (litSec && litSec.style.display === 'none') { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
+    }
+    if (nav) {
+        var links = nav.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            (function(a){
+                a.onclick = function(){
+                    for (var j = 0; j < links.length; j++) links[j].className = '';
+                    a.className = 'on';
+                };
+            })(links[i]);
+        }
+        var secs = [];
+        for (var m = 0; m < links.length; m++) {
+            var id = links[m].getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) secs.push({a: links[m], el: el});
+        }
+        function spy() {
+            var top = window.scrollY + 120;
+            var hit = secs[0];
+            for (var s = 0; s < secs.length; s++) {
+                if (secs[s].el.getBoundingClientRect().top + window.scrollY <= top) hit = secs[s];
+            }
+            if (hit) {
+                for (var j = 0; j < links.length; j++) links[j].className = '';
+                hit.a.className = 'on';
+            }
+        }
+        window.addEventListener('scroll', spy);
+        spy();
+    }
+})();
+</script>
 <script>
 <#-- Manual download: fetch on current page, trigger browser download on success, alert on failure (no new window) -->
 function bqDownloadManual(url, a) {
-    var dl = a ? a.querySelector('.dl') : null;
+    var dl = a ? a.querySelector('span') : null;
     var old = dl ? dl.textContent : '';
     if (dl) { dl.textContent = '...'; }
     fetch(url).then(function (res) {

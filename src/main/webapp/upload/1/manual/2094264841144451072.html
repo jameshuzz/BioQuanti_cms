@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+    @page { size: A4; margin: 1.6cm 1.5cm; }
+    body { font-family: 'NotoSansSC'; font-size: 9.5pt; color: #000; line-height: 1.6; margin: 0; }
+    .cover { text-align: center; padding-top: 30px; page-break-after: always; }
+    .cover .logo { font-size: 15pt; font-weight: bold; color: #1a5c9e; letter-spacing: 1px; }
+    .cover h1 { font-size: 17pt; margin: 22px 0 8px; }
+    .cover h2 { font-size: 11pt; font-weight: normal; color: #444; margin: 0 0 30px; }
+    .cover-grid { width: 70%; margin: 0 auto; border-collapse: collapse; }
+    .cover-grid td { border: 1px solid #999; padding: 7px 12px; font-size: 10pt; }
+    .cover-grid td.k { background: #eef3f8; width: 34%; text-align: left; }
+    .cover .intro { margin: 26px auto 0; width: 76%; font-size: 9.5pt; color: #333; }
+    .cover .tel { margin-top: 40px; font-size: 9pt; color: #555; line-height: 1.9; }
+    .cover .notice { margin: 30px auto 0; width: 76%; border: 1px solid #e6a23c; background: #fdf6ec; padding: 8px 12px; font-size: 9pt; color: #8a6116; }
+    h2.sec { font-size: 12pt; border-left: 4px solid #1a5c9e; padding-left: 8px; margin: 18px 0 8px; page-break-after: avoid; }
+    p { margin: 5px 0; text-align: justify; }
+    .note { background: #f7f7f7; border-left: 3px solid #bbb; padding: 6px 10px; font-size: 9pt; color: #333; margin: 8px 0; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0; page-break-inside: auto; }
+    table.layout { border: none; margin: 0; }
+    table.layout > tr > td, table.layout td { border: none; padding: 0; }
+    table.fixed, table.bq-manual-tbl { border-collapse: collapse; }
+    table.fixed th, table.fixed td, table.bq-manual-tbl th, table.bq-manual-tbl td { border: 1px solid #888; padding: 4px 8px; font-size: 9pt; text-align: center; }
+    table.fixed th, table.bq-manual-tbl th { background: #dde8f1; font-weight: bold; }
+    table.bq-manual-tbl td { text-align: center; }
+    table.fixed td.l, table.fixed th.l { text-align: left; }
+    img { display: block; margin: 8px auto; }
+    .img-principle { width: 560px; }
+    .img-dilution { width: 570px; }
+    .img-stdcurve { width: 260px; }
+    ol.exp { padding-left: 22px; margin: 6px 0; }
+    ol.exp li { margin: 4px 0; text-align: justify; }
+    .page-break { page-break-before: always; }
+    .refs { padding-left: 22px; font-size: 8.5pt; }
+    .refs li { margin: 3px 0; }
+</style>
+</head>
+<body>
+
+<!-- ==================== 封面 ==================== -->
+<div class="cover">
+    <div class="logo">BioQuanti&reg;</div>
+    <h1>{{PRODUCT_CN}}简易法ELISA试剂盒</h1>
+    <h2>{{PRODUCT_EN}} Easy-Step ELISA Kit</h2>
+    <table class="cover-grid">
+        <tr><td class="k">货号：</td><td>{{CATALOG_NO}}</td></tr>
+        <tr><td class="k">规格：</td><td>{{SPEC}}</td></tr>
+        <tr><td class="k">灵敏度：</td><td>{{SENSITIVITY}}</td></tr>
+        <tr><td class="k">检测范围：</td><td>{{DETECT_RANGE}}</td></tr>
+    </table>
+    <div class="intro">此试剂盒用于定量检测血清、血浆、细胞培养上清或其它生物样本中的{{SAMPLE_NAME}}浓度</div>
+    <div class="tel">
+        销售电话（微信同号）：18627880041<br/>
+        技术支持电话（微信同号）：15988423858
+    </div>
+    <div class="notice">
+        请在实验前仔细阅读本说明书<br/>
+        本试剂盒仅供体外研究使用，不用于临床诊断
+    </div>
+</div>
+
+<!-- ==================== 目录 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">目录</h2>
+<p>一、背景信息</p>
+<p>二、检测原理</p>
+<p>三、试剂盒组件及保存</p>
+<p>四、需自备实验辅助器材</p>
+<p>五、实验注意事项</p>
+<p>六、样本预处理</p>
+<p>七、试剂工作液配制</p>
+<p>八、实验步骤</p>
+<p>九、数据分析</p>
+<p>十、试剂盒典型参数</p>
+<p>十一、参考文献</p>
+
+<!-- ==================== 一、背景信息 ==================== -->
+<h2 class="sec">一、背景信息</h2>
+<p>{{BACKGROUND}}</p>
+
+<!-- ==================== 二、检测原理 ==================== -->
+<h2 class="sec">二、检测原理</h2>
+<img class="img-principle" src="img_principle.png"/>
+<p>本试剂盒采用双抗体夹心法。试剂盒中的酶标板已预先包被抗体。</p>
+<p>将标准品/待测样本和生物素标记的检测抗体同时加入各对应孔，混合孵育，形成双抗体夹心结构。洗去未结合的成分，加入HRP-链霉亲和素(SABC)孵育，再次洗去未结合的成分，然后加入TMB显色底物，TMB在辣根过氧化物酶(HRP)的催化下由无色缓慢变深为蓝色，及时加终止液，液体变成黄色后在 450 nm 波长测定吸光度OD值。</p>
+<p>标准品/样本中目的抗原浓度 与 OD450值之间呈正比，通过绘制标准曲线将样本OD值代入标曲方程计算样本中目的抗原的浓度。</p>
+
+<!-- ==================== 三、试剂盒组件及保存 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">三、试剂盒组件及保存</h2>
+<p>未拆封的试剂盒可在4℃保存一个月，超出时间，请拆开试剂盒按照下表中的条件分别保存各组分。</p>
+<table class="fixed">
+    <tr><th class="l">组件名称</th><th>规格({{SPEC}})</th><th class="l">开启后保存条件</th></tr>
+    <tr><td class="l">预包被酶标板(可拆卸)<br/>Precoated Microplate (Dismountable)</td><td>8孔×12条</td><td class="l">将剩余板条和未复溶的标准品放回铝箔袋中，加入干燥剂密封保存。-20&deg;C，可存放6个月。</td></tr>
+    <tr><td class="l">冻干标准品<br/>Lyophilized Standard</td><td>2支</td><td class="l" rowspan="6">2-8&deg;C可存放6个月 (TMB底物需避光)</td></tr>
+    <tr><td class="l">生物素化抗体 100X<br/>Biotin-labeled Antibody 100X</td><td>1支60ul</td></tr>
+    <tr><td class="l">HRP-链霉亲和素(SABC)100X<br/>HRP-Streptavidin Conjugate (SABC) 100X</td><td>1支120ul</td></tr>
+    <tr><td class="l">样本稀释液<br/>Sample Dilution Buffer</td><td>1瓶 20ml</td></tr>
+    <tr><td class="l">抗体稀释液<br/>Antibody Dilution Buffer</td><td>1瓶 10ml</td></tr>
+    <tr><td class="l">SABC稀释液<br/>SABC Dilution Buffer</td><td>1瓶 10ml</td></tr>
+    <tr><td class="l">TMB底物<br/>TMB Substrate</td><td>1瓶 10ml</td><td class="l" rowspan="5">2-8&deg;C可存放6个月 (TMB底物需避光)</td></tr>
+    <tr><td class="l">反应终止液<br/>Stop Solution</td><td>1瓶 10ml</td></tr>
+    <tr><td class="l">浓缩洗涤液 25X<br/>Wash Buffer 25X</td><td>1瓶 30ml</td></tr>
+    <tr><td class="l">覆膜</td><td>5张</td></tr>
+    <tr><td class="l">说明书</td><td>1份</td></tr>
+    <tr><td class="l">质检报告COA</td><td>1份</td><td class="l"></td></tr>
+</table>
+<div class="note">注：开盖前请离心；试剂实际体积略多于标签体积，请单独量取使用；使用完旋紧瓶盖以防蒸发和微生物污染。使用试剂盒中的样本稀释液对冻干标准品进行复溶，复溶过程避免产生气泡；复溶后标准品在12小时内使用完毕，无法分装冻存。</div>
+
+<!-- ==================== 四、需自备实验辅助器材 ==================== -->
+<h2 class="sec">四、需自备实验辅助器材</h2>
+<p>酶标仪(可读取波长450nm和620nm)</p>
+<p>37&deg;C恒温箱</p>
+<p>自动洗板机（手洗亦可，需自备多道移液器）</p>
+<p>单道(0.5-10&mu;L, 5-50&mu;L, 20-200&mu;L, 200-1000&mu;L)和多道移液器(使用前需校准)。</p>
+<p>无菌EP管（用于标准品和样本稀释）</p>
+<p>一次性移液器枪头</p>
+<p>吸水纸及加样槽</p>
+<p>超纯水或去离子水</p>
+<p>烧杯和量筒</p>
+<p>100 mM PMSF(phenylmethanes&mu;Lfonyl fluoride) 存储液 (1 g PMSF溶于57 mL异丙醇)，样本需要裂解时使用</p>
+<p>标曲绘制软件，如：ELISA Calc、Graphpad Prism等</p>
+
+<!-- ==================== 五、实验注意事项 ==================== -->
+<h2 class="sec">五、实验注意事项</h2>
+<p><b>试剂严禁混用：</b>请勿将其它批次、货号、厂商试剂盒的试剂用于本试剂盒。</p>
+<p><b>实验操作细节：</b></p>
+<p>1. <b>试剂及样本保存。</b>试剂盒组件请按照要求保存以免活性下降，如有需要可单独采购对应组件。样品最佳保存条件：2-8&deg;C保存应小于 5天，-20&deg;C不应超过 6 个月，-80&deg;C不应超过 2年，超过以上时间应保存在液氮中。冻存的标本融化时，为了减少冰晶(0&deg;C)对样品的破坏，应采用15-25&deg;C水浴快速融化，融化后离心除去沉淀物，混匀后用于检测。</p>
+<p>2. <b>实验前准备。</b>请提前备好下一步所需试剂，洗板后及时加入板孔，防止板孔干燥致高背景。</p>
+<p>3. <b>标曲设置。</b>每次检测都应同时绘制标准曲线作为参照。</p>
+<p>4. <b>加样操作。</b>标准品、样本以及不同试剂加样时，注意更换枪头、加样槽以免交叉污染，枪头避免接触微孔板的内表面。加样时间控制在3min内以防板孔干燥。</p>
+<p>5. <b>孵育。</b>每次孵育在推荐温度下完成，贴覆膜以防板孔中液体的蒸发。</p>
+<p>6. <b>洗板。</b>推荐机器洗板，以保证最佳CV值。手工洗板，枪头或滴管切勿接触酶标板孔。不充分的洗涤或污染容易造成假阳性和高背景。</p>
+<p>7. <b>显色强度控制。</b>推荐使用OD620nm进行终止前蓝色强度监控，当标曲颜色最深孔OD620nm为0.6-0.8时，即刻终止显色变为黄色，对应的OD450nm为2.0-2.5，此时试剂盒分辨率最佳。</p>
+<p>8. <b>实验设计：</b>若样本类型特殊，无参考数据，建议做预实验验证其适用性。正常样本常用于对照，说明书（试剂盒典型参数部分）提供部分正常样本参考数据和稀释比；实验组包括疾病、造模或给药样本等，待测物表达情况常和正常样本相差较大，建议以正常样本稀释比为中心做4-5个连续10倍梯度稀释预实验。</p>
+<p>9. <b>个人安全防护：</b>实验过程中，请穿实验服，戴口罩、手套等，特别是检测血液或者其他体液样品时，请按生物实验室安全防护条例执行。</p>
+
+<!-- ==================== 六、样本预处理 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">六、样本预处理</h2>
+<p><b>血清：</b>全血标本室温放置 2 小时或 2-8&deg;C过夜自然凝固后1000&times;g 低温离心15 min，取上清立即使用或分装后-20℃存放，避免反复冻融。避免使用溶血，高血脂样品。</p>
+<p><b>血浆:</b> 可用EDTA或肝素作为抗凝剂，标本采集后1000&times;g 低温离心15 min，立即使用或分装后-20℃存放，避免反复冻融。避免使用溶血，高血脂样品。</p>
+<p><b>细胞上清:</b> 收集细胞培养液，500&times;g 离心5 min，除去杂质及细胞碎片，取上清立即使用或分装后-20℃存放，避免反复冻融。</p>
+<p><b>组织（细胞）匀浆：</b>取适量组织块，于预冷的 PBS（0.01M，pH7.0-7.2）中清洗去除血液（匀浆中裂解的红细胞会影响测量结果），称重后将组织剪碎，然后加入一定体积的裂解液（一般按照 1:9 的质量体积比，具体体积可根据实验需要适当调整，并做好记录，推荐在裂解液中加入蛋白酶抑制剂PMSF）并转移到玻璃匀浆器中，在冰上充分研磨；为了进一步裂解组织细胞，可对匀浆液进行超声破碎处理（超声破碎过程中注意冰水浴降温，推荐使用3mm探头，超声功率选择150-300W，超声2s，暂停20s，循环10次以上）。最后将制备好的匀浆液于 5000&times;g 离心 5-10 分钟，取上清即可检测。 样本为细胞匀浆时，先按照常规流程收集细胞，使用预冷的PBS清洗去除残留培养基，再按上面程序裂解，裂解浓度为5&times;10<sup>6</sup>细胞数目/mL裂解液以上。样本可立即检测或分装保存在-20&deg;C，避免反复冻融。</p>
+<p><b>尿液：</b>请收集清晨第一次尿液（中段尿），或 24小时尿液，2000&times;g 离心 15 分钟后收集上清，立即检测或分装保存在-20&deg;C，避免反复冻融。</p>
+<p><b>唾液：</b>用唾液样本采集管收集样本，然后于 2-8&deg;C, 1000&times;g 离心 15 分钟，取上清即可检测，或分装保存在-20&deg;C，避免反复冻融。</p>
+<p><b>其它生物样品：</b>请 1000&times;g 离心 20 分钟，取上清即可检测。</p>
+<div class="note">
+注：<br/>
+1. 重组蛋白可能与试剂盒中捕获或检测抗体不匹配而出现不能检测的情况。<br/>
+2. 肝肾组织裂解液含有丰富的内源性生物素和过氧化物酶，不适用本试剂盒，可以检测肝肾组织的细胞培养样本。<br/>
+3. 为方便待测物的量纲均一化比较，匀浆样本建议同时测定总蛋白浓度（推荐BCA试剂盒BQE-MS0013），尿液样本测定肌酐含量（推荐肌酐检测试剂盒C011-2-1）。<br/>
+4. 离心速度单位换算：g=(1.118&times;10<sup>-5</sup>)&times;转子半径cm&times;（rpm）<sup>2</sup>。例如，某台常规离心机转速为10000rpm，转子半径为5cm，则其g值为：g = 1.118 &times; 10<sup>-5</sup> &times; 5 &times; (10000)<sup>2</sup> &asymp; 5500g。
+</div>
+
+<!-- ==================== 七、试剂工作液配制 ==================== -->
+<h2 class="sec">七、试剂工作液配制</h2>
+<p>按当次实验所需提前20分钟取出所需的酶标板条及标准品，平衡到室温(18-25&deg;C)后使用。</p>
+<p><b>1、洗涤液（1&times;）:</b></p>
+<p>如果浓缩洗涤液（25&times;）有晶体析出，请先在40&deg;C水浴中加热至晶体全部溶解，混匀后使用。按1:25比例，使用超纯水或去离子水（电导率小于2&mu;S/cm或电阻率大于18M&Omega;）进行稀释，如取30mL 浓缩洗涤液（25&times;），加入720mL超纯水混匀，得到750mL洗涤液（1&times;）。配制好的洗液，最好当天使用完，用不完的，可以保存在2-8&deg;C，不超过48小时。</p>
+<p><b>2、标准品:</b></p>
+<p>2.1. 标准品(标记为STD7管，浓度为{{STD_TOP}})的复溶：开盖前瞬时离心，加入500&mu;L样本稀释液到标准品管中，旋紧管盖，室温静置2分钟，轻柔上下颠倒数次使标准品充分复溶(或加入500&mu;L样本稀释液，静置1-2分钟后，用低速涡旋仪混匀3-5秒)。1000&times;g低速离心1分钟。</p>
+<p>2.2. 标准品2倍倍比梯度稀释：另取7个EP管，分别标记为STD6、STD5、STD4、STD3、STD2、STD1和Blank。先在每个EP管中分别加入150&mu;L的样本稀释液。再取150&mu;L STD7管标准品溶液加入到STD6管中，低速涡旋震荡使充分混合。再取150&mu;L STD6管标准品溶液到STD5管中，充分混合。再取150&mu;L STD5管标准品溶液到STD4管中，充分混合，依此循环操作，最后 STD1管标准品溶液为300&mu;L，无需取出。注意Blank EP管中仅有样本稀释液。此时，这7个EP管中标准品的浓度分别为{{STD_DILUTION_SERIES}}。</p>
+<img class="img-dilution" src="img_dilution.png"/>
+<p><b>3、生物素化抗体工作液（1&times;）：</b></p>
+<p>3.1. 计算所需工作液（1&times;）的总体积：50ul/孔&times;孔数，准备比总体积多50ul-100ul的量。现用现配，不适合长期存放。</p>
+<p>3.2. 开盖前瞬时离心，按1:100的比例用抗体稀释液稀释生物素化抗体（100&times;），充分混匀。如取10ul生物素化抗体（100&times;）加入到990ul抗体稀释液中，得到1000ul生物素标记抗体工作液（1&times;）。</p>
+<p><b>4、HRP-链霉亲和素(SABC)工作液：</b></p>
+<p>4.1. 计算所需工作液（1&times;）的总体积：100ul/孔&times;孔数，准备比总体积多100ul-200ul的量。现用现配，不适合长期存放。</p>
+<p>4.2. 开盖前瞬时离心，按1:100的比例用SABC稀释液稀释浓缩SABC（100&times;），充分混匀。如取10ul浓缩SABC（100&times;）加入到990ul SABC稀释液中，得到1000ul HRP-链霉亲和素(SABC)工作液（1&times;）。</p>
+
+<!-- ==================== 八、实验步骤 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">八、实验步骤</h2>
+<ol class="exp">
+    <li>设定标准品孔、空白孔、样本孔，并记录其位置。为减小实验误差，建议将标准品和样本设置复孔。</li>
+    <li>加样：按浓度顺序向标准品孔中加入50ul各梯度标准品，向样本孔中加入50ul待测样本工作液，向空白孔中加入50ul 样本稀释液，然后立即向每孔加入50ul生物素化抗体工作液。轻轻震板10s，使孔中液体混匀，覆膜，并在37&deg;C下静置孵育60分钟。（将溶液添加到微孔板的底部，轻轻晃动混匀，并尽可能避免接触管壁和起泡。）</li>
+    <li>洗板3次: 取下覆膜，吸去或甩掉酶标板内的液体，在洁净的吸水纸上拍2-3次。每孔加入洗涤缓冲液350ul，不浸泡，弃掉孔内液体，在吸水纸上拍2-3次。重复洗板步骤 3 次。避免异物进入板孔及板孔干燥。</li>
+    <li>加HRP-链霉亲和素(SABC)工作液：每孔加入100ul SABC工作液。覆膜，37&deg;C静置孵育30分钟。(同时将整瓶TMB放入37&deg;C温箱中平衡30min)</li>
+    <li>洗板5次：取下覆膜，吸去或甩掉酶标板内的液体，用洗涤缓冲液洗板5次，方法同步骤 3。</li>
+    <li>加TMB底物：每孔加入90ul TMB底物，覆膜，在37&deg;C避光静置孵育10-20分钟。打开酶标仪预热15min。(注意：根据颜色的实际变化，反应时间可以缩短或延长，但不能超过30分钟。当标准孔中出现较好的蓝色梯度时，可以终止反应。TMB在加样前应是无色透明，如有变色，请勿使用。)</li>
+    <li>加终止液：保留孔中TMB底物，每孔加入50ul反应终止液。颜色由蓝色立即变为黄色。注意保持终止液与TMB底物的加样顺序一致。（避免眼睛、皮肤接触终止液）</li>
+    <li>OD值的测量：立即用酶标仪在450nm处读取OD数值。</li>
+</ol>
+
+<!-- ==================== 九、数据分析 ==================== -->
+<h2 class="sec">九、数据分析</h2>
+<p>取标准品、空白孔和样本各自复孔的平均OD值，减去空白孔的OD值作为校正值。</p>
+<p>以标准品浓度为横坐标，OD450值为纵坐标，使用标曲绘制软件（如：ELISA Calc、Graphpad Prism等）进行曲线拟合，拟合推荐使用四参数逻辑方程（4PL）或五参数逻辑方程（5PL）、双对数、半对数、直线等，具体曲线选择应综合相关系数R<sup>2</sup>值（R<sup>2</sup>越接近1，拟合效果越好）和曲线趋势（总体光滑，曲线斜率始终为正）。</p>
+<p>将样本的OD值代入标准曲线方程，即可计算得到样本工作液的拟合浓度，乘以相应的稀释倍数得到样本的实测浓度。</p>
+
+<!-- ==================== 十、试剂盒典型参数 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">十、试剂盒典型参数</h2>
+
+<p><b>1、参考标曲</b></p>
+<p>实验者的操作及当时的实验环境等因素都会影响每次实验OD值，以下实验数据和标准曲线仅供参考。</p>
+<table class="layout"><tr>
+<td style="width:58%;vertical-align:top;padding-right:10px;">
+<table class="bq-manual-tbl">
+    <tr><th>STD.(pg/mL)</th><th>OD-1</th><th>OD-2</th><th>Average</th><th>Corrected</th></tr>
+    {{CAL_TABLE_ROWS}}
+</table>
+</td>
+<td style="width:42%;vertical-align:top;text-align:center;">{{CAL_TABLE_CHART}}</td>
+</tr></table>
+
+<p><b>2、参考样本值</b></p>
+<p>以下表格为本试剂盒针对健康样本推荐的稀释比例，仅供参考。(NA为无确切参考值)</p>
+<table class="bq-manual-tbl">
+    <tr><th>样本类型</th><th>推荐稀释比例</th><th>参考含量</th></tr>
+    {{SAMPLE_TABLE_ROWS}}
+</table>
+<div class="note">注：1/2稀释，表示50ul原始样本+50ul样本稀释液。</div>
+
+<p><b>3、精密度</b></p>
+<p>板内精密度：含低、中、高3种不同浓度样本分别在板内重复测定20次。</p>
+<p>板间精密度：含低、中、高3种不同浓度样本分别在板间重复测定20次。</p>
+<table class="bq-manual-tbl">
+    <tr><th>类别</th><th colspan="3">板内精密度</th><th colspan="3">板间精密度</th></tr>
+    <tr><th>样本</th><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td></tr>
+    <tr><th>数量</th><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+    {{PRECISION_TABLE_ROWS}}
+</table>
+
+<p><b>4、回收率</b></p>
+<p>样本稀释后，加入一定量的{{SAMPLE_NAME}}，分别配制成标曲范围内低、中、高3种不同浓度，计算不同基质样本中的加标回收率。</p>
+<table class="bq-manual-tbl">
+    <tr><th>样品类型</th><th>均值 (%)</th><th>范围 (%)</th></tr>
+    {{RECOVERY_TABLE_ROWS}}
+</table>
+
+<p><b>5、灵敏度</b></p>
+<p>用20个重复的零孔平均OD值加上两倍标准差得到的OD值代入标准曲线拟合出对应的浓度值，此试剂盒中{{SAMPLE_NAME}}的灵敏度为{{SENSITIVITY}}。</p>
+
+<p><b>6、线性</b></p>
+<p>使用样本稀释液将含或添加有高浓度{{SAMPLE_NAME}}的各基质样本分别进行标曲范围内的2倍倍比梯度稀释，计算各稀释比下的回收率范围。</p>
+<table class="bq-manual-tbl">
+    <tr><th>样品类型</th><th>1:2</th><th>1:4</th><th>1:8</th></tr>
+    {{LINEARITY_TABLE_ROWS}}
+</table>
+
+<p><b>7、特异性</b></p>
+<p>试剂盒经验证和同家族蛋白、互作蛋白及其它种属同靶标蛋白无明显交叉反应，交叉试验验证浓度为{{CROSS_REACT_CONC}}。</p>
+
+<p><b>8、稳定性</b></p>
+<p>未拆封的试剂盒在37&deg;C和2-8&deg;C进行稳定性实验，得出稳定性数据。</p>
+<table class="fixed">
+    <tr><th>试剂盒(n=5)</th><th>37&deg;C一个月</th><th>2-8&deg;C六个月</th></tr>
+    <tr><td>平均值 (%)</td><td>80</td><td>95-100</td></tr>
+</table>
+
+<p><b>9、标准品校准</b></p>
+<p>试剂盒免疫测定使用重组表达的BioQuanti&reg;重组{{SAMPLE_NAME}} (指标名)进行校准。</p>
+
+<!-- ==================== 十一、参考文献 ==================== -->
+<h2 class="sec">十一、参考文献</h2>
+<ol class="refs">
+    {{LITERATURE_LINES}}
+</ol>
+
+<!-- ==================== 声明 ==================== -->
+<div class="page-break"></div>
+<h2 class="sec">声明</h2>
+<p>限于现有科学认知及技术水平，尚不能对所有原料进行全面的分析，本产品可能存在一定的质量风险。</p>
+<p>本试剂盒已在最大程度上去除/降低了生物样本中的内源性干扰因素，但仍有可能存在未知干扰因素。</p>
+<p>本试剂盒未与其他厂家同类试剂盒或不同分析方法检测数据进行对比，所以不排除检测结果不一致的情况。</p>
+<p>本公司只对试剂盒本身质量负责，不对使用试剂盒所造成的样本消耗负责，使用前请充分考虑样本可能的使用量，预留充足的样本。</p>
+<p>实验结果与试剂的有效性、实验操作及当时的实验环境等因素密切相关；即使是相同人员操作也可能在两次独立实验中得到不同的结果，为保证结果的重现性，需要控制实验过程中每一步的操作。</p>
+<p>本试剂盒生产过程中严格质控，最终检验合格后发货。然而，因为运输条件、实验设备差异等因素影响，用户检测结果可能跟出厂数据不一致。不同批次间试剂盒间的差异也可能来自上述原因。</p>
+<p>本试剂盒仅供科学研究使用，不得用于临床或其他用途。</p>
+
+</body>
+</html>

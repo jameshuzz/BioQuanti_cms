@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+    body { font-family: 'NotoSansSC'; font-size: 12pt; margin: 40px; color: #1a3a5c; }
+    .header { text-align: center; border-bottom: 3px solid #2e75b6; padding-bottom: 12px; margin-bottom: 20px; }
+    .header h1 { font-size: 18pt; color: #2e75b6; margin: 0; }
+    .header .sub { font-size: 10pt; color: #666; margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th { background: #2e75b6; color: #fff; padding: 8px 10px; text-align: left; width: 30%; font-size: 11pt; }
+    td { border: 1px solid #b8cce4; padding: 8px 10px; font-size: 11pt; }
+    tr:nth-child(even) td { background: #eef3fa; }
+    .footer { margin-top: 26px; font-size: 9pt; color: #888; border-top: 1px solid #ccc; padding-top: 8px; text-align: center; }
+    .warn { background: #fff4e5; border-left: 4px solid #e6a23c; padding: 10px 12px; font-size: 10pt; }
+</style>
+</head>
+<body>
+    <div class="header">
+        <h1>产品检测说明书</h1>
+        <div class="sub">Specification &amp; Detection Manual</div>
+    </div>
+    <table>
+        <tr><th>货号</th><td>{{CATALOG_NO}}</td></tr>
+        <tr><th>产品名称</th><td>{{PRODUCT_NAME}}</td></tr>
+        <tr><th>英文名称</th><td>{{ENGLISH_NAME}}</td></tr>
+        <tr><th>检测范围</th><td>{{DETECT_RANGE}}</td></tr>
+        <tr><th>灵敏度</th><td>{{SENSITIVITY}}</td></tr>
+        <tr><th>规格</th><td>{{SPECIFICATION}}</td></tr>
+    </table>
+    <div class="warn">
+        注意：本说明书仅供参考，实际操作请遵循最新官方版本。试剂请在 2-8°C 条件下保存。
+    </div>
+    <div class="footer">BioQuanti · 本文档由系统自动生成 · 生成时间不代表产品批次</div>
+</body>
+</html>

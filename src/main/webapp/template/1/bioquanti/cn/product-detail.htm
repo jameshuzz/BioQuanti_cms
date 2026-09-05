@@ -76,8 +76,8 @@
 
                 <#-- 资料按钮行：说明书（后台生成附件后显示）+ MSDS固定文件 -->
                 <div class="bq-doc-btns">
-                    <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[")>
-                    <a class="bq-doc-btn" href="javascript:void(0)" onclick="bqDownloadManual('/manual/${field.id}.do', this)">
+                    <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[") && field.MANUAL != '[]'>
+                    <a class="bq-doc-btn" href="{@ms:file field.MANUAL/}" download="${field.CATALOG_NO!''}-说明书.pdf">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         <span>说明书</span>
                     </a>
@@ -228,37 +228,6 @@
         spy();
     }
 })();
-</script>
-<script>
-<#-- 说明书下载：当前页fetch，成功触发浏览器下载，失败弹提示（不开新窗口） -->
-function bqDownloadManual(url, a) {
-    var dl = a ? a.querySelector('span') : null;
-    var old = dl ? dl.textContent : '';
-    if (dl) { dl.textContent = '...'; }
-    fetch(url).then(function (res) {
-        if (!res.ok) {
-            return res.text().then(function (t) { throw new Error(t || '下载失败'); });
-        }
-        return res.blob().then(function (blob) {
-            var cd = res.headers.get('Content-Disposition') || '';
-            var m = cd.match(/filename\*=UTF-8''([^;]+)/);
-            var name = '说明书.pdf';
-            if (m) { try { name = decodeURIComponent(m[1]); } catch (e) {} }
-            var u = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = u;
-            link.download = name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
-        });
-    }).catch(function (err) {
-        alert(err.message || '下载失败，请稍后再试');
-    }).finally(function () {
-        if (dl) { dl.textContent = old; }
-    });
-}
 </script>
 </body>
 </html>

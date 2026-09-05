@@ -117,13 +117,6 @@ public interface IManualTemplateBiz extends IBaseBiz<ManualTemplateEntity> {
 	Map<String, Object> generateAttachments(String templateId);
 
 	/**
-	 * 读取产品已生成的说明书静态附件（前台下载接口用，替代实时渲染）
-	 * @param linkId 文章id
-	 * @return {bytes:PDF字节, fileName:下载文件名}
-	 */
-	Map<String, Object> getManualAttachment(String linkId);
-
-	/**
 	 * 说明书目录扫描（孤儿文件检测）
 	 * @return {templates:模板文件数, templateSize:字节数, orphans:[{name,size,lastModified}], orphanSize}
 	 */

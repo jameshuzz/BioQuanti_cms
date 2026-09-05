@@ -281,7 +281,10 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		}
 
 		String html = readTemplateContent(entity.getTemplateUrl());
-		String substituted = ManualRenderUtil.substitute(html, specData);
+		// 字段默认值：规格未填时默认96T（可按产品数据覆盖）
+		Map<String, String> defaults = new HashMap<>();
+		defaults.put("SPEC", "96T");
+		String substituted = ManualRenderUtil.substitute(html, specData, defaults);
 		// baseUri=模板文件所在目录，模板里的相对路径图片（如原理图/标曲图）按此解析
 		File templateFile = resolveUrl(entity.getTemplateUrl());
 		String baseUri = templateFile.getParentFile().toURI().toString();
@@ -409,41 +412,6 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		result.put("success", okIds.size());
 		result.put("pages", pages);
 		result.put("errors", errors);
-		return result;
-	}
-
-	@Override
-	public Map<String, Object> getManualAttachment(String linkId) {
-		if (StringUtils.isBlank(linkId)) {
-			throw new BusinessException("产品编号不能为空");
-		}
-		List<Map<String, Object>> specRows = queryForList(
-				"SELECT MANUAL FROM " + SPEC_TABLE + " WHERE LINK_ID = ?", linkId);
-		if (specRows.isEmpty() || specRows.get(0).get("MANUAL") == null) {
-			throw new BusinessException("该产品未生成说明书附件");
-		}
-		// MANUAL字段为JSON数组，取第一个附件
-		List<Map> manuals;
-		try {
-			manuals = JSONUtil.toList(String.valueOf(specRows.get(0).get("MANUAL")), Map.class);
-		} catch (Exception e) {
-			throw new BusinessException("说明书附件数据异常");
-		}
-		if (manuals == null || manuals.isEmpty() || manuals.get(0).get("url") == null) {
-			throw new BusinessException("该产品未生成说明书附件");
-		}
-		File f = resolveUrl(String.valueOf(manuals.get(0).get("url")));
-		if (!f.exists()) {
-			throw new BusinessException("说明书附件文件不存在，请在后台重新生成");
-		}
-		Map<String, Object> result = new HashMap<>();
-		try {
-			result.put("bytes", FileUtils.readFileToByteArray(f));
-		} catch (Exception e) {
-			throw new BusinessException("说明书附件读取失败:" + e.getMessage());
-		}
-		String name = String.valueOf(manuals.get(0).get("name"));
-		result.put("fileName", StringUtils.isBlank(name) || "null".equals(name) ? f.getName() : name);
 		return result;
 	}
 

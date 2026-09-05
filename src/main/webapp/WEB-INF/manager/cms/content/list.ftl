@@ -6,6 +6,9 @@
                 <@shiro.hasPermission name="cms:content:save">
                     <el-button v-if="isLeaf==true" type="primary" class="el-icon-plus" size="default" @click="openForm()">新增</el-button>
                 </@shiro.hasPermission>
+                <@shiro.hasPermission name="cms:content:save">
+                    <el-button type="success" class="el-icon-upload" size="default" @click="importDialog.visible = true">Excel导入</el-button>
+                </@shiro.hasPermission>
                 <@shiro.hasPermission name="cms:content:del">
                     <el-button type="danger" class="el-icon-delete" size="default" @click="del(selectionList)"  :disabled="!selectionList.length">删除</el-button>
                 </@shiro.hasPermission>
@@ -142,6 +145,41 @@
                     @current-change='currentChange'
                     @size-change="sizeChange">
             </el-pagination>
+
+            <#-- ================= Excel导入弹窗 ================= -->
+            <el-dialog v-model="importDialog.visible" title="Excel导入文章" width="620px" :close-on-click-modal="false">
+                <div style="margin-bottom:10px;">
+                    <el-button type="primary" link @click="downloadImportTemplate">下载导入模板</el-button>
+                    <span style="color:#909399;font-size:12px;margin-left:8px;">
+                        模板"栏目"列带下拉选择；按"货号"匹配，已存在则更新文章和规格数据，否则新增
+                    </span>
+                </div>
+                <el-upload drag action="" :auto-upload="false" :limit="1" accept=".xlsx"
+                           :on-change="onImportFileChange" :on-remove="() => importDialog.file = null"
+                           :file-list="importDialog.fileList">
+                    <div style="padding:20px 0;">
+                        <div style="font-size:14px;">将 .xlsx 文件拖到此处，或点击选择</div>
+                    </div>
+                </el-upload>
+                <div style="margin:12px 0;">
+                    <el-checkbox v-model="importDialog.generateStatic">导入成功后生成静态页（列表页+详情页）</el-checkbox>
+                </div>
+                <div v-if="importDialog.result" style="margin-bottom:10px;">
+                    <el-alert v-if="importDialog.result.failed == 0" type="success" :closable="false"
+                              :title="'导入完成：共' + importDialog.result.total + '行，新增' + importDialog.result.created + '，更新' + importDialog.result.updated + '，失败' + importDialog.result.failed"></el-alert>
+                    <el-alert v-else type="warning" :closable="false"
+                              :title="'导入完成：共' + importDialog.result.total + '行，新增' + importDialog.result.created + '，更新' + importDialog.result.updated + '，失败' + importDialog.result.failed">
+                    </el-alert>
+                    <div v-if="importDialog.result.errors && importDialog.result.errors.length" style="margin-top:8px;">
+                        <div style="font-size:12px;color:#F56C6C;margin-bottom:4px;">失败明细：</div>
+                        <div v-for="(e, i) in importDialog.result.errors" :key="i" style="font-size:12px;color:#F56C6C;line-height:20px;">{{ e }}</div>
+                    </div>
+                </div>
+                <template #footer>
+                    <el-button @click="importDialog.visible = false">关闭</el-button>
+                    <el-button type="primary" :loading="importDialog.loading" :disabled="!importDialog.file" @click="doImport">开始导入</el-button>
+                </template>
+            </el-dialog>
         </el-main>
     </div>
 </template>
@@ -317,7 +355,16 @@
                     categoryId: ''
                 },
                 isLeaf: true,
-                historyKey:"cms_content_history"
+                historyKey:"cms_content_history",
+                //Excel导入弹窗
+                importDialog: {
+                    visible: false,
+                    file: null,
+                    fileList: [],
+                    generateStatic: true,
+                    loading: false,
+                    result: null
+                }
             }
         },
         watch: {
@@ -334,6 +381,47 @@
         },
 
         methods: {
+            //下载Excel导入模板
+            downloadImportTemplate: function () {
+                window.open(ms.manager + "/cms/content/import/template.do");
+            },
+            //选择导入文件
+            onImportFileChange: function (file, fileList) {
+                this.importDialog.file = file.raw;
+                this.importDialog.fileList = fileList.slice(-1);
+                this.importDialog.result = null;
+            },
+            //执行导入（FormData走XHR，绕开ms.http的表单编码头，避免multipart丢失）
+            doImport: function () {
+                var that = this;
+                if (!that.importDialog.file) {
+                    that.$message.error('请先选择.xlsx文件');
+                    return;
+                }
+                var fd = new FormData();
+                fd.append('file', that.importDialog.file);
+                fd.append('generateStatic', that.importDialog.generateStatic);
+                that.importDialog.loading = true;
+                that.importDialog.result = null;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', ms.manager + "/cms/content/import.do");
+                xhr.onload = function () {
+                    that.importDialog.loading = false;
+                    var res;
+                    try { res = JSON.parse(xhr.responseText); } catch (e) { res = {result: false, msg: '响应解析失败'}; }
+                    if (res.result) {
+                        that.importDialog.result = res.data;
+                        that.list();
+                    } else {
+                        that.$message.error(res.msg || '导入失败');
+                    }
+                };
+                xhr.onerror = function () {
+                    that.importDialog.loading = false;
+                    that.$message.error('导入失败：网络错误');
+                };
+                xhr.send(fd);
+            },
             //查询列表
             list: function () {
                 var that = this;

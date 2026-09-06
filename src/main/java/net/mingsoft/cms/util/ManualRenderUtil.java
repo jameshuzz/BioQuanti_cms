@@ -1,6 +1,7 @@
 package net.mingsoft.cms.util;
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder.FontStyle;
 import net.mingsoft.base.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,14 +45,14 @@ public class ManualRenderUtil {
 	private static final Pattern PLACEHOLDER = Pattern.compile("\\{\\{([A-Za-z0-9_]+)\\}\\}");
 
 	/**
-	 * 字体族名，模板CSS中使用 font-family:'NotoSansSC'
+	 * 默认字体族名（宋体风格衬线），模板CSS中使用 font-family:'NotoSerifSC'
 	 */
-	public static final String FONT_FAMILY = "NotoSansSC";
+	public static final String FONT_FAMILY = "NotoSerifSC";
 
 	/**
 	 * 提取classpath字体文件到临时文件（仅一次），openhtmltopdf按File注册字体
 	 */
-	private static volatile File fontFile;
+	private static final java.util.concurrent.ConcurrentHashMap<String, File> FONT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
 	/**
 	 * 占位符替换（无默认值）：值为null/空串渲染为"-"
@@ -271,7 +272,7 @@ public class ManualRenderUtil {
 		try {
 			byte[] png = renderStdCurvePng(points);
 			String base64 = Base64.getEncoder().encodeToString(png);
-			return "<img style=\"width:250px;\" src=\"data:image/png;base64," + base64 + "\"/>";
+			return "<img style=\"width:270px;\" src=\"data:image/png;base64," + base64 + "\"/>";
 		} catch (Exception e) {
 			return "";
 		}
@@ -343,23 +344,26 @@ public class ManualRenderUtil {
 		for (double[] p : points) {
 			maxY = Math.max(maxY, p[1]);
 		}
-		maxY = Math.ceil(maxY * 1.1 * 10) / 10.0;
+		// 纵轴上限取整到0.5步进（对齐Word参考图 0/0.5/1/1.5/2/2.5 刻度）
+		maxY = Math.ceil(maxY * 1.02 / 0.5) * 0.5;
 		if (maxY <= 0) {
 			maxY = 1;
 		}
 		double lgMin = Math.log10(minX), lgMax = Math.log10(maxX);
 		int plotW = w - left - right, plotH = h - top - bottom;
 
-		// 网格与坐标刻度
-		g.setColor(new Color(220, 220, 220));
+		// 虚线网格与坐标刻度
+		g.setColor(new Color(90, 90, 90));
+		g.setStroke(new BasicStroke(0.7f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+				10f, new float[]{1.5f, 1.5f}, 0f));
 		int ySteps = 5;
 		for (int i = 0; i <= ySteps; i++) {
 			int y = top + plotH - (int) Math.round(plotH * i / (double) ySteps);
 			g.drawLine(left, y, left + plotW, y);
 			g.setColor(Color.BLACK);
 			String label = trimNum(maxY * i / ySteps);
-			g.drawString(label, left - 34, y + 4);
-			g.setColor(new Color(220, 220, 220));
+			g.drawString(label, left - 30, y + 4);
+			g.setColor(new Color(90, 90, 90));
 		}
 		// x刻度用实际数据浓度值，密集时隔一个标注
 		g.setColor(Color.BLACK);
@@ -376,12 +380,16 @@ public class ManualRenderUtil {
 		g.setStroke(new BasicStroke(1.2f));
 		g.drawLine(left, top, left, top + plotH);
 		g.drawLine(left, top + plotH, left + plotW, top + plotH);
-		g.drawString("OD450", 4, top + 10);
+		// 纵轴标签OD450纵向绘制（对齐Word参考图）
+		Graphics2D gy = (Graphics2D) g.create();
+		gy.rotate(-Math.PI / 2, 6, top + plotH / 2.0);
+		gy.drawString("OD450", 6 - gy.getFontMetrics().stringWidth("OD450") / 2, top + plotH / 2 + 4);
+		gy.dispose();
 		String unit = "pg/mL";
 		g.drawString(unit, left + plotW - g.getFontMetrics().stringWidth(unit), top + plotH + 27);
 
-		// 折线与数据点
-		g.setColor(new Color(26, 92, 158));
+		// 折线与数据点（红色曲线，对齐Word参考样式）
+		g.setColor(new Color(192, 0, 0));
 		g.setStroke(new BasicStroke(1.6f));
 		for (int i = 0; i < points.length; i++) {
 			int x = left + (int) Math.round(plotW * (Math.log10(points[i][0]) - lgMin) / (lgMax - lgMin));
@@ -457,7 +465,12 @@ public class ManualRenderUtil {
 			PdfRendererBuilder builder = new PdfRendererBuilder();
 			builder.useFastMode();
 			builder.withW3cDocument(w3cDoc, baseUri);
-			builder.useFont(getFontFile(), FONT_FAMILY);
+			// 注册常规/粗体两个字重，同族名下CSS font-weight:bold 才会生效
+			// NotoSansSC（黑体风格）与NotoSerifSC（宋体风格，对应Word正文）两族都注册，模板按需选用
+			builder.useFont(getFontFile("/fonts/NotoSansSC-Regular.ttf"), "NotoSansSC", 400, FontStyle.NORMAL, true);
+			builder.useFont(getFontFile("/fonts/NotoSansSC-Bold.ttf"), "NotoSansSC", 700, FontStyle.NORMAL, true);
+			builder.useFont(getFontFile("/fonts/NotoSerifSC-Regular.ttf"), FONT_FAMILY, 400, FontStyle.NORMAL, true);
+			builder.useFont(getFontFile("/fonts/NotoSerifSC-Bold.ttf"), FONT_FAMILY, 700, FontStyle.NORMAL, true);
 			builder.toStream(out);
 			builder.run();
 			return out.toByteArray();
@@ -469,31 +482,26 @@ public class ManualRenderUtil {
 	}
 
 	/**
-	 * classpath字体解压到临时文件（双检锁，仅首次）
+	 * classpath字体解压到临时文件（按资源路径缓存），openhtmltopdf按File注册字体
 	 */
-	private static File getFontFile() {
-		if (fontFile == null) {
-			synchronized (ManualRenderUtil.class) {
-				if (fontFile == null) {
-					try {
-						File tmp = File.createTempFile("nsc-font-", ".ttf");
-						tmp.deleteOnExit();
-						try (InputStream in = ManualRenderUtil.class.getResourceAsStream("/fonts/NotoSansSC-Regular.ttf");
-					     FileOutputStream fos = new FileOutputStream(tmp)) {
-						if (in == null) {
-							throw new BusinessException("中文字体文件缺失:resources/fonts/NotoSansSC-Regular.ttf（须为TrueType轮廓，CFF轮廓的otf不被openhtmltopdf支持）");
-						}
-							in.transferTo(fos);
-						}
-						fontFile = tmp;
-					} catch (BusinessException e) {
-						throw e;
-					} catch (Exception e) {
-						throw new BusinessException("字体文件加载失败:" + e.getMessage());
+	private static File getFontFile(String resourcePath) {
+		return FONT_CACHE.computeIfAbsent(resourcePath, path -> {
+			try {
+				File tmp = File.createTempFile("nsc-font-", ".ttf");
+				tmp.deleteOnExit();
+				try (InputStream in = ManualRenderUtil.class.getResourceAsStream(path);
+				     FileOutputStream fos = new FileOutputStream(tmp)) {
+					if (in == null) {
+						throw new BusinessException("中文字体文件缺失:resources" + path + "（须为TrueType轮廓，CFF轮廓的otf不被openhtmltopdf支持）");
 					}
+					in.transferTo(fos);
 				}
+				return tmp;
+			} catch (BusinessException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new BusinessException("字体文件加载失败:" + e.getMessage());
 			}
-		}
-		return fontFile;
+		});
 	}
 }

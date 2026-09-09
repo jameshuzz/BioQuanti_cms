@@ -17,13 +17,23 @@
 
 <div class="bq-container bq-searchpage">
     <div class="bq-result-count">
-        <#if search?? && ((search.content_title?? && search.content_title?has_content) || (search.species?? && search.species?has_content) || (search.content_tag?? && search.content_tag?has_content))>
+        <#-- product category name map (same source as header search dropdown) -->
+        <#assign bqCatNames = {}>
+        {ms:channel typeid='3707212335907000001' type='son' orderby='sort'}
+        <#assign bqCatNames = bqCatNames + {field.typeid: field.typetitle}>
+        {/ms:channel}
+        <#if search?? && ((search.content_title?? && search.content_title?has_content) || (search.categoryIds?? && search.categoryIds?has_content) || (search.content_tag?? && search.content_tag?has_content))>
         <#assign _kw = (search.content_title?? && search.content_title?has_content)?string(MUtil.escape(search.content_title), 'All')>
-        <#assign _sp = (search.species?? && search.species?has_content)?string(MUtil.escape(search.species), 'All species')>
+        <#assign _cat = ''>
+        <#if search.categoryIds?? && search.categoryIds?has_content>
+        <#list search.categoryIds?split(',') as _c>
+        <#assign _cat = _cat + ((_cat != '')?string(' / ', '') + ((bqCatNames[_c])!_c))>
+        </#list>
+        </#if>
         <#assign _tag = (search.content_tag?? && search.content_tag?has_content)?string(MUtil.escape(search.content_tag), '')>
-        Keyword: <b>${_kw}</b> &nbsp;|&nbsp; Species: <b>${_sp}</b><#if _tag != ''> &nbsp;|&nbsp; Tag: <b>${_tag}</b></#if> &nbsp;|&nbsp; <b>{ms:page.rcount/}</b> results
+        Keyword: <b>${_kw}</b><#if _cat != ''> &nbsp;|&nbsp; Category: <b>${_cat}</b></#if><#if _tag != ''> &nbsp;|&nbsp; Tag: <b>${_tag}</b></#if> &nbsp;|&nbsp; <b>{ms:page.rcount/}</b> results
         <#else>
-        Enter a keyword, choose a species, or click a hot tag to search.
+        Enter a keyword or choose a product category to search.
         </#if>
     </div>
 
@@ -41,7 +51,7 @@
     <div class="bq-pagination">
         <#assign _base = "{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm&size=20">
         <#assign _base = _base + (search.content_title?? && search.content_title?has_content)?string("&content_title=" + MUtil.escape(search.content_title)?url('UTF-8'), "")>
-        <#assign _base = _base + (search.species?? && search.species?has_content)?string("&species=" + MUtil.escape(search.species)?url('UTF-8'), "")>
+        <#assign _base = _base + (search.categoryIds?? && search.categoryIds?has_content)?string("&categoryIds=" + search.categoryIds?url('UTF-8'), "")>
         <#assign _base = _base + (search.content_tag?? && search.content_tag?has_content)?string("&content_tag=" + MUtil.escape(search.content_tag)?url('UTF-8'), "")>
         <#assign _cur = page.cur?number>
         <#assign _total = page.total?number>

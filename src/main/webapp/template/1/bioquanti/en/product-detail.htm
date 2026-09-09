@@ -6,140 +6,126 @@
 <title>{ms:global.name/}-${field.title}</title>
 <meta name="keywords" content="${field.keyword}">
 <meta name="description" content="${field.descrip}">
-<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
-<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
-<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
 <link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
 </head>
 <body>
 <#include "/en/header.htm"/>
 
-<div class="bq-pagebanner" style="background-image:url('<#if field.categoryImg?? && field.categoryImg?has_content && field.categoryImg != '[]'>{@ms:file field.categoryImg/}<#else>/{ms:global.style/}en/images/bg-1.jpg</#if>')">
-    <h1>${field.typetitle}</h1>
-    <p>PRODUCT DETAIL</p>
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; <a href="{ms:global.html/}en/products/kits/index.html">Products</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
 </div>
 
-<div class="bq-detail-wrap">
-    <div class="bq-container">
-        <div class="bq-detail-grid">
-            <!-- Left: hot products -->
-            <aside class="bq-sidebar">
-                <div class="side-title">Hot Products</div>
-                <div class="side-body">
-                    {ms:arclist size=10 typeid="3707212335907000201"}
-                    <div class="hot-item">
-                        <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}"></#if></a></div>
-                        <div>
-                            <div class="no">${field.shorttitle}</div>
-                            <div class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></div>
-                        </div>
-                    </div>
-                    {/ms:arclist}
-                </div>
-            </aside>
-            <!-- Right: detail -->
-            <div class="bq-detail-main">
-                <div class="bq-crumb" style="background:none;border:0;">Home: <a href="{ms:global.html/}en/index.html">Home</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
-                <h1 class="title">${field.title}</h1>
-                <div class="meta">
-                    Catalog No.: <#if field.shorttitle?has_content>${field.shorttitle}<#else>-</#if>　|　
-                    Published: ${field.date?string("yyyy-MM-dd")}　|　
-                    Hits: ${field.hit}
-                </div>
-                <#-- Custom model: spec bar (auto hidden for articles without model data) -->
-                <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
-                <div class="bq-spec-bar">
-                    <span class="item"><em>Catalog No.</em><b>${field.CATALOG_NO}</b></span>
-                    <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><span class="item"><em>Detection Range</em><b>${field.DETECT_RANGE}</b></span></#if>
-                    <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><span class="item"><em>Sensitivity</em><b>${field.SENSITIVITY}</b></span></#if>
-                </div>
+<div class="bq2-container bq2-detailwrap">
+    <!-- Title -->
+    <h1 class="bq2-dtitle">${field.title}</h1>
+
+    <!-- Doc buttons: Manual (shown after backend generates the attachment) + MSDS -->
+    <div class="bq2-docbtns">
+        <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[") && field.MANUAL != '[]'>
+        <a class="bq2-docbtn" href="{@ms:file field.MANUAL/}" download="${field.CATALOG_NO!''}-Manual.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Manual</span>
+        </a>
+        </#if>
+        <a class="bq2-docbtn msds" href="/{ms:global.style/}files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>MSDS</span>
+        </a>
+    </div>
+
+    <!-- Gallery + Spec Panel -->
+    <div class="bq2-topgrid">
+        <#-- Slider source: article litpic (multi-image JSON from backend), degrades to single image -->
+        <#assign picList=[]>
+        <#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")>
+        <#assign picList=field.litpic?eval>
+        </#if>
+        <div class="bq2-gallery">
+            <#if picList?size gt 1>
+            <div class="bq2-slider" id="bqSlider" data-pics='${field.litpic?js_string}'>
+                <button type="button" class="bq2-slider-arrow prev" aria-label="Previous">&#10094;</button>
+                <img class="bq2-slider-img" src="${picList[0].url}" alt="${field.title}">
+                <button type="button" class="bq2-slider-arrow next" aria-label="Next">&#10095;</button>
+            </div>
+            <#elseif picList?size == 1>
+            <div class="bq2-slider"><img class="bq2-slider-img" src="${picList[0].url}" alt="${field.title}"></div>
+            <#elseif field.litpic?? && field.litpic?has_content>
+            <div class="bq2-slider"><img class="bq2-slider-img" src="{@ms:file field.litpic/}" alt="${field.title}"></div>
+            <#else>
+            <div class="bq2-slider"><img class="bq2-slider-img" src="/{ms:global.style/}en/images/newui/kit-photo-lg.png" alt="${field.title}"></div>
+            </#if>
+        </div>
+
+        <#-- Spec panel (hidden automatically when no model data) -->
+        <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
+        <#assign spec = (field.SPEC)!''>
+        <#assign spec = spec?trim>
+        <div class="bq2-specpanel">
+            <div class="bq2-spec-head">${field.CATALOG_NO}</div>
+            <div class="bq2-spec-rows">
+                <#if spec?has_content>
+                <#assign p1 = (spec == '48T')?then('¥ 680', (spec == '24T')?then('¥ 480', '¥ 980'))>
+                <div class="bq2-spec-row cur"><span class="k">Spec</span><span class="v">${spec}</span><span class="p">${p1}</span></div>
+                <#if spec != '96T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">96T</span><span class="p">¥ 980</span></div></#if>
+                <#if spec != '48T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">48T</span><span class="p">¥ 680</span></div></#if>
+                <#if spec != '24T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">24T</span><span class="p">¥ 480</span></div></#if>
+                <#else>
+                <div class="bq2-spec-row cur"><span class="k">Spec</span><span class="v">96T</span><span class="p">¥ 980</span></div>
+                <div class="bq2-spec-row"><span class="k">Spec</span><span class="v">48T</span><span class="p">¥ 680</span></div>
+                <div class="bq2-spec-row"><span class="k">Spec</span><span class="v">24T</span><span class="p">¥ 480</span></div>
                 </#if>
+            </div>
+            <div class="bq2-spec-meta">
+                <p><span>Lead Time:</span> In Stock</p>
+                <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><p><span>Detection Range:</span> ${field.DETECT_RANGE}</p></#if>
+                <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><p><span>Sensitivity:</span> ${field.SENSITIVITY}</p></#if>
+            </div>
+        </div>
+        </#if>
+    </div>
 
-                <#-- Product image slideshow: article thumbnail litpic (multi-upload JSON array); slider when multiple, plain image otherwise -->
-                <#assign picList=[]>
-                <#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")>
-                <#assign picList=field.litpic?eval>
-                </#if>
+    <#-- Four fixed modules: tab navigation -->
+    <div class="bq2-modnav" id="bqModNav">
+        <a href="#bq-mod-intro" class="on">Product Introduction</a>
+        <a href="#bq-mod-protocol">Protocol</a>
+        <a href="#bq-mod-lit">References</a>
+        <a href="#bq-mod-related">Related Products</a>
+    </div>
 
-                <div class="bq-prod-info">
-                    <div class="bq-prod-img">
-                        <#if picList?size gt 1>
-                        <div class="bq-slider" id="bqSlider" data-pics='${field.litpic?js_string}'>
-                            <div class="bq-slider-main">
-                                <button type="button" class="bq-slider-arrow prev" aria-label="Previous">&#10094;</button>
-                                <img class="bq-slider-img" src="${picList[0].url}" alt="${field.title}">
-                                <button type="button" class="bq-slider-arrow next" aria-label="Next">&#10095;</button>
-                            </div>
-                        </div>
-                        <#elseif picList?size == 1>
-                        <img src="${picList[0].url}" alt="${field.title}">
-                        <#elseif field.litpic?? && field.litpic?has_content>
-                        <img src="{@ms:file field.litpic/}" alt="${field.title}">
-                        <#else>
-                        <img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}">
-                        </#if>
-                    </div>
-                </div>
+    <div class="bq2-mods">
+        <#-- Module 1: introduction -->
+        <div class="bq-mod-sec" id="bq-mod-intro">
+            <div class="content bq-mod-body" id="bqIntro">${field.content!''}</div>
+        </div>
 
-                <#-- Document buttons: Manual (static attachment) + MSDS fixed file -->
-                <div class="bq-doc-btns">
-                    <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[") && field.MANUAL != '[]'>
-                    <a class="bq-doc-btn" href="{@ms:file field.MANUAL/}" download="${field.CATALOG_NO!''}-Manual.pdf">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>Manual</span>
+        <#-- Module 2: protocol -->
+        <div class="bq-mod-sec" id="bq-mod-protocol" style="display:none;">
+            <div class="bq-mod-body" id="bqProtocolBody"></div>
+        </div>
+
+        <#-- Module 3: references -->
+        <div class="bq-mod-sec" id="bq-mod-lit" style="display:none;">
+            <div class="bq-mod-body" id="bqLitBody"></div>
+        </div>
+
+        <#-- Module 4: related products -->
+        <div class="bq-mod-sec" id="bq-mod-related">
+            <h2 class="bq-mod-h">Related Products</h2>
+            <div class="bq-mod-body">
+                <div class="bq-related-grid">
+                    <#assign curId=field.id?string>
+                    <#-- latest 10 in same category, exclude self, take 9 -->
+                    <#assign shown=0>
+                    {ms:arclist size=10 typeid=field.typeid}
+                    <#if field.id?string != curId && shown lt 9>
+                    <#assign shown=shown+1>
+                    <a class="bq-related-item" href="{ms:global.html/}${field.link}">
+                        <div class="pic"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></div>
+                        <div class="no">${field.shorttitle}</div>
+                        <div class="tt">${field.title}</div>
                     </a>
                     </#if>
-                    <a class="bq-doc-btn msds" href="/{ms:global.style/}files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>MSDS</span>
-                    </a>
-                </div>
-
-                <#-- Four fixed modules: anchor nav -->
-                <div class="bq-modnav" id="bqModNav">
-                    <a href="#bq-mod-intro" class="on">Product Overview</a>
-                    <a href="#bq-mod-protocol">Protocol</a>
-                    <a href="#bq-mod-lit">References</a>
-                    <a href="#bq-mod-related">Related Products</a>
-                </div>
-
-                <div class="bq-mods">
-                    <#-- Module 1: Product Overview (title & content from rich text H3) -->
-                    <div class="bq-mod-sec" id="bq-mod-intro">
-                        <div class="content bq-mod-body" id="bqIntro">${field.content!''}</div>
-                    </div>
-
-                    <#-- Module 2: Protocol (body H3 section moved in by JS, hidden if absent) -->
-                    <div class="bq-mod-sec" id="bq-mod-protocol" style="display:none;">
-                        <div class="bq-mod-body" id="bqProtocolBody"></div>
-                    </div>
-
-                    <#-- Module 3: References (body H3 section moved in by JS, hidden if absent) -->
-                    <div class="bq-mod-sec" id="bq-mod-lit" style="display:none;">
-                        <div class="bq-mod-body" id="bqLitBody"></div>
-                    </div>
-
-                    <#-- Module 4: Related Products (same category, exclude current) -->
-                    <div class="bq-mod-sec" id="bq-mod-related">
-                        <h2 class="bq-mod-h">Related Products</h2>
-                        <div class="bq-mod-body">
-                            <div class="bq-related-grid">
-                                <#assign curId=field.id?string>
-                                <#-- Latest 10 in same category, exclude current, cap at 9 for a full grid -->
-                                <#assign shown=0>
-                                {ms:arclist size=10 typeid=field.typeid}
-                                <#if field.id?string != curId && shown lt 9>
-                                <#assign shown=shown+1>
-                                <a class="bq-related-item" href="{ms:global.html/}${field.link}">
-                                    <div class="pic"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}"></#if></div>
-                                    <div class="no">${field.shorttitle}</div>
-                                    <div class="tt">${field.title}</div>
-                                </a>
-                                </#if>
-                                {/ms:arclist}
-                            </div>
-                        </div>
-                    </div>
+                    {/ms:arclist}
                 </div>
             </div>
         </div>
@@ -149,13 +135,12 @@
 <#include "/en/footer.htm"/>
 
 <script>
-<#-- Slideshow: arrow navigation (image list from data-pics attribute) -->
 (function(){
     var slider = document.getElementById('bqSlider');
     if (!slider) return;
-    var img = slider.querySelector('.bq-slider-img');
-    var prev = slider.querySelector('.bq-slider-arrow.prev');
-    var next = slider.querySelector('.bq-slider-arrow.next');
+    var img = slider.querySelector('.bq2-slider-img');
+    var prev = slider.querySelector('.bq2-slider-arrow.prev');
+    var next = slider.querySelector('.bq2-slider-arrow.next');
     if (!img) return;
     var urls = [];
     try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
@@ -170,7 +155,7 @@
 })();
 </script>
 <script>
-<#-- Four modules: body H3 routing ("Protocol"/"实验方案", "References"/"引用文献") + nav highlight -->
+<#-- Four modules: body H3 routing ("Protocol"/"实验方案", "References"/"引用文献") + tab highlight -->
 (function(){
     var intro = document.getElementById('bqIntro');
     var protocolSec = document.getElementById('bq-mod-protocol');

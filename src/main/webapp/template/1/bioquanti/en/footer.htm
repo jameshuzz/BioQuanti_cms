@@ -1,41 +1,33 @@
-<!-- ===== footer ===== -->
-<div class="bq-footer">
-    <div class="bq-container">
-        <div class="cols">
-            <div class="col">
+<!-- ===== NEW UI 2026-09 EN Footer ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
                 <h4>Products</h4>
                 {ms:channel typeid="3707212335907000001" type='son' orderby='sort'}
                 <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
                 {/ms:channel}
             </div>
-            <div class="col">
-                <h4>Technical Support</h4>
-                <a href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">Product Search</a>
-                {ms:arclist typeid="3707212335907000005" size=3}
-                <a href="{ms:global.html/}${field.link}">${field.title}</a>
-                {/ms:arclist}
+            <div class="bq2-ftcol">
+                <h4>About BIOQUANTI</h4>
+                <a href="{ms:global.html/}en/about/index.html">About Us</a>
+                <a href="{ms:global.html/}en/tech/index.html">News</a>
+                <a href="{ms:global.html/}en/contact/index.html">Contact Us</a>
             </div>
-            <div class="col">
-                <h4>About Us</h4>
-                {ms:channel typeid="3707212335907000006" type='self'}
-                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
-                {/ms:channel}
-                {ms:channel typeid="3707212335907000005" type='self'}
-                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
-                {/ms:channel}
-            </div>
-            <div class="col">
+            <div class="bq2-ftcol bq2-ftcontact">
                 <h4>Contact Us</h4>
-                <a href="{ms:global.html/}en/contact/index.html">Online Message</a>
-                <p>Tel: 027-XXX-XXXX</p>
-                <p>Email: sales@bioquanti.com</p>
-                <p>Address: Wuhan · China · Optics Valley</p>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">Room 17, Office Floor 8, Building 5, Block 4, Joy City Business Project, Jiufeng Sub-district, East Lake High-tech Development Zone, Wuhan, Hubei, China</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/{ms:global.style/}en/images/newui/footer-qr.png" alt="BioQuanti QR code">
             </div>
         </div>
     </div>
-    <div class="bq-copyright">
-        <div class="bq-container">
+    <div class="bq2-copyright">
+        <div class="bq2-container">
             © 2026 BioQuanti · 鄂ICP备2024082069号-1 · {ms:global.name/}
         </div>
     </div>
-</div>
+</footer>

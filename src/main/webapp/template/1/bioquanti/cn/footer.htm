@@ -1,41 +1,33 @@
-<!-- ===== footer ===== -->
-<div class="bq-footer">
-    <div class="bq-container">
-        <div class="cols">
-            <div class="col">
+<!-- ===== NEW UI 2026-09 页脚 ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
                 <h4>产品中心</h4>
                 {ms:channel typeid="1787212335907000001" type='son' orderby='sort'}
                 <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
                 {/ms:channel}
             </div>
-            <div class="col">
-                <h4>技术支持</h4>
-                <a href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=cn/search.htm">产品搜索</a>
-                {ms:arclist typeid="1787212335907000005" size=3}
-                <a href="{ms:global.html/}${field.link}">${field.title}</a>
-                {/ms:arclist}
+            <div class="bq2-ftcol">
+                <h4>关于BIOQUANTI</h4>
+                <a href="{ms:global.html/}cn/about/index.html">公司简介</a>
+                <a href="{ms:global.html/}cn/tech/index.html">新闻动态</a>
+                <a href="{ms:global.html/}cn/contact/index.html">联系我们</a>
             </div>
-            <div class="col">
-                <h4>关于我们</h4>
-                {ms:channel typeid="1787212335907000006" type='self'}
-                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
-                {/ms:channel}
-                {ms:channel typeid="1787212335907000005" type='self'}
-                <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
-                {/ms:channel}
-            </div>
-            <div class="col">
+            <div class="bq2-ftcol bq2-ftcontact">
                 <h4>联系我们</h4>
-                <a href="{ms:global.html/}cn/contact/index.html">在线留言</a>
-                <p>电话：027-XXX-XXXX</p>
-                <p>邮箱：sales@bioquanti.com</p>
-                <p>地址：中国 · 武汉 · 光谷</p>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">湖北省武汉市东湖新技术开发区九峰街道高新大道大悦城商务项目1期4号商业5号办公8层2号17室（自贸区武汉片区）</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/{ms:global.style/}cn/images/newui/footer-qr.png" alt="BioQuanti QR code">
             </div>
         </div>
     </div>
-    <div class="bq-copyright">
-        <div class="bq-container">
+    <div class="bq2-copyright">
+        <div class="bq2-container">
             © 2026 BioQuanti · 鄂ICP备2024082069号-1 · {ms:global.name/}
         </div>
     </div>
-</div>
+</footer>

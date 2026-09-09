@@ -6,168 +6,201 @@
 <title>{ms:global.name/}</title>
 <meta name="keywords" content="{ms:global.keyword/}">
 <meta name="description" content="{ms:global.descrip/}">
-<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
-<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
-<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
 <link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
 </head>
 <body>
+<#assign bq_head_variant='index'>
 <#include "/en/header.htm"/>
 
-<!-- Carousel (configurable in backend: content_type='f' articles under the Home Slide column) -->
-<div class="bq-carousel">
-    <div class="bq-track">
-        {ms:arclist typeid="3707212335907000101" size=5}
-        <div class="bq-slide">
-            <img src="{@ms:file field.litpic/}" alt="${field.title}">
-            <div class="cap">
-                <h2>${field.title}</h2>
-                <#if field.shorttitle?? && field.shorttitle?has_content><p>${field.shorttitle}</p></#if>
-                <a class="cta" href="<#if field.outlink?? && field.outlink?has_content>${field.outlink}<#else>/</#if>">Learn More</a>
+<!-- ===== Hero slideshow (source: backend "Home Slide" category, one article = one slide) ===== -->
+<section class="bq2-hero">
+    <div class="bq2-hero-slider" id="bqHeroSlider">
+        <div class="bq2-hero-track">
+            {ms:arclist typeid='3707212335907000101' size=5}
+            <div class="bq2-hero-slide">
+                <img src="{@ms:file field.litpic/}" alt="${field.title}">
+                <div class="bq2-hero-cap">
+                    <div class="bq2-container">
+                        <h2>${field.title}</h2>
+                        <#if field.shorttitle?? && field.shorttitle?has_content><p>${field.shorttitle}</p></#if>
+                        <a class="bq2-hero-cta" href="<#if field.outlink?? && field.outlink?has_content>${field.outlink}<#else>#</#if>">Learn More</a>
+                    </div>
+                </div>
             </div>
-        </div>
-        {/ms:arclist}
-    </div>
-    <div class="bq-arrow prev">‹</div>
-    <div class="bq-arrow next">›</div>
-    <div class="bq-dots"></div>
-</div>
-<script>
-(function(){
-  var track = document.querySelector('.bq-track');
-  var slides = document.querySelectorAll('.bq-slide');
-  var dotsWrap = document.querySelector('.bq-dots');
-  if(!track || !slides.length) return;
-  for(var d=0; d<slides.length; d++){ var s=document.createElement('span'); if(d===0) s.className='on'; dotsWrap.appendChild(s); }
-  var dots = dotsWrap.querySelectorAll('span');
-  if(slides.length < 2) return;
-  var i = 0, timer;
-  function go(n){ i=(n+slides.length)%slides.length; track.style.transform='translateX(-'+(i*100)+'%)'; for(var k=0;k<dots.length;k++){ dots[k].className=(k===i)?'on':''; } }
-  function next(){ go(i+1); }
-  function play(){ timer=setInterval(next,4500); }
-  function restart(){ clearInterval(timer); play(); }
-  document.querySelector('.bq-arrow.next').onclick=function(){ next(); restart(); };
-  document.querySelector('.bq-arrow.prev').onclick=function(){ go(i-1); restart(); };
-  for(var k=0;k<dots.length;k++){ dots[k].onclick=(function(k){ return function(){ go(k); restart(); }; })(k); }
-  play();
-})();
-</script>
-
-<!-- Quick links -->
-<div class="bq-quicktabs">
-    <div class="bq-container">
-        <div class="bq-qt-grid">
-            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style=bioquanti&tmpl=en/search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt=""></span><span class="tt">Featured ELISA Kits<br>One Price</span></a>
-            <a class="bq-qt" href="{ms:global.html/}en/products/antibodies/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt=""></span><span class="tt">Antibody Pairs<br>SALE</span></a>
-            <a class="bq-qt" href="{ms:global.html/}en/products/proteins/index.html"><span class="ico"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt=""></span><span class="tt">Recombinant Proteins<br>In Stock</span></a>
-            <a class="bq-qt" href="{ms:global.html/}en/tech/index.html"><span class="ico"><img src="/{ms:global.style/}en/images/hexinjishu.jpg" alt=""></span><span class="tt">Protocols<br>Tech Manuals</span></a>
-            <a class="bq-qt" href="{ms:global.html/}en/tech/index.html"><span class="ico"><img src="/{ms:global.style/}en/images/jiance.png" alt=""></span><span class="tt">FAQ</span></a>
-            <a class="bq-qt" href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm"><span class="ico"><img src="/upload/1/bioquanti/pimg_1.png" alt=""></span><span class="tt">Browse<br>All Products</span></a>
-        </div>
-    </div>
-</div>
-
-<!-- Our Products -->
-<div class="bq-section">
-    <div class="bq-container">
-        <div class="bq-sec-title"><h2>Our Products</h2><span class="en">PRODUCT CATEGORIES</span><span class="bar"></span></div>
-        <div class="bq-catgrid">
-
-            <!-- Kits -->
-            <div class="bq-catcard">
-                <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Kits"></div>
-                <h3><a href="{ms:global.html/}en/products/kits/index.html">Kits</a></h3>
-                <ul class="bq-subcats">
-                    {ms:channel typeid="3707212335907000102" type='son' orderby='sort'}
-                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
-                    {/ms:channel}
-                </ul>
-                <a class="more" href="{ms:global.html/}en/products/kits/index.html">More Kits →</a>
-            </div>
-
-            <!-- Proteins -->
-            <div class="bq-catcard">
-                <div class="pic"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Proteins"></div>
-                <h3><a href="{ms:global.html/}en/products/proteins/index.html">Proteins</a></h3>
-                <ul class="bq-subcats">
-                    {ms:channel typeid="3707212335907000103" type='son' orderby='sort'}
-                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
-                    {/ms:channel}
-                </ul>
-                <a class="more" href="{ms:global.html/}en/products/proteins/index.html">More Proteins →</a>
-            </div>
-
-            <!-- Antibodies -->
-            <div class="bq-catcard">
-                <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Antibodies"></div>
-                <h3><a href="{ms:global.html/}en/products/antibodies/index.html">Antibodies</a></h3>
-                <ul class="bq-subcats">
-                    {ms:channel typeid="3707212335907000104" type='son' orderby='sort'}
-                    <li><a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
-                    {/ms:channel}
-                </ul>
-                <a class="more" href="{ms:global.html/}en/products/antibodies/index.html">More Antibodies →</a>
-            </div>
-
-            <!-- All Products (others / search entry) -->
-            <div class="bq-catcard">
-                <div class="pic"><img src="/upload/1/bioquanti/pimg_2.png" alt="All Products"></div>
-                <h3><a href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">All Products</a></h3>
-                <ul class="bq-subcats">
-                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=ELISA&style=bioquanti&tmpl=en/search.htm">ELISA Kits</a></li>
-                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Protein&style=bioquanti&tmpl=en/search.htm">Recombinant Proteins</a></li>
-                    <li><a href="{ms:global.contextpath/}/mcms/search.do?content_title=Antibody&style=bioquanti&tmpl=en/search.htm">Antibodies</a></li>
-                    <li><a href="{ms:global.contextpath/}/mcms/search.do?species=Human&style=bioquanti&tmpl=en/search.htm">Human Products</a></li>
-                </ul>
-                <a class="more" href="{ms:global.contextpath/}/mcms/search.do?style=bioquanti&tmpl=en/search.htm">Browse All Products →</a>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- Hot Products: search entries by application/disease area -->
-<div class="bq-section alt">
-    <div class="bq-container">
-        <div class="bq-sec-title"><h2>Hot Products</h2><span class="en">APPLICATION AREAS</span><span class="bar"></span></div>
-        <div class="bq-hotcat-grid">
-            <#assign hotCats=[
-                {'title':'Cytokines & Inflammation','tag':'细胞因子&炎症','ico':'icon-ganxibao','sr':'cytokine'},
-                {'title':'Cancer Research','tag':'肿瘤研究','ico':'icon-zhongliuke','sr':'tumor'},
-                {'title':'Chronic Disease & Metabolism','tag':'慢性疾病&生长代谢','ico':'icon-manxingjibing1','sr':'chronic'},
-                {'title':'Neurodegeneration','tag':'神经疾病','ico':'icon-mind','sr':'nerve'},
-                {'title':'Biologics Residuals','tag':'生物制品残留','ico':'icon-weishengwu1','sr':'biologics'},
-                {'title':'Drug Toxicity','tag':'神经疾病','ico':'icon-manxingjibing','sr':'toxicity'},
-                {'title':'Autoimmune Disease','tag':'自身免疫疾病','ico':'icon-bacteria1','sr':'bacteria'},
-                {'title':'Microbial Infection','tag':'微生物感染','ico':'icon-bacteria','sr':'microbial'},
-                {'title':'Easy-Step Kits','tag':'Easy-Step 试剂盒','ico':'icon-shengwu','sr':'bio'},
-                {'title':'Auxiliary Kits','tag':'Easy-Step 试剂盒','ico':'icon-weishengwuxiaoxi','sr':'aux kits'}
-            ]>
-            <#list hotCats as item>
-            <a class="bq-hotcat-card" href="{ms:global.contextpath/}/mcms/search.do?content_tag=${item.tag?url('UTF-8')}&style=bioquanti&tmpl=en/search.htm">
-                <span class="ico"><i class="iconfont ${item.ico}" aria-label="${item.sr}"></i></span>
-                <span class="tt">${item.title}</span>
-            </a>
-            </#list>
-        </div>
-    </div>
-</div>
-
-<!-- Technical -->
-<div class="bq-section">
-    <div class="bq-container">
-        <div class="bq-sec-title"><h2>Technical Articles</h2><span class="en">TECHNICAL</span><span class="bar"></span></div>
-        <ul class="bq-newslist">
-            {ms:arclist size=4 typeid="3707212335907000005"}
-            <li>
-                <span class="dt">${field.date?string("yyyy-MM-dd")}</span>
-                <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
-            </li>
             {/ms:arclist}
-        </ul>
+        </div>
+        <button type="button" class="bq2-hero-arrow prev" aria-label="Previous">&#10094;</button>
+        <button type="button" class="bq2-hero-arrow next" aria-label="Next">&#10095;</button>
+        <div class="bq2-hero-dots"></div>
     </div>
-</div>
+</section>
+
+<!-- ===== Product Tabs (Kits/Proteins/Antibodies/Others) ===== -->
+<section class="bq2-sec">
+    <div class="bq2-container">
+        <div class="bq2-tabs bq2-prodtabs" id="bq2-prodtabs">
+            <button type="button" class="cur">Kits</button>
+            <button type="button">Proteins</button>
+            <button type="button">Antibodies</button>
+            <button type="button">Others</button>
+        </div>
+        <div class="bq2-panels bq2-prodpanels">
+            <div class="bq2-panel cur">
+                {ms:arclist typeid='3707212335907000102' size=5}
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                    <p class="code">${field.shorttitle}</p>
+                    <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                </div>
+                {/ms:arclist}
+            </div>
+            <div class="bq2-panel">
+                {ms:arclist typeid='3707212335907000103' size=5}
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                    <p class="code">${field.shorttitle}</p>
+                    <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                </div>
+                {/ms:arclist}
+            </div>
+            <div class="bq2-panel">
+                {ms:arclist typeid='3707212335907000104' size=5}
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                    <p class="code">${field.shorttitle}</p>
+                    <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                </div>
+                {/ms:arclist}
+            </div>
+            <div class="bq2-panel">
+                {ms:arclist typeid='3707212335907000105' size=5}
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                    <p class="code">${field.shorttitle}</p>
+                    <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                </div>
+                {/ms:arclist}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Hot News ===== -->
+<section class="bq2-sec bq2-sec-news">
+    <div class="bq2-container">
+        <h3 class="bq2-sec-title">Hot News</h3>
+        <div class="bq2-newsbox">
+            <div class="bq2-newsleft">
+                <img src="/{ms:global.style/}en/images/newui/news-left.png" alt="News">
+            </div>
+            <div class="bq2-newsright">
+                <div class="bq2-tabs bq2-newstabs" id="bq2-newstabs">
+                    <button type="button" class="cur">New Products</button>
+                    <button type="button">Promotions</button>
+                    <button type="button">Company News</button>
+                </div>
+                <div class="bq2-panels bq2-newspanels">
+                    <div class="bq2-panel cur">
+                        {ms:arclist typeid='6097212335907010004' size=4}
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                            <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
+                            <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
+                        </div>
+                        {/ms:arclist}
+                    </div>
+                    <div class="bq2-panel">
+                        {ms:arclist typeid='6097212335907010005' size=4}
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                            <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
+                            <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
+                        </div>
+                        {/ms:arclist}
+                    </div>
+                    <div class="bq2-panel">
+                        {ms:arclist typeid='6097212335907010006' size=4}
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                            <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
+                            <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
+                        </div>
+                        {/ms:arclist}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== About Us ===== -->
+<section class="bq2-about">
+    <div class="bq2-container">
+        <h2>About Us</h2>
+        <p class="bq2-about-desc">BIOQUANTI focuses on the R&amp;D, production and sales of ELISA kits and provides related technical support and testing services. Our business scope covers biotechnology R&amp;D, sales of chemical products and Class I medical devices, medical research and experimental development.</p>
+        <div class="bq2-stats">
+            <div class="st"><b>1000+</b><span>Regular Products</span></div>
+            <div class="st"><b>300+</b><span>Enterprises Served</span></div>
+            <div class="st"><b>1000+</b><span>Regular Products</span></div>
+            <div class="st"><b>300+</b><span>Enterprises Served</span></div>
+        </div>
+    </div>
+</section>
 
 <#include "/en/footer.htm"/>
+<script>
+(function(){
+  function bindTabs(tabsId){
+    var root = document.getElementById(tabsId);
+    if(!root) return;
+    var btns = root.querySelectorAll('button');
+    var panelsBox = root.nextElementSibling;
+    if(!panelsBox) return;
+    var panels = panelsBox.querySelectorAll(':scope > .bq2-panel');
+    btns.forEach(function(b, i){
+      b.addEventListener('click', function(){
+        btns.forEach(function(x){ x.classList.remove('cur'); });
+        panels.forEach(function(p){ p.classList.remove('cur'); });
+        b.classList.add('cur');
+        if(panels[i]) panels[i].classList.add('cur');
+      });
+    });
+  }
+  bindTabs('bq2-prodtabs');
+  bindTabs('bq2-newstabs');
+
+  // Hero slideshow: autoplay + arrows + dots, pause on hover
+  var hero = document.getElementById('bqHeroSlider');
+  if(hero){
+    var track = hero.querySelector('.bq2-hero-track');
+    var slides = hero.querySelectorAll('.bq2-hero-slide');
+    var dotsWrap = hero.querySelector('.bq2-hero-dots');
+    if(!slides.length){ hero.style.display = 'none'; }
+    else{
+      var idx = 0, timer = null;
+      slides.forEach(function(s, i){
+        var d = document.createElement('span');
+        if(i === 0) d.className = 'on';
+        d.addEventListener('click', function(){ go(i); reset(); });
+        dotsWrap.appendChild(d);
+      });
+      var dots = dotsWrap.querySelectorAll('span');
+      function go(i){
+        idx = (i + slides.length) % slides.length;
+        track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+        dots.forEach(function(d, k){ d.classList.toggle('on', k === idx); });
+      }
+      function auto(){ timer = setInterval(function(){ go(idx + 1); }, 5000); }
+      function reset(){ clearInterval(timer); auto(); }
+      hero.querySelector('.prev').addEventListener('click', function(){ go(idx - 1); reset(); });
+      hero.querySelector('.next').addEventListener('click', function(){ go(idx + 1); reset(); });
+      hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+      hero.addEventListener('mouseleave', reset);
+      auto();
+    }
+  }
+})();
+</script>
 </body>
 </html>

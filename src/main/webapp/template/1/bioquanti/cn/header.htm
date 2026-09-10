@@ -38,6 +38,8 @@
                 <#assign curtypeid = "">
                 <#if field?? && field.typeid??><#assign curtypeid = field.typeid><#elseif typeid??><#assign curtypeid = typeid></#if>
                 <#assign prodMain = ['1787212335907000001','2787212335907000102','2787212335907000103','2787212335907000104','2787212335907000105']>
+                <#assign svcMain = ['1787217415207001','3787212335907230001','3787212335907230002','3787212335907230003','3787212335907230004']>
+                <#assign promoMain = ['3787212335907240000','3787212335907240001','3787212335907240002','3787212335907240003','3787212335907240004']>
                 <li <#if curtypeid == ''>class="active"</#if>><a href="{ms:global.html/}cn/index.html">首页</a></li>
                 <li <#if prodMain?seq_contains(curtypeid)>class="active"</#if>>
                     <a href="{ms:global.html/}cn/products/kits/index.html" class="bq2-drop-toggle">产品中心 <span class="caret">▾</span></a>
@@ -47,18 +49,24 @@
                         {/ms:channel}
                     </div>
                 </li>
-                <#assign newsMain = ['6097212335907010001','6097212335907010002','6097212335907010003']>
-                <li <#if newsMain?seq_contains(curtypeid)>class="active"</#if>>
-                    <a href="{ms:global.html/}cn/new-products/index.html" class="bq2-drop-toggle">新闻资讯 <span class="caret">▾</span></a>
+                <li <#if svcMain?seq_contains(curtypeid)>class="active"</#if>>
+                    <a href="{ms:global.html/}cn/services/index.html" class="bq2-drop-toggle">技术服务 <span class="caret">▾</span></a>
                     <div class="bq2-dropdown">
-                        <a href="{ms:global.html/}cn/new-products/index.html">新品促销</a>
-                        <a href="{ms:global.html/}cn/promotions/index.html">促销活动</a>
-                        <a href="{ms:global.html/}cn/company-news/index.html">公司新闻</a>
+                        {ms:channel typeid='1787217415207001' type='son' orderby='sort'}
+                        <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                        {/ms:channel}
                     </div>
                 </li>
-                <li <#if curtypeid == '1787217415207001'>class="active"</#if>><a href="{ms:global.html/}cn/services/index.html">其他服务</a></li>
-                <li <#if curtypeid == '1787212335907000005'>class="active"</#if>><a href="{ms:global.html/}cn/tech/index.html">技术专栏</a></li>
-                <li <#if curtypeid == '1787212335907000006'>class="active"</#if>><a href="{ms:global.html/}cn/about/index.html">关于公司</a></li>
+                <li <#if promoMain?seq_contains(curtypeid)>class="active"</#if>>
+                    <a href="{ms:global.html/}cn/promotion/index.html" class="bq2-drop-toggle">促销中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        {ms:channel typeid='3787212335907240000' type='son' orderby='sort'}
+                        <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a>
+                        {/ms:channel}
+                    </div>
+                </li>
+                <li <#if curtypeid == '3787212335907250000'>class="active"</#if>><a href="{ms:global.html/}cn/quality/index.html">质量保障</a></li>
+                <li <#if curtypeid == '1787212335907000006'>class="active"</#if>><a href="{ms:global.html/}cn/about/index.html">关于我们</a></li>
                 <li <#if curtypeid == '1787212335907000007'>class="active"</#if>><a href="{ms:global.html/}cn/contact/index.html">联系我们</a></li>
             </ul>
         </div>

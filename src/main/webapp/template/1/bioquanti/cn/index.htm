@@ -38,7 +38,7 @@
 
 <!-- ===== 产品 TAB（试剂盒/蛋白/抗体/其他） ===== -->
 <section class="bq2-sec">
-    <div class="bq2-container">
+    <div class="bq2-container bq2-wide">
         <div class="bq2-tabs bq2-prodtabs" id="bq2-prodtabs">
             <button type="button" class="cur">试剂盒</button>
             <button type="button">蛋白</button>
@@ -88,7 +88,7 @@
 
 <!-- ===== 热门资讯（新品促销/促销活动/公司新闻） ===== -->
 <section class="bq2-sec bq2-sec-news">
-    <div class="bq2-container">
+    <div class="bq2-container bq2-wide">
         <h3 class="bq2-sec-title">热门资讯</h3>
         <div class="bq2-newsbox">
             <div class="bq2-newsleft">
@@ -145,6 +145,9 @@
             <div class="st"><b>1000+</b><span>常规产品</span></div>
             <div class="st"><b>300+</b><span>成功服务企业</span></div>
         </div>
+        <div class="bq2-about-right">
+            <img src="/{ms:global.style/}cn/images/newui/about-map.png" alt="关于我们">
+        </div>
     </div>
 </section>
 
@@ -158,13 +161,15 @@
     var panelsBox = root.nextElementSibling;
     if(!panelsBox) return;
     var panels = panelsBox.querySelectorAll(':scope > .bq2-panel');
+    function activate(idx){
+      btns.forEach(function(x){ x.classList.remove('cur'); });
+      panels.forEach(function(p){ p.classList.remove('cur'); });
+      if(btns[idx]) btns[idx].classList.add('cur');
+      if(panels[idx]) panels[idx].classList.add('cur');
+    }
     btns.forEach(function(b, i){
-      b.addEventListener('click', function(){
-        btns.forEach(function(x){ x.classList.remove('cur'); });
-        panels.forEach(function(p){ p.classList.remove('cur'); });
-        b.classList.add('cur');
-        if(panels[i]) panels[i].classList.add('cur');
-      });
+      b.addEventListener('mouseenter', function(){ activate(i); });
+      b.addEventListener('click', function(){ activate(i); });
     });
   }
   bindTabs('bq2-prodtabs');

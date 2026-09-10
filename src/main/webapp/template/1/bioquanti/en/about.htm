@@ -3,27 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{ms:global.name/}-${field.title}</title>
-<meta name="keywords" content="${field.keyword}">
-<meta name="description" content="${field.descrip}">
-<link rel="alternate" hreflang="zh-CN" href="{ms:global.host/}cn/index.html">
-<link rel="alternate" hreflang="en" href="{ms:global.host/}en/index.html">
-<link rel="alternate" hreflang="x-default" href="{ms:global.host/}cn/index.html">
+<title>{ms:global.name/}-About Us</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
 <link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
 </head>
 <body>
 <#include "/en/header.htm"/>
 
-<div class="bq-pagebanner" style="background-image:url('<#if field.categoryImg?? && field.categoryImg?has_content && field.categoryImg != '[]'>{@ms:file field.categoryImg/}<#else>/{ms:global.style/}en/images/bg-1.jpg</#if>')">
-    <h1>${field.typetitle}</h1>
-    <p>ABOUT US</p>
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; About Us</div>
 </div>
 
-<div class="bq-container bq-detail">
-    <h1 class="title">${field.title}</h1>
-    <div class="content">${field.content}</div>
+<!-- Top building banner -->
+<div class="bq2-abbanner" style="background-image:url('/{ms:global.style/}en/images/newui/about-building.jpg')"></div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- Left anchor nav -->
+    <aside class="bq2-side">
+        <p class="bq2-side-title">About Us</p>
+        <ul class="bq2-qnav" id="bq2-anav">
+            {ms:arclist typeid='3707212335907000006' size=10 orderby='sort' order='asc'}
+            <li><a href="#bq2-sec-${field.index}">${field.title}</a></li>
+            {/ms:arclist}
+        </ul>
+    </aside>
+
+    <!-- Right: sections (one article = one section) -->
+    <div class="bq2-main">
+        {ms:arclist typeid='3707212335907000006' size=10 orderby='sort' order='asc'}
+        <div class="bq2-qsec" id="bq2-sec-${field.index}">
+            <#if field.litpic?? && field.litpic?has_content>
+            <img class="pic" src="{@ms:file field.litpic/}" alt="${field.title}">
+            </#if>
+            <h3>${field.title}</h3>
+            <div class="rich">${field.content}</div>
+        </div>
+        {/ms:arclist}
+    </div>
 </div>
 
 <#include "/en/footer.htm"/>
+<script>
+(function(){
+  var nav = document.getElementById('bq2-anav');
+  if(!nav) return;
+  var links = nav.querySelectorAll('a');
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      links.forEach(function(x){ x.classList.remove('cur'); });
+      a.classList.add('cur');
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -245,7 +245,8 @@
 			<if test="contentSource != null and contentSource != ''"> and content_source=#{contentSource}</if>
 			<if test="contentDatetime != null"> and content_datetime=#{contentDatetime} </if>
 			<if test="contentSort != null"> and content_sort=#{contentSort} </if>
-			<if test="contentTags != null and contentTags != ''">and content_tags=#{contentTags}</if>
+			<!-- 语言标签过滤：content_tags 逗号分隔，如 zh,en -->
+			<if test="contentTags != null and contentTags != ''"> and FIND_IN_SET(#{contentTags},ct.content_tags)&gt;0</if>
 			<if test="contentImg != null and contentImg != ''"> and content_img=#{contentImg}</if>
 			<if test="contentDescription != null and contentDescription != ''"> and content_description=#{contentDescription}</if>
 			<if test="contentKeyword != null and contentKeyword != ''"> and content_keyword=#{contentKeyword}</if>
@@ -293,6 +294,8 @@
 					FIND_IN_SET(#{item},ct.content_type)=0
 				</foreach>
 			</if>
+			<!-- 语言标签过滤：content_tags 逗号分隔，如 zh,en -->
+			<if test="contentTags != null and contentTags != ''"> and FIND_IN_SET(#{contentTags},ct.content_tags)&gt;0</if>
 			<if test="contentDisplay != null and contentDisplay != ''"> and content_display=#{contentDisplay}</if>
 			<if test="contentAuthor != null and contentAuthor != ''"> and content_author=#{contentAuthor}</if>
 			<if test="contentSource != null and contentSource != ''"> and content_source=#{contentSource}</if>

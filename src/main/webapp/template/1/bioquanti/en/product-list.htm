@@ -60,20 +60,40 @@
     <!-- Product Rows -->
     <div class="bq2-main">
         <div class="bq2-prodrows">
-            {ms:arclist ispaging=true size=20}
+            {ms:arclist ispaging=true size=20 tableName='mdiy_model_cpspecprod'}
             <div class="bq2-row">
                 <a class="bq2-row-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
                 <div class="bq2-row-info">
                     <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
-                    <p class="no">Code: ${field.shorttitle}</p>
+                    <#assign aid = field.link?string?keep_after_last('/')?replace('.html','')>
+                    <#assign codeNo = ((field.CATALOG_NO)!'')?string>
+                    <#if !codeNo?has_content><#assign codeNo = (field.shorttitle)!''></#if>
+                    <p class="no">Code: ${codeNo}</p>
+                    <p class="kv">Sensitivity: ${(field.SENSITIVITY)!''}</p>
+                    <p class="kv">Detection Range: ${(field.DETECT_RANGE)!''}</p>
+                    <#assign intro = ((field.content)!'')?string?replace('<[^>]+>','','r')?replace('&nbsp;',' ')?replace('\\s+',' ','r')?trim>
+                    <#if intro?length gt 60><#assign intro = intro[0..59] + '…'></#if>
+                    <#if intro?has_content><p class="ds">${intro}</p></#if>
                     <div class="bq2-row-acts">
-                        <a class="act-view" href="{ms:global.html/}${field.link}">View Details</a>
-                        <button type="button" class="act-copy" data-title="${field.title}" data-code="${field.shorttitle}">Copy Product Info</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/${aid}.pdf" data-name="${field.shorttitle!''}-Manual.pdf"><img src="/{ms:global.style/}en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">¥ 980</p>
-                    <a class="view" href="{ms:global.html/}${field.link}">View Details</a>
+                    <#-- Spec/price dropdown: data from SPEC_PRICE (JSON array), option text = spec + price, first item default -->
+                    <#assign spRaw = ((field.SPEC_PRICE)!'')?string?trim>
+                    <#assign specs = []>
+                    <#if spRaw?has_content && spRaw?starts_with('[')>
+                    <#assign specs = spRaw?eval>
+                    </#if>
+                    <#if specs?size gt 0>
+                    <select class="bq-specsel">
+                        <#list specs as sp>
+                        <option value="${sp_index}">${((sp.spec)!'')?string}${((sp.price)!'')?string?has_content?then(' | ' + ((sp.price)!'')?string, '')}</option>
+                        </#list>
+                    </select>
+                    <#else>
+                    <p class="price">Inquiry</p>
+                    </#if>
                 </div>
             </div>
             {/ms:arclist}
@@ -134,23 +154,17 @@
       if(p) p.classList.add('open');
     }
   }
-  document.querySelectorAll('.act-copy').forEach(function(btn){
+  // Manual download: fetch HEAD check, download if exists else alert
+  document.querySelectorAll('.act-manual').forEach(function(btn){
     btn.addEventListener('click', function(){
-      var text = (btn.getAttribute('data-title') || '') + ' Code:' + (btn.getAttribute('data-code') || '');
-      function done(){
-        btn.classList.add('ok');
-        var old = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function(){ btn.textContent = old; btn.classList.remove('ok'); }, 1200);
-      }
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(done).catch(function(){});
-      }else{
-        var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try{ document.execCommand('copy'); done(); }catch(e){}
-        document.body.removeChild(ta);
-      }
+      var url = btn.getAttribute('data-url');
+      var name = btn.getAttribute('data-name') || 'Manual.pdf';
+      function ok(){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+      if (window.fetch) {
+        fetch(url, {method:'HEAD'}).then(function(r){
+          if (r.ok) { ok(); } else { alert('Manual is being prepared and not available yet. Please contact us if needed.'); }
+        }).catch(function(){ alert('Manual is being prepared and not available yet. Please contact us if needed.'); });
+      } else { ok(); }
     });
   });
 })();

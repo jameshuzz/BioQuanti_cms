@@ -187,7 +187,7 @@
 <script>
     var contentList = Vue.defineComponent({
         template: '#content-main',
-        props:["categoryId","leaf"],
+        props:["categoryId","leaf","lang"],
         provide() {
             return {
                 searchParent: this //筛选使用
@@ -448,10 +448,12 @@
                 sessionStorage.setItem(that.historyKey,JSON.stringify({form: form, page: page}));
                 //筛选栏目类型，1=列表
                 that.form.categoryType = '1';
-                ms.http.post(ms.manager + "/cms/content/list.do", form.sqlWhere ? Object.assign({}, {
+                //语言Tab过滤：zh/en 注入 contentTags（后端 FIND_IN_SET 匹配逗号分隔标签），all 不过滤
+                var langParams = this.lang && this.lang != 'all' ? {contentTags: this.lang} : {};
+                ms.http.post(ms.manager + "/cms/content/list.do", form.sqlWhere ? Object.assign({}, langParams, {
                     categoryType: '1',
                     sqlWhere: form.sqlWhere
-                }, page) : Object.assign({}, form, page)).then(function (res) {
+                }, page) : Object.assign({}, form, langParams, page)).then(function (res) {
                     if (that.loadState) {
                         that.loading = false;
                     } else {

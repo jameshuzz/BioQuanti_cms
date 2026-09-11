@@ -33,67 +33,8 @@
             <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=114.40%2C30.47%2C114.52%2C30.54&amp;layer=mapnik&amp;marker=30.5063%2C114.4603" loading="lazy" title="BioQuanti Map"></iframe>
         </div>
     </div>
-
-    <!-- Message form -->
-    <form class="bq2-cform" id="bq-contact-form">
-        <div class="grid4">
-            <input type="text" name="company" maxlength="150" placeholder="Company">
-            <input type="text" name="name" required maxlength="100" placeholder="Your Name">
-            <input type="text" name="phone" id="bq-phone" maxlength="50" placeholder="Phone">
-            <input type="email" name="email" maxlength="150" placeholder="Email">
-        </div>
-        <textarea name="content" required rows="8" placeholder="Please leave your message here"></textarea>
-        <div class="sub"><button type="submit">Submit</button></div>
-        <div class="bq2-cform-msg" id="bq-cform-msg"></div>
-    </form>
 </div>
 
 <#include "/en/footer.htm"/>
-
-<script>
-(function(){
-  var form = document.getElementById('bq-contact-form');
-  if(!form) return;
-  var msg = document.getElementById('bq-cform-msg');
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    msg.className = 'bq2-cform-msg';
-    msg.innerHTML = '';
-    var data = {
-      company: form.querySelector('[name=company]').value.trim(),
-      name: form.querySelector('[name=name]').value.trim(),
-      phone: form.querySelector('[name=phone]').value.trim(),
-      email: form.querySelector('[name=email]').value.trim(),
-      content: form.querySelector('[name=content]').value.trim()
-    };
-    if(!data.phone && !data.email){
-      msg.className = 'bq2-cform-msg err';
-      msg.innerHTML = 'Please provide at least one contact method (phone or Email)';
-      return;
-    }
-    $.ajax({
-      url: '{ms:global.contextpath/}/cms/message/post.do',
-      type: 'POST',
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      dataType: 'json',
-      success: function(res){
-        if(res && res.result){
-          msg.className = 'bq2-cform-msg ok';
-          msg.innerHTML = '✓ Submitted successfully. We will contact you shortly!';
-          form.reset();
-        }else{
-          msg.className = 'bq2-cform-msg err';
-          msg.innerHTML = (res && res.msg) ? res.msg : 'Submission failed, please try again later';
-        }
-      },
-      error: function(){
-        msg.className = 'bq2-cform-msg err';
-        msg.innerHTML = 'Network error, please try again later';
-      }
-    });
-  });
-})();
-</script>
 </body>
 </html>

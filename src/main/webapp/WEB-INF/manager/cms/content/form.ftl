@@ -299,7 +299,7 @@
 <script>
     var contentForm = Vue.defineComponent({
         template: '#content-form',
-        props:["categoryId","categoryType","id"],
+        props:["categoryId","categoryType","id","defaultLang"],
         components:{
         },
         data: function () {
@@ -455,6 +455,21 @@
                 that.$refs.form[0].resetFields();
 
                 that.contentCategoryIdOptionsGet();
+            },
+            //表单内切换所属栏目：新增文章且语言标签为空时按栏目路径自动补（cn/→zh，en/→en），保证新增数据有语言归属
+            "form.categoryId":function(n,o) {
+                if (!this.id && n && (!this.form.contentTags || this.form.contentTags.length == 0)) {
+                    var cat = this.categoryIdOptions.filter(function (f) {
+                        return f['id'] == n;
+                    });
+                    if (cat.length > 0 && cat[0].categoryPath) {
+                        if (cat[0].categoryPath.indexOf('cn/') == 0) {
+                            this.form.contentTags = ['zh'];
+                        } else if (cat[0].categoryPath.indexOf('en/') == 0) {
+                            this.form.contentTags = ['en'];
+                        }
+                    }
+                }
             },
 
         },
@@ -881,6 +896,11 @@
                 var that = this;
                 this.form.id = this.id;
                 this.editorHidden = true;
+
+                //新增文章默认打上语言标签（与左侧语言Tab联动；all 不自动打）
+                if (!this.id && this.defaultLang && this.defaultLang != 'all') {
+                    this.form.contentTags = [this.defaultLang];
+                }
 
                 //在指定栏目下新增或编辑文章时
                 if (this.categoryId) {

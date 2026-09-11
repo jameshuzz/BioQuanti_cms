@@ -51,6 +51,9 @@
                                     <div class="ms-form-tip">
                                         不能将父级别栏目移动到自身子级栏目
                                     </div>
+                                    <div class="ms-form-tip" v-if="langTip" style="color:#E6A23C;">
+                                        {{langTip}}
+                                    </div>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -451,6 +454,8 @@
                     "value": "3",
                     "label": "链接"
                 }],
+                //语言归属提示（根据所选父栏目路径前缀判断）
+                langTip: '',
                 templateOptions: [],
                 mdiyModelListOptions: [],
                 mdiyCategoryModelListOptions: [],
@@ -540,6 +545,8 @@
                         }
                     }
                 });
+                //更新语言归属提示
+                this.updateLangTip();
             },
             'form.categoryTitle': function (n) {
                 var regu = "[[!@'\"#$%^&*()_+-/~?！@#￥%…&*（）——+—？》《：“‘’]";
@@ -569,6 +576,42 @@
                     return false;
                 }
             },
+            //语言归属提示：新增栏目由父栏目路径决定（cn/→中文站，en/→英文站）
+            updateLangTip: function () {
+                var that = this;
+                var tip = '';
+                if (this.form.id) {
+                    //编辑：显示当前栏目自身归属
+                    var self = this.categoryList.filter(function (f) { return f['id'] == that.form.id; });
+                    if (self.length > 0 && self[0].categoryPath) {
+                        var p = self[0].categoryPath;
+                        if (p.indexOf('cn/') == 0) {
+                            tip = '当前栏目属于中文站（' + p + '）';
+                        } else if (p.indexOf('en/') == 0) {
+                            tip = '当前栏目属于英文站（' + p + '）';
+                        } else {
+                            tip = '当前栏目路径无 cn/en 前缀，不会出现在语言标签页';
+                        }
+                    }
+                } else if (this.form.categoryId) {
+                    //新增子栏目：归属跟随父栏目
+                    var parent = this.categoryList.filter(function (f) { return f['id'] == that.form.categoryId; });
+                    if (parent.length > 0 && parent[0].categoryPath) {
+                        var pp = parent[0].categoryPath;
+                        if (pp.indexOf('cn/') == 0) {
+                            tip = '新建栏目将归属中文站（路径 cn/…）';
+                        } else if (pp.indexOf('en/') == 0) {
+                            tip = '新建栏目将归属英文站（路径 en/…）';
+                        } else {
+                            tip = '父栏目路径无 cn/en 前缀，新建栏目不会出现在语言标签页';
+                        }
+                    }
+                } else {
+                    //新增顶级栏目：路径 = 生成路径，需以 cn/ 或 en/ 开头
+                    tip = '顶级栏目：路径由"生成路径"决定，建议建在对应语言的栏目下';
+                }
+                this.langTip = tip;
+            },
             getTree: function () {
                 var that = this;
                 ms.http.get(ms.manager + "/cms/category/list.do").then(function (res) {
@@ -578,6 +621,8 @@
 						// 在顶级栏目下增加栏目集数据合，让子栏目能够成为顶级栏目
                         that.treeList[0].children = ms.util.treeData(res.data.rows, 'id', 'categoryId', 'children');
                         that.treeKey = new Date().getTime();
+                        //栏目数据加载完后重新计算语言归属提示
+                        that.updateLangTip();
                     }
                 });
             },

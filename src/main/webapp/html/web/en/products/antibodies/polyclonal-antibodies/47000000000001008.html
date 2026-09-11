@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti-Human ADAM15 ELISA Pair Set</title>
+<meta name="keywords" content="BQAP-0008,Human ADAM15 ELISA Pair Set,Human">
+<meta name="description" content="Human ADAM15 ELISA Pair Set">
+<link rel="stylesheet" href="/template/1/bioquanti/en/css/app.css">
+</head>
+<body>
+<!-- ===== NEW UI 2026-09 EN Header (index=top search layout / inner=search bar under nav, page sets <#assign bq_head_variant='index'>) ===== -->
+<header class="bq2-head">
+    <div class="bq2-topline">
+        <div class="bq2-container bq2-topflex">
+            <a class="bq2-logo" href="/html/web/en/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            <div class="bq2-topright">
+                <div class="bq2-lang"><a href="/html/web/cn/index.html">中文</a></div>
+            </div>
+        </div>
+    </div>
+    <nav class="bq2-nav">
+        <div class="bq2-container">
+            <button type="button" class="bq2-nav-toggle" id="bq-nav-toggle" aria-label="Menu">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <ul id="bq-nav-menu">
+                <li ><a href="/html/web/en/index.html">Home</a></li>
+                <li >
+                    <a href="/html/web/en/products/kits/index.html" class="bq2-drop-toggle">Products <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/en/products/kits/index.html">Kits</a>
+                        <a href="/html/web/en/products/proteins/index.html">Proteins</a>
+                        <a href="/html/web/en/products/antibodies/index.html">Antibodies</a>
+                        <a href="/html/web/en/products/others/index.html">Others</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/en/services/index.html" class="bq2-drop-toggle">Services <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/en/services/lab-testing/index.html">Lab Testing</a>
+                        <a href="/html/web/en/services/tech-support/index.html">Technical Support</a>
+                        <a href="/html/web/en/services/tech-docs/index.html">Documentation</a>
+                        <a href="/html/web/en/services/faq/index.html">FAQ</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/en/promotion/index.html" class="bq2-drop-toggle">Promotions <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/en/promotion/monthly/index.html">Monthly Promotions</a>
+                        <a href="/html/web/en/promotion/trial/index.html">Free Samples</a>
+                        <a href="/html/web/en/promotion/benefits/index.html">Special Offers</a>
+                        <a href="/html/web/en/promotion/hot/index.html">Hot Products</a>
+                    </div>
+                </li>
+                <li ><a href="/html/web/en/quality/index.html">Quality</a></li>
+                <li ><a href="/html/web/en/about/index.html">About Us</a></li>
+                <li ><a href="/html/web/en/contact/index.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="bq2-searchbar">
+        <div class="bq2-container">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+                <div class="bq2-selwrap">
+                    <select name="categoryIds" id="bq-species-select">
+                        <option value="">All Products</option>
+                        <option value="3707212335907000102">Kits</option>
+                        <option value="3707212335907000103">Proteins</option>
+                        <option value="3707212335907000104">Antibodies</option>
+                        <option value="3707212335907000105">Others</option>
+                    </select>
+                </div>
+                <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="">
+                <input type="hidden" name="style" value="bioquanti">
+                <input type="hidden" name="tmpl" value="en/search.htm">
+                <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search</button>
+            </form>
+        </div>
+    </div>
+</header>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq2-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = 'Enter keywords';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = 'Search in "' + spText + '" (e.g. HSP70)';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="/html/web/en/index.html">Home</a> &gt; <a href="/html/web/en/products/kits/index.html">Products</a> &gt; <a href="/html/web/en/products/antibodies/polyclonal-antibodies/index.html">Polyclonal Antibodies</a> &gt; Human ADAM15 ELISA Pair Set</div>
+</div>
+
+<div class="bq2-container bq2-detailwrap">
+    <!-- Title -->
+    <h1 class="bq2-dtitle">Human ADAM15 ELISA Pair Set</h1>
+
+    <!-- Doc buttons: Manual (always shown, alerts when file missing) + MSDS -->
+    <div class="bq2-docbtns">
+        <button type="button" class="bq2-docbtn" data-url="/upload/1/manual/47000000000001008.pdf" data-name="-Manual.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Manual</span>
+        </button>
+        <a class="bq2-docbtn msds" href="/template/1/bioquanti/files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>MSDS</span>
+        </a>
+    </div>
+    <script>
+    (function(){
+        document.querySelectorAll('.bq2-docbtn[data-url]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                var url = btn.getAttribute('data-url');
+                var name = btn.getAttribute('data-name') || 'Manual.pdf';
+                function ok(){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+                if (window.fetch) {
+                    fetch(url, {method:'HEAD'}).then(function(r){
+                        if (r.ok) { ok(); } else { alert('Manual is being prepared and not available yet. Please contact us if needed.'); }
+                    }).catch(function(){ alert('Manual is being prepared and not available yet. Please contact us if needed.'); });
+                } else { ok(); }
+            });
+        });
+    })();
+    </script>
+
+    <!-- Gallery + Spec Panel -->
+    <div class="bq2-topgrid">
+        <div class="bq2-gallery">
+            <div class="bq2-slider"><img class="bq2-slider-img" src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human ADAM15 ELISA Pair Set"></div>
+        </div>
+
+    </div>
+
+    <div class="bq2-modnav" id="bqModNav">
+        <a href="#bq-mod-intro" class="on">Product Introduction</a>
+        <a href="#bq-mod-protocol">Protocol</a>
+        <a href="#bq-mod-lit">References</a>
+        <a href="#bq-mod-related">Related Products</a>
+    </div>
+
+    <div class="bq2-mods">
+        <div class="bq-mod-sec" id="bq-mod-intro">
+            <div class="content bq-mod-body" id="bqIntro"><div class="bq-spec"><h3>Product Specifications</h3><table class="table table-bordered" style="width:100%;border-collapse:collapse;"><tbody><tr><th style="width:160px;background:#f4f8fc;">Catalog No.</th><td>BQAP-0008</td></tr><tr><th style="width:160px;background:#f4f8fc;">Description</th><td>Human ADAM15 ELISA Pair Set</td></tr><tr><th style="width:160px;background:#f4f8fc;">Species</th><td>BQAP-0008,Human ADAM15 ELISA Pair Set</td></tr><tr><th style="width:160px;background:#f4f8fc;">Type</th><td>Antibody</td></tr></tbody></table></div></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-protocol">
+            <div class="bq-mod-body" id="bqProtocolBody"></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-lit">
+            <div class="bq-mod-body" id="bqLitBody"></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-related">
+            <h2 class="bq-mod-h">Related Products</h2>
+            <div class="bq-mod-body">
+                <div class="bq-related-grid">
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001001.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Canine KIM-1 / TIM1 / HAVCR1 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0001</div>
+                        <div class="tt">Canine KIM-1 / TIM1 / HAVCR1 ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001002.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Cynomolgus CD200R ELISA Pair Set"></div>
+                        <div class="no">BQAP-0002</div>
+                        <div class="tt">Cynomolgus CD200R ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001003.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Cynomolgus p53 / TP53 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0003</div>
+                        <div class="tt">Cynomolgus p53 / TP53 ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001004.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Escherichia coli acnB ELISA Pair Set"></div>
+                        <div class="no">BQAP-0004</div>
+                        <div class="tt">Escherichia coli acnB ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001005.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human 2B4 / CD244 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0005</div>
+                        <div class="tt">Human 2B4 / CD244 ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001006.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human ACBD6 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0006</div>
+                        <div class="tt">Human ACBD6 ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001007.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human ACRV1 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0007</div>
+                        <div class="tt">Human ACRV1 ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001009.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human AFP / alpha-fetoprotein ELISA Pair Set"></div>
+                        <div class="no">BQAP-0009</div>
+                        <div class="tt">Human AFP / alpha-fetoprotein ELISA Pair Set</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/en/products/antibodies/polyclonal-antibodies/47000000000001010.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="Human ALK-1 / ACVRL1 ELISA Pair Set"></div>
+                        <div class="no">BQAP-0010</div>
+                        <div class="tt">Human ALK-1 / ACVRL1 ELISA Pair Set</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NEW UI 2026-09 EN Footer ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
+                <h4>Products</h4>
+                <a href="/html/web/en/products/kits/index.html">Kits</a>
+                <a href="/html/web/en/products/proteins/index.html">Proteins</a>
+                <a href="/html/web/en/products/antibodies/index.html">Antibodies</a>
+                <a href="/html/web/en/products/others/index.html">Others</a>
+            </div>
+            <div class="bq2-ftcol">
+                <h4>About BIOQUANTI</h4>
+                <a href="/html/web/en/about/index.html">About Us</a>
+                <a href="/html/web/en/new-products/index.html">News</a>
+                <a href="/html/web/en/contact/index.html">Contact Us</a>
+            </div>
+            <div class="bq2-ftcol bq2-ftcontact">
+                <h4>Contact Us</h4>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">Room 17, Office Floor 8, Building 5, Block 4, Joy City Business Project, Jiufeng Sub-district, East Lake High-tech Development Zone, Wuhan, Hubei, China</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/template/1/bioquanti/en/images/newui/footer-qr.png" alt="BioQuanti QR code">
+            </div>
+        </div>
+    </div>
+    <div class="bq2-copyright">
+        <div class="bq2-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</footer>
+
+<script>
+(function(){
+    var slider = document.getElementById('bqSlider');
+    if (!slider) return;
+    var img = slider.querySelector('.bq2-slider-img');
+    var prev = slider.querySelector('.bq2-slider-arrow.prev');
+    var next = slider.querySelector('.bq2-slider-arrow.next');
+    if (!img) return;
+    var urls = [];
+    try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
+    if (urls.length === 0) { urls = [img.getAttribute('src')]; }
+    var cur = 0;
+    function show(i) {
+        cur = (i + urls.length) % urls.length;
+        img.src = urls[cur];
+    }
+    if (prev) prev.onclick = function(){ show(cur - 1); };
+    if (next) next.onclick = function(){ show(cur + 1); };
+})();
+</script>
+<script>
+(function(){
+    var intro = document.getElementById('bqIntro');
+    var protocolBody = document.getElementById('bqProtocolBody');
+    var litBody = document.getElementById('bqLitBody');
+    var hasProtocol = false, hasLit = false;
+    if (intro) {
+        var nodes = Array.prototype.slice.call(intro.children);
+        var bucket = intro;
+        nodes.forEach(function(n){
+            if (n.tagName === 'H3' || n.tagName === 'H2') {
+                var t = n.textContent.trim();
+                if ((t.indexOf('Protocol') > -1 || t.indexOf('实验方案') > -1) && protocolBody) {
+                    bucket = protocolBody;
+                    hasProtocol = true;
+                } else if ((t.indexOf('References') > -1 || t.indexOf('引用文献') > -1) && litBody) {
+                    bucket = litBody;
+                    hasLit = true;
+                }
+            }
+            if (bucket !== intro && n.parentNode === intro) {
+                bucket.appendChild(n);
+            }
+        });
+    }
+    var nav = document.getElementById('bqModNav');
+    if (nav) {
+        if (!hasProtocol) { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
+        if (!hasLit) { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
+    }
+    if (nav) {
+        var links = nav.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            (function(a){
+                function go(e){
+                    e.preventDefault();
+                    for (var j = 0; j < links.length; j++) links[j].className = '';
+                    a.className = 'on';
+                    var target = document.getElementById(a.getAttribute('href').slice(1));
+                    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+                }
+                a.addEventListener('mouseenter', go);
+                a.addEventListener('click', go);
+            })(links[i]);
+        }
+        var secs = [];
+        for (var m = 0; m < links.length; m++) {
+            var id = links[m].getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) secs.push({a: links[m], el: el});
+        }
+        function spy() {
+            var top = window.scrollY + 120;
+            var hit = secs[0];
+            for (var s = 0; s < secs.length; s++) {
+                if (secs[s].el.getBoundingClientRect().top + window.scrollY <= top) hit = secs[s];
+            }
+            if (hit) {
+                for (var j = 0; j < links.length; j++) links[j].className = '';
+                hit.a.className = 'on';
+            }
+        }
+        window.addEventListener('scroll', spy);
+        spy();
+    }
+})();
+</script>
+<script>
+(function(){
+    var rows = document.querySelectorAll('#bqSpecRows .bq2-spec-row');
+    rows.forEach(function(r){
+        r.addEventListener('click', function(){
+            rows.forEach(function(x){ x.classList.remove('cur'); });
+            r.classList.add('cur');
+        });
+    });
+})();
+</script>
+</body>
+</html>

@@ -91,14 +91,14 @@
     <div class="bq2-container bq2-wide">
         <h3 class="bq2-sec-title">Hot News</h3>
         <div class="bq2-newsbox">
-            <div class="bq2-newsleft">
-                <img src="/{ms:global.style/}en/images/newui/news-left.png" alt="News">
+            <div class="bq2-tabs bq2-newstabs" id="bq2-newstabs">
+                <button type="button" class="cur">New Products</button>
+                <button type="button">Promotions</button>
+                <button type="button">Company News</button>
             </div>
-            <div class="bq2-newsright">
-                <div class="bq2-tabs bq2-newstabs" id="bq2-newstabs">
-                    <button type="button" class="cur">New Products</button>
-                    <button type="button">Promotions</button>
-                    <button type="button">Company News</button>
+            <div class="bq2-newsbody">
+                <div class="bq2-newsleft">
+                    <img src="/{ms:global.style/}en/images/newui/news-left.png" alt="News">
                 </div>
                 <div class="bq2-panels bq2-newspanels">
                     <div class="bq2-panel cur">
@@ -160,7 +160,7 @@
     var btns = root.querySelectorAll('button');
     var panelsBox = root.nextElementSibling;
     if(!panelsBox) return;
-    var panels = panelsBox.querySelectorAll(':scope > .bq2-panel');
+    var panels = panelsBox.querySelectorAll('.bq2-panel');
     function activate(idx){
       btns.forEach(function(x){ x.classList.remove('cur'); });
       panels.forEach(function(p){ p.classList.remove('cur'); });

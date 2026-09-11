@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti-牛热休克蛋白70 (HSP70) ELISA试剂盒</title>
+<meta name="keywords" content="BQE-B0001,Bovine HSP70 (Heat shock protein 70) ELISA Kit,Bovine">
+<meta name="description" content="Bovine HSP70 (Heat shock protein 70) ELISA Kit">
+<link rel="stylesheet" href="/template/1/bioquanti/cn/css/app.css">
+</head>
+<body>
+<!-- ===== NEW UI 2026-09 头部（index=顶部搜索布局 / inner=导航下搜索条布局，页面里 <#assign bq_head_variant='index'> 控制） ===== -->
+<header class="bq2-head">
+    <div class="bq2-topline">
+        <div class="bq2-container bq2-topflex">
+            <a class="bq2-logo" href="/html/web/cn/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            <div class="bq2-topright">
+                <div class="bq2-lang"><a href="/html/web/en/index.html">English</a></div>
+            </div>
+        </div>
+    </div>
+    <nav class="bq2-nav">
+        <div class="bq2-container">
+            <button type="button" class="bq2-nav-toggle" id="bq-nav-toggle" aria-label="菜单">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <ul id="bq-nav-menu">
+                <li ><a href="/html/web/cn/index.html">首页</a></li>
+                <li >
+                    <a href="/html/web/cn/products/kits/index.html" class="bq2-drop-toggle">产品中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                        <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                        <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                        <a href="/html/web/cn/products/others/index.html">其他</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/services/index.html" class="bq2-drop-toggle">技术服务 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/services/lab-testing/index.html">实验代测</a>
+                        <a href="/html/web/cn/services/tech-support/index.html">技术支持</a>
+                        <a href="/html/web/cn/services/tech-docs/index.html">技术文档</a>
+                        <a href="/html/web/cn/services/faq/index.html">常见问题</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/promotion/index.html" class="bq2-drop-toggle">促销中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/promotion/monthly/index.html">当月促销</a>
+                        <a href="/html/web/cn/promotion/trial/index.html">免费试用</a>
+                        <a href="/html/web/cn/promotion/benefits/index.html">福利活动</a>
+                        <a href="/html/web/cn/promotion/hot/index.html">爆款单品</a>
+                    </div>
+                </li>
+                <li ><a href="/html/web/cn/quality/index.html">质量保障</a></li>
+                <li ><a href="/html/web/cn/about/index.html">关于我们</a></li>
+                <li ><a href="/html/web/cn/contact/index.html">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="bq2-searchbar">
+        <div class="bq2-container">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+                <div class="bq2-selwrap">
+                    <select name="categoryIds" id="bq-species-select">
+                        <option value="">全部产品</option>
+                        <option value="2787212335907000102">试剂盒</option>
+                        <option value="2787212335907000103">蛋白</option>
+                        <option value="2787212335907000104">抗体</option>
+                        <option value="2787212335907000105">其他</option>
+                    </select>
+                </div>
+                <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="">
+                <input type="hidden" name="style" value="bioquanti">
+                <input type="hidden" name="tmpl" value="cn/search.htm">
+                <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
+            </form>
+        </div>
+    </div>
+</header>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq2-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  // 搜索：关键词与产品分类独立；选择分类仅作为筛选条件
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = '请输入搜索内容';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在「' + spText + '」分类中搜索（例如：HSP70）';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">您当前位置 - <a href="/html/web/cn/index.html">首页</a> &gt; <a href="/html/web/cn/products/kits/index.html">产品列表</a> &gt; <a href="/html/web/cn/products/kits/elisa-kits/index.html">酶联免疫试剂盒</a> &gt; 牛热休克蛋白70 (HSP70) ELISA试剂盒</div>
+</div>
+
+<div class="bq2-container bq2-detailwrap">
+    <!-- 标题区 -->
+    <h1 class="bq2-dtitle">牛热休克蛋白70 (HSP70) ELISA试剂盒</h1>
+    <p class="bq2-dsub">Bovine HSP70 (Heat shock protein 70) ELISA Kit</p>
+
+    <!-- 资料按钮行：说明书（恒显示，无文件时点击提示）+ MSDS固定文件 -->
+    <div class="bq2-docbtns">
+        <button type="button" class="bq2-docbtn" data-url="/upload/1/manual/1787212335907000007.pdf" data-name="BQE-B0001-说明书.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>说明书</span>
+        </button>
+        <a class="bq2-docbtn msds" href="/template/1/bioquanti/files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>MSDS</span>
+        </a>
+    </div>
+    <script>
+    (function(){
+        document.querySelectorAll('.bq2-docbtn[data-url]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                var url = btn.getAttribute('data-url');
+                var name = btn.getAttribute('data-name') || '说明书.pdf';
+                function ok(){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+                if (window.fetch) {
+                    fetch(url, {method:'HEAD'}).then(function(r){
+                        if (r.ok) { ok(); } else { alert('说明书整理中，暂未提供下载，如需请联系客服'); }
+                    }).catch(function(){ alert('说明书整理中，暂未提供下载，如需请联系客服'); });
+                } else { ok(); }
+            });
+        });
+    })();
+    </script>
+
+    <!-- 图片 + 规格面板 -->
+    <div class="bq2-topgrid">
+        <div class="bq2-gallery">
+            <div class="bq2-slider" id="bqSlider" data-pics='[{\"url\":\"/upload/1/bioquanti/product/prod-1.jpg\",\"name\":\"prod-1\",\"uid\":1788337606736,\"status\":\"success\"},{\"url\":\"/upload/1/bioquanti/product/prod-2.jpg\",\"name\":\"prod-2\",\"uid\":1788337606737,\"status\":\"success\"},{\"url\":\"/upload/1/bioquanti/product/prod-3.jpg\",\"name\":\"prod-3\",\"uid\":1788337606738,\"status\":\"success\"}]'>
+                <button type="button" class="bq2-slider-arrow prev" aria-label="上一张">&#10094;</button>
+                <img class="bq2-slider-img" src="/upload/1/bioquanti/product/prod-1.jpg" alt="牛热休克蛋白70 (HSP70) ELISA试剂盒">
+                <button type="button" class="bq2-slider-arrow next" aria-label="下一张">&#10095;</button>
+            </div>
+        </div>
+
+        <div class="bq2-specpanel">
+            <div class="bq2-spec-head">BQE-B0001</div>
+            <div class="bq2-spec-rows" id="bqSpecRows">
+                <div class="bq2-spec-row cur"><span class="k">规格</span><span class="v">96T</span><span class="p">询价</span></div>
+            </div>
+            <div class="bq2-spec-meta">
+                <p><span>供货期：</span>现货</p>
+                <p><span>检测范围：</span>1.56-100ng/ml</p>
+                <p><span>灵敏度：</span>0.94ng/ml</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bq2-modnav" id="bqModNav">
+        <a href="#bq-mod-intro" class="on">产品简介</a>
+        <a href="#bq-mod-protocol">实验方案</a>
+        <a href="#bq-mod-lit">引用文献</a>
+        <a href="#bq-mod-related">相关产品</a>
+    </div>
+
+    <div class="bq2-mods">
+        <div class="bq-mod-sec" id="bq-mod-intro">
+            <div class="content bq-mod-body" id="bqIntro"><h3>产品介绍</h3><p>Anti-14-3-3 GAMMA/YWHAG-Specific Antibody（兔多克隆抗体），可应用于 WB、IHC、FCM、ELISA，检验物种为人、小鼠、大鼠。</p><table style="width:100%;border-collapse:collapse;"><tbody><tr class="firstRow"><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;width:140px;">产品名称</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">Anti-14-3-3 GAMMA/YWHAG-Specific Antibody</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">指标别称</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">14 3 3 protein gamma; 14 3 3GAMMA; 14-3-3; 14-3-3 GAMMA; KCIP 1; YWHAG</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">产品类型</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">Polyclonal</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">检验物种</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">human, mouse, rat</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">应用范围</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">WB, IHC, FCM, ELISA</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">基因名称</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">YWHAG（tyrosine 3-monooxygenase/tryptophan 5-monooxygenase activation protein gamma）</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">宿主 / 亚型</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">Rabbit / IgG</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">免疫原</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">E.coli-derived human 14-3-3 gamma/YWHAG recombinant protein (Position: D21-K162)</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">计算/实际分子量</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">28 kDa / 28 kDa</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">成分</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">500 ug/ml antibody with PBS, 0.02% NaN3, 1 mg/ml BSA and 50% glycerol</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">纯化方式 / 浓度 / 形态</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">Immunogen affinity purified / 500 ug/ml / Liquid</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">保存条件</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">12 months from date of receipt, -20℃ as supplied</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">Uniprot ID / Gene ID</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">P61981 / 7532</td></tr></tbody></table><h4>背景资料</h4><p>This gene product belongs to the 14-3-3 family of proteins which mediate signal transduction by binding to phosphoserine-containing proteins. This highly conserved protein family is found in both plants and mammals, and this protein is 100% identical to the rat ortholog. It is induced by growth factors in human vascular smooth muscle cells, and is also highly expressed in skeletal and heart muscles, suggesting an important role for this protein in muscle tissue. It has been shown to interact with RAF1 and protein kinase C, proteins involved in various signal transduction pathways.</p><h4>推荐稀释比</h4><table style="width:100%;border-collapse:collapse;"><tbody><tr class="firstRow"><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">Western blot (WB)</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">1:500-2000</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">Immunohistochemistry (IHC)</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">1:50-400</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">Flow Cytometry (Fixed)</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">1:50-200</td></tr><tr><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">ELISA</th><td style="border:1px solid #e0e6ef;padding:8px 12px;">1:100-1000</td></tr></tbody></table><p>（甲醛固定/石蜡切片需在 10mM 柠檬酸盐缓冲液 pH6.0 或 pH8.0 EDTA 修复液中煮沸 20 分钟。最佳工作稀释度须由最终用户确定。）</p><h4>推荐配套二抗和检测试剂</h4><p>Western blot 推荐使用 Enhanced Chemiluminescent Kit with anti-Rabbit IgG (EK1002)；IHC(P) 推荐使用 HRP Conjugated anti-Rabbit IgG Super Vision Assay Kit (SV0002-1)。</p><h4>验证数据</h4><p><strong>Western blot：</strong>使用 A04148-2 对 14-3-3 GAMMA/YWHAG-Specific 进行 Western blot 分析。每孔上样 30 ug 还原条件下的样品。Lane 1: Jurkat 全细胞裂解物；Lane 2: 人胎盘组织裂解物；Lane 3: 大鼠脑组织裂解物；Lane 4: 大鼠骨骼肌组织裂解物；Lane 5: 小鼠脑组织裂解物；Lane 6: 小鼠骨骼肌组织裂解物。一抗稀释度 1:1000，二抗为 goat anti-rabbit IgG-HRP (BA1054)，ECL Plus Western Blotting Substrate (AR1197) 显色。在约 28 kDa 处检测到特异条带，与预期分子量一致。</p><p><strong>IHC：</strong>使用 A04148-2 在人食管鳞状癌石蜡切片中检测到 14-3-3 GAMMA/YWHAG-Specific。一抗稀释度 1:200，生物素化 goat anti-rabbit IgG 为二抗，SABC (SA1022) + DAB (AR1027) 显色。</p><p><strong>Flow Cytometry：</strong>使用 A04148-2 对 U87 细胞进行流式分析。4% 多聚甲醛固定、破膜缓冲液透化、10% 正常山羊血清封闭后，一抗 1:100 稀释 20°C 孵育 30 min；Fluoro488 conjugated goat anti-rabbit IgG (BA1127) 1:100 稀释二抗 20°C 孵育 30 min。同型对照为 rabbit IgG（绿线），空白对照未标记样品（红线），抗体染色为蓝线。</p><h3>实验方案</h3><h4>一、Western blot（WB）</h4><p><strong>A. 溶液与试剂</strong></p><ol class=" list-paddingleft-2"><li><p>RIPA裂解液（货号 AR0105）</p></li><li><p>蛋白酶抑制剂（货号 AR1182）</p></li><li><p>磷酸酶抑制剂（货号 AR1183）</p></li><li><p>BCA蛋白定量试剂盒（货号 AR0146）</p></li><li><p>SDS-PAGE蛋白上样缓冲液(变性)(5X)（货号 AR1112）</p></li><li><p>SDS-PAGE凝胶制备试剂盒（货号 AR0138）</p></li><li><p>Tris-glycine-SDS电泳缓冲液(10×液体)（货号 AR1146-10）</p></li><li><p>彩色预染 Marker（货号 AR1113 / AR1116 / AR1210）</p></li><li><p>NC膜(0.22um/0.45um)（货号 AR0135-02 / AR0135-04）/ PVDF膜(0.22um/0.45um)（货号 AR0136-02 / AR0136-04）</p></li><li><p>转印滤纸（货号 AR0173）、Tris-glycine转膜缓冲液(10×液体)（货号 AR1151-10）</p></li><li><p>TBS-T漂洗缓冲液(10×)（货号 AR0195-10）</p></li><li><p>BSA TBS-T缓冲系统封闭液（货号 AR0189）</p></li><li><p>Western专用一抗二抗稀释液（货号 AR1017）</p></li><li><p>HRP Conjugated AffiniPure Goat Anti-mouse/rabbit IgG (H+L)（货号 BA1051 / BA1055）</p></li><li><p>超敏 ECL化学发光即用型底物（货号 AR1171）</p></li></ol><p><strong>B. 样本蛋白处理</strong></p><p>蛋白抽提（组织样本）：</p><ol class=" list-paddingleft-2"><li><p>取0.1-0.2g组织样本，切碎。</p></li><li><p>配制裂解液，按 RIPA裂解液 : 蛋白酶抑制剂 : 磷酸酶抑制剂 = 100:1:1 的比例配制。</p></li><li><p>每100mg样本加入1ml的RIPA裂解液。</p></li><li><p>用匀浆器充分研磨匀浆（在冰上进行）。</p></li><li><p>4℃裂解0.5-1h，用超声破碎仪破碎。</p></li><li><p>10000rpm离心10分钟，取上清。</p></li></ol><p>细胞样本：</p><ol class=" list-paddingleft-2"><li><p>6孔板每个孔加入200ul的预冷的无菌PBS（货号 PYG0021）。</p></li><li><p>用细胞刮轻刮6孔板，用移液枪将液体转至离心管中。</p></li><li><p>配制裂解液（比例同上），3000rpm离心3分钟，弃上清，加入沉淀体积5倍的裂解液，吹散沉淀。</p></li><li><p>4℃裂解0.5-1h，超声破碎以完成细胞裂解并剪切DNA（降低样品粘度）。</p></li><li><p>10000rpm离心10分钟，取上清，测量浓度（货号 AR0146）。</p></li><li><p>蛋白浓度统一定为3mg/ml，提取蛋白浓度小于3mg的直接加1/4体积的5X上样缓冲液，100℃煮沸5min使蛋白变性，冰上骤冷，即为实验所用蛋白样本。-20℃冷冻保存，至少可保存半年左右。</p></li></ol><p><strong>C. 电泳、转膜</strong></p><p>上样10µl到SDS-PAGE凝胶孔中，恒压电泳：浓缩胶 80V 约40分钟；分离胶 120V 约80分钟。电泳直至溴酚蓝染料前沿下至凝胶末端处停止。电泳结束后取出凝胶，在转膜缓冲液中浸泡3-5分钟，按&quot;三明治&quot;模型放置滤纸、NC膜和凝胶，转膜在低温环境中进行，选择恒流，每个转印槽建议电流为150mA。</p><p>注意：PVDF膜使用前要先用纯甲醇浸泡10秒活化，然后用纯水冲洗3次。建议将预染蛋白分子量标准品（5µl/泳道）上样，以验证转膜的效率。凝胶浓度及转膜条件参照下表：</p><table style="width:100%;border-collapse:collapse;"><tbody><tr class="firstRow"><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">蛋白分子量 (KD)</th><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">分离胶浓度 (%)</th><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">膜孔径</th><th style="border:1px solid #e0e6ef;padding:8px 12px;background:#f4f8fc;">转印时间（分钟）</th></tr><tr><td style="border:1px solid #e0e6ef;padding:8px 12px;">大于 300</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">6%</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">0.45</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">100-120</td></tr><tr><td style="border:1px solid #e0e6ef;padding:8px 12px;">100-300</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">8%</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">0.45</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">80-100</td></tr><tr><td style="border:1px solid #e0e6ef;padding:8px 12px;">30 ～ 100</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">10%</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">0.45</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">70</td></tr><tr><td style="border:1px solid #e0e6ef;padding:8px 12px;">10 ～ 30</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">12%</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">0.22</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">50</td></tr><tr><td style="border:1px solid #e0e6ef;padding:8px 12px;">&lt;10</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">15%</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">0.22</td><td style="border:1px solid #e0e6ef;padding:8px 12px;">40</td></tr></tbody></table><p><strong>D. 膜封闭和一抗孵育</strong>（溶液体积适用于 9cm x 6cm 的膜，以液体完全覆盖膜为标准）</p><ol class=" list-paddingleft-2"><li><p>膜封闭：膜转移之后，室温下用15ml TBS洗涤3次，每次5分钟；将膜置于15ml封闭缓冲液（货号 AR0189）中，室温孵育1-1.5小时。</p></li><li><p>一抗孵育：将膜和一抗（按照产品网页中建议的适当稀释度和稀释液）置于10ml一抗稀释缓冲液（货号 AR1017）中，4°C下孵育过夜并不时轻轻晃动；用15ml TBST洗涤3次，每次8分钟。</p></li></ol><p><strong>E. 二抗孵育和发光成像</strong></p><ol class=" list-paddingleft-2"><li><p>将膜与 Anti-rabbit/mouse IgG, HRP-Antibody（货号 BA1055 / BA1051）按1:5000的比例稀释（货号 AR1017）孵育，摇床上室温孵育2小时；用15ml TBST洗涤3次，每次8分钟。</p></li><li><p>化学发光成像：ECL化学发光试剂（货号 AR1171）A液和B液等体积混合配成工作液，加于洗好的印迹膜上10-30秒，吸干发光液，置印迹膜于化学发光成像分析仪自动成像。</p></li></ol><h4>二、免疫组化石蜡片（IHC-P）</h4><p><strong>A. 溶液与试剂</strong>：二甲苯、无水变性乙醇（100%和95%）、去离子水、PBS洗涤缓冲液、抗体稀释液、EDTA修复液10X、3%过氧化氢、封闭液（正常山羊血清或BSA）、检测系统（多聚体抗兔/鼠/山羊IgG-HRP，根据一抗来源选择）、DAB Kit、Mayer苏木素、中性树胶。</p><p><strong>B. 脱蜡/复水</strong>（制作过程中务必随时保持切片处于湿润状态）：</p><ol class=" list-paddingleft-2"><li><p>将切片放入二甲苯的洗液中孵育3次，每次10分钟。</p></li><li><p>将切片放入100%乙醇中孵育1次，每次10分钟。</p></li><li><p>将切片放入85%乙醇中孵育1次，每次10分钟。</p></li><li><p>将切片放入70%乙醇中孵育1次，每次10分钟。</p></li><li><p>用dH2O清洗切片两次，每次5分钟。</p></li></ol><p><strong>C. 抗原修复</strong>：将切片浸入1X EDTA修复液，放入微波炉中加热直至沸腾；继续保持亚沸腾温度10分钟（95°-98°C）后，拿出并在室温冷却切片30分钟。</p><p><strong>D. 染色</strong>：</p><ol class=" list-paddingleft-2"><li><p>用PBS清洗切片三次，每次5分钟。</p></li><li><p>切片放入3%过氧化氢水溶液中，孵育10分钟。</p></li><li><p>用PBS清洗切片两次，每次10分钟。</p></li><li><p>封闭：滴加5％BSA，37℃孵育30min；甩掉封闭液，勿洗。</p></li><li><p>一抗：滴加相应稀释过的抗体工作液，4℃孵育过夜。</p></li><li><p>PBS洗5min×3次。</p></li><li><p>二抗：滴加一抗同源的二抗（聚合HRP标记抗兔/小鼠IgG），37℃孵育30min。</p></li><li><p>PBS洗5min×4次。</p></li><li><p>显色：DAB显色（B液一滴加入1ml A液中，使用前充分混合，现配现用），镜下观察显色1~10min，即可得到合适的染色强度。</p></li><li><p>将切片浸入dH2O中，终止显色。</p></li><li><p>复染：苏木素复染40s，水冲洗，酸性乙醇分化液浸泡1s后迅速水冲洗，Na2HPO4返蓝40s，水冲洗，蒸馏水冲洗，烘干。</p></li><li><p>封片：中性树胶封片。</p></li></ol><h4>三、免疫组化冰冻片（IHC-F）</h4><p><strong>A. 溶液与试剂</strong>：4%多聚甲醛、去离子水、PBS洗涤缓冲液、抗体稀释液、EDTA修复液10X、3%过氧化氢、封闭液（正常山羊血清或BSA）、检测系统（多聚体抗兔/鼠/山羊IgG-HRP）、DAB Kit、苏木精、中性树胶。</p><p><strong>B. 组织处理</strong>：冰冻固定组织进行免疫染色，直接进行染色操作。对新鲜未固定的冰冻组织：</p><ol class=" list-paddingleft-2"><li><p>切片用4%多聚甲醛室温下固定。</p></li><li><p>室温下固定切片15分钟。</p></li><li><p>吸干液体后用1X PBS冲洗三次，每次5分钟。</p></li></ol><h4>四、流式细胞术（FCM）</h4><p><strong>A. 实验试剂</strong>：DPBS(不含钙镁)（PYG0123）、双蒸水、4%多聚甲醛固定液（AR1069）、破膜剂、破核膜剂、洗液、浓缩正常山羊血清封闭液（AR1009）、偶联荧光素的二抗（Fluoro 488/594/550、FITC-羊/驴抗兔/小鼠IgG系列）、流式细胞仪清洗液。</p><p><strong>B. 实验操作流程</strong>：</p><ol class=" list-paddingleft-2"><li><p><strong>细胞样本处理</strong>：将准备好的单细胞悬液3000rpm离心1分钟收集细胞；小心吸出培养基，加入1mL（细胞沉淀体积20倍以上）的4%多聚甲醛固定液（AR1069），充分吹散重悬，4°C固定20分钟（部分指标检测时细胞不能固定）；固定后的细胞3000rpm离心1分钟，弃上清，用1ml DPBS（PYG0123）重悬清洗细胞3次。</p></li><li><p><strong>抗原抗体反应</strong>：备好样本管（标明样本名、空白对照BLANK和同型对照Isotype及抗体信息）；将处理好的细胞样本中加入相应的缓冲液、破膜剂或破核膜试剂，每个样本管内加入样本量为100µL（保证每管细胞数为10^6左右）。膜抗原不需破膜加DPBS；胞浆/膜/分泌类抗原经固定后加破膜剂；核抗原经固定后加破核膜试剂。</p></li><li><p><strong>封闭</strong>：每个样本管均匀分入100µL重悬液后，加5µL浓缩型山羊血清（AR1009），混匀后37℃孵育10min。</p></li><li><p><strong>一抗孵育</strong>：空白管不处理，同型对照管加入相对应兔/小鼠同型对照（1µg每管），抗体检测管加入对应抗体（1µg每管）混匀后37℃孵育45min，或室温1-2h（可间隔20分钟轻晃混匀）。3000rpm离心1min后弃上清，加1mL DPBS重悬清洗2次，加100µL洗液。</p></li><li><p><strong>二抗孵育</strong>：每支样本管加浓缩荧光标记抗兔/小鼠的二抗5µL（BLANK样本管不加），混匀后37℃避光孵育40min。3000rpm离心1min后弃上清，加1ml DPBS清洗2次，加100µL DPBS混匀。</p></li><li><p><strong>上机检测</strong>：FSC/SSC散点图、荧光直方图、叠加直方图，保存图片，登记结果。</p></li></ol><h3>引用文献</h3><ol class=" list-paddingleft-2"><li><p>ITPR3 promotes liver fibrosis by damaging hepatocytes via the Ca2+/NF-B/LECT2 pathway. <em>Scientific Reports</em>, 2026. Application: IHC; IF: 3.9; Species: Mouse; PMID: 41826410.</p></li></ol></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-protocol">
+            <div class="bq-mod-body" id="bqProtocolBody"></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-lit">
+            <div class="bq-mod-body" id="bqLitBody"></div>
+        </div>
+
+        <div class="bq-mod-sec" id="bq-mod-related">
+            <h2 class="bq-mod-h">相关产品</h2>
+            <div class="bq-mod-body">
+                <div class="bq-related-grid">
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/2096213032582311937.html">
+                        <div class="pic"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="Excel导入测试产品1号"></div>
+                        <div class="no"></div>
+                        <div class="tt">Excel导入测试产品1号</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000727.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人ADAM15（含去整合素和金属蛋白酶域的蛋白15）ELISA试剂盒"></div>
+                        <div class="no">BQE-H0677</div>
+                        <div class="tt">人ADAM15（含去整合素和金属蛋白酶域的蛋白15）ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000728.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人甲胎蛋白（AFP）ELISA试剂盒"></div>
+                        <div class="no">BQE-H0678</div>
+                        <div class="tt">人甲胎蛋白（AFP）ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000008.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="牛胰岛素样生长因子1 (IGF-1) ELISA试剂盒"></div>
+                        <div class="no">BQE-B0002</div>
+                        <div class="tt">牛胰岛素样生长因子1 (IGF-1) ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000729.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人载脂蛋白A-I（APOA1）ELISA试剂盒"></div>
+                        <div class="no">BQE-H0679</div>
+                        <div class="tt">人载脂蛋白A-I（APOA1）ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000009.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="牛白介素1β (IL-1b) ELISA试剂盒"></div>
+                        <div class="no">BQE-B0003</div>
+                        <div class="tt">牛白介素1β (IL-1b) ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000730.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人去唾液酸糖蛋白受体1（ASGR1）ELISA试剂盒"></div>
+                        <div class="no">BQE-H0680</div>
+                        <div class="tt">人去唾液酸糖蛋白受体1（ASGR1）ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000010.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="牛白介素6 (IL-6) ELISA试剂盒"></div>
+                        <div class="no">BQE-B0004</div>
+                        <div class="tt">牛白介素6 (IL-6) ELISA试剂盒</div>
+                    </a>
+                    <a class="bq-related-item" href="/html/web/cn/products/kits/elisa-kits/1787212335907000731.html">
+                        <div class="pic"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人β2-微球蛋白（B2M）ELISA试剂盒"></div>
+                        <div class="no">BQE-H0681</div>
+                        <div class="tt">人β2-微球蛋白（B2M）ELISA试剂盒</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NEW UI 2026-09 页脚 ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
+                <h4>产品中心</h4>
+                <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                <a href="/html/web/cn/products/others/index.html">其他</a>
+            </div>
+            <div class="bq2-ftcol">
+                <h4>关于BIOQUANTI</h4>
+                <a href="/html/web/cn/about/index.html">公司简介</a>
+                <a href="/html/web/cn/new-products/index.html">新闻动态</a>
+                <a href="/html/web/cn/contact/index.html">联系我们</a>
+            </div>
+            <div class="bq2-ftcol bq2-ftcontact">
+                <h4>联系我们</h4>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">湖北省武汉市东湖新技术开发区九峰街道高新大道大悦城商务项目1期4号商业5号办公8层2号17室（自贸区武汉片区）</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/template/1/bioquanti/cn/images/newui/footer-qr.png" alt="BioQuanti QR code">
+            </div>
+        </div>
+    </div>
+    <div class="bq2-copyright">
+        <div class="bq2-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</footer>
+
+<script>
+(function(){
+    var slider = document.getElementById('bqSlider');
+    if (!slider) return;
+    var img = slider.querySelector('.bq2-slider-img');
+    var prev = slider.querySelector('.bq2-slider-arrow.prev');
+    var next = slider.querySelector('.bq2-slider-arrow.next');
+    if (!img) return;
+    var urls = [];
+    try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
+    if (urls.length === 0) { urls = [img.getAttribute('src')]; }
+    var cur = 0;
+    function show(i) {
+        cur = (i + urls.length) % urls.length;
+        img.src = urls[cur];
+    }
+    if (prev) prev.onclick = function(){ show(cur - 1); };
+    if (next) next.onclick = function(){ show(cur + 1); };
+})();
+</script>
+<script>
+(function(){
+    var intro = document.getElementById('bqIntro');
+    var protocolBody = document.getElementById('bqProtocolBody');
+    var litBody = document.getElementById('bqLitBody');
+    var hasProtocol = false, hasLit = false;
+    if (intro) {
+        var nodes = Array.prototype.slice.call(intro.children);
+        var bucket = intro;
+        nodes.forEach(function(n){
+            if (n.tagName === 'H3' || n.tagName === 'H2') {
+                var t = n.textContent.trim();
+                if (t.indexOf('实验方案') > -1 && protocolBody) {
+                    bucket = protocolBody;
+                    hasProtocol = true;
+                } else if (t.indexOf('引用文献') > -1 && litBody) {
+                    bucket = litBody;
+                    hasLit = true;
+                }
+            }
+            if (bucket !== intro && n.parentNode === intro) {
+                bucket.appendChild(n);
+            }
+        });
+    }
+    var nav = document.getElementById('bqModNav');
+    if (nav) {
+        if (!hasProtocol) { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
+        if (!hasLit) { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
+    }
+    if (nav) {
+        var links = nav.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            (function(a){
+                function go(e){
+                    e.preventDefault();
+                    for (var j = 0; j < links.length; j++) links[j].className = '';
+                    a.className = 'on';
+                    var target = document.getElementById(a.getAttribute('href').slice(1));
+                    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+                }
+                a.addEventListener('mouseenter', go);
+                a.addEventListener('click', go);
+            })(links[i]);
+        }
+        var secs = [];
+        for (var m = 0; m < links.length; m++) {
+            var id = links[m].getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) secs.push({a: links[m], el: el});
+        }
+        function spy() {
+            var top = window.scrollY + 120;
+            var hit = secs[0];
+            for (var s = 0; s < secs.length; s++) {
+                if (secs[s].el.getBoundingClientRect().top + window.scrollY <= top) hit = secs[s];
+            }
+            if (hit) {
+                for (var j = 0; j < links.length; j++) links[j].className = '';
+                hit.a.className = 'on';
+            }
+        }
+        window.addEventListener('scroll', spy);
+        spy();
+    }
+})();
+</script>
+<script>
+(function(){
+    var rows = document.querySelectorAll('#bqSpecRows .bq2-spec-row');
+    rows.forEach(function(r){
+        r.addEventListener('click', function(){
+            rows.forEach(function(x){ x.classList.remove('cur'); });
+            r.classList.add('cur');
+        });
+    });
+})();
+</script>
+</body>
+</html>

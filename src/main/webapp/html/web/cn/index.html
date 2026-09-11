@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti</title>
+<meta name="keywords" content="BioQuanti,ELISA试剂盒,重组蛋白,抗体对,生命科学研究试剂">
+<meta name="description" content="BioQuanti 专注于生命科学研究试剂，提供 ELISA 试剂盒、重组蛋白与配对抗体，覆盖免疫学、肿瘤研究、神经生物学等研究领域。">
+<link rel="stylesheet" href="/template/1/bioquanti/cn/css/app.css">
+<script>
+    //当前列表路径，方便第三方插件调用
+    function pageurl(val) {
+			var basePath = "/html/web/";
+            // 普通分页方式
+            if (val == 1) {
+                return basePath + "/index.html";
+            } else {
+                return basePath + "/list-" + val + ".html";
+            }
+    }
+</script>
+</head>
+<body>
+<!-- ===== NEW UI 2026-09 头部（index=顶部搜索布局 / inner=导航下搜索条布局，页面里 <#assign bq_head_variant='index'> 控制） ===== -->
+<header class="bq2-head">
+    <div class="bq2-topline">
+        <div class="bq2-container bq2-topflex">
+            <a class="bq2-logo" href="/html/web/cn/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            <div class="bq2-topright">
+                <form class="bq2-search" action="/mcms/search.do" method="post" id="bq-search-form">
+                    <div class="bq2-selwrap">
+                        <select name="categoryIds" id="bq-species-select">
+                            <option value="">全部产品</option>
+                            <option value="2787212335907000102">试剂盒</option>
+                            <option value="2787212335907000103">蛋白</option>
+                            <option value="2787212335907000104">抗体</option>
+                            <option value="2787212335907000105">其他</option>
+                        </select>
+                    </div>
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="">
+                    <input type="hidden" name="style" value="bioquanti">
+                    <input type="hidden" name="tmpl" value="cn/search.htm">
+                    <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
+                </form>
+                <div class="bq2-lang"><a href="/html/web/en/index.html">English</a></div>
+            </div>
+        </div>
+    </div>
+    <nav class="bq2-nav">
+        <div class="bq2-container">
+            <button type="button" class="bq2-nav-toggle" id="bq-nav-toggle" aria-label="菜单">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <ul id="bq-nav-menu">
+                <li class="active"><a href="/html/web/cn/index.html">首页</a></li>
+                <li >
+                    <a href="/html/web/cn/products/kits/index.html" class="bq2-drop-toggle">产品中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                        <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                        <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                        <a href="/html/web/cn/products/others/index.html">其他</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/services/index.html" class="bq2-drop-toggle">技术服务 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/services/lab-testing/index.html">实验代测</a>
+                        <a href="/html/web/cn/services/tech-support/index.html">技术支持</a>
+                        <a href="/html/web/cn/services/tech-docs/index.html">技术文档</a>
+                        <a href="/html/web/cn/services/faq/index.html">常见问题</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/promotion/index.html" class="bq2-drop-toggle">促销中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/promotion/monthly/index.html">当月促销</a>
+                        <a href="/html/web/cn/promotion/trial/index.html">免费试用</a>
+                        <a href="/html/web/cn/promotion/benefits/index.html">福利活动</a>
+                        <a href="/html/web/cn/promotion/hot/index.html">爆款单品</a>
+                    </div>
+                </li>
+                <li ><a href="/html/web/cn/quality/index.html">质量保障</a></li>
+                <li ><a href="/html/web/cn/about/index.html">关于我们</a></li>
+                <li ><a href="/html/web/cn/contact/index.html">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq2-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  // 搜索：关键词与产品分类独立；选择分类仅作为筛选条件
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = '请输入搜索内容';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在「' + spText + '」分类中搜索（例如：HSP70）';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<!-- ===== Hero 幻灯片（数据源：后台"首页幻灯片"栏目，每篇文章=一张幻灯） ===== -->
+<section class="bq2-hero">
+    <div class="bq2-hero-slider" id="bqHeroSlider">
+        <div class="bq2-hero-track">
+            <div class="bq2-hero-slide">
+                <img src="/upload/1/bioquanti/swip/2.jfif" alt="武汉光谷高新技术开发区">
+                <div class="bq2-hero-cap">
+                    <div class="bq2-container">
+                        <h2>武汉光谷高新技术开发区</h2>
+                        <p>位于国家级生物医药产业基地 · 专注ELISA试剂盒研发生产及销售</p>
+                        <a class="bq2-hero-cta" href="/html/web/cn/about/index.html">了解更多</a>
+                    </div>
+                </div>
+            </div>
+            <div class="bq2-hero-slide">
+                <img src="/upload/1/bioquanti/swip/n1.png" alt="为什么选择 Bioquanti Technology">
+                <div class="bq2-hero-cap">
+                    <div class="bq2-container">
+                        <h2>为什么选择 Bioquanti Technology</h2>
+                        <p>1400+品种选择 · 覆盖多物种 · 多研究领域</p>
+                        <a class="bq2-hero-cta" href="/html/web/cn/about/index.html">了解更多</a>
+                    </div>
+                </div>
+            </div>
+            <div class="bq2-hero-slide">
+                <img src="/upload/1/cms/content/2098017485717528576.png" alt="Easy-Step ELISA Kit">
+                <div class="bq2-hero-cap">
+                    <div class="bq2-container">
+                        <h2>Easy-Step ELISA Kit</h2>
+                        <p>操作简便省时 · 上样50ul · 高灵敏度高特异性</p>
+                        <a class="bq2-hero-cta" href="#">了解更多</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="bq2-hero-arrow prev" aria-label="上一张">&#10094;</button>
+        <button type="button" class="bq2-hero-arrow next" aria-label="下一张">&#10095;</button>
+        <div class="bq2-hero-dots"></div>
+    </div>
+</section>
+
+<!-- ===== 产品 TAB（试剂盒/蛋白/抗体/其他） ===== -->
+<section class="bq2-sec">
+    <div class="bq2-container bq2-wide">
+        <div class="bq2-tabs bq2-prodtabs" id="bq2-prodtabs">
+            <button type="button" class="cur">试剂盒</button>
+            <button type="button">蛋白</button>
+            <button type="button">抗体</button>
+            <button type="button">其他</button>
+        </div>
+        <div class="bq2-panels bq2-prodpanels">
+            <div class="bq2-panel cur">
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/kits/elisa-kits/2096213032582311937.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="Excel导入测试产品1号"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/kits/elisa-kits/2096213032582311937.html">Excel导入测试产品1号</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000727.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人ADAM15（含去整合素和金属蛋白酶域的蛋白15）ELISA试剂盒"></a>
+                    <p class="code">BQE-H0677</p>
+                    <p class="name"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000727.html">人ADAM15（含去整合素和金属蛋白酶域的蛋白15）ELISA试剂盒</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000007.html"><img src="/upload/1/bioquanti/product/prod-1.jpg" alt="牛热休克蛋白70 (HSP70) ELISA试剂盒"></a>
+                    <p class="code">BQE-B0001</p>
+                    <p class="name"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000007.html">牛热休克蛋白70 (HSP70) ELISA试剂盒</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000728.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人甲胎蛋白（AFP）ELISA试剂盒"></a>
+                    <p class="code">BQE-H0678</p>
+                    <p class="name"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000728.html">人甲胎蛋白（AFP）ELISA试剂盒</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000008.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="牛胰岛素样生长因子1 (IGF-1) ELISA试剂盒"></a>
+                    <p class="code">BQE-B0002</p>
+                    <p class="name"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000008.html">牛胰岛素样生长因子1 (IGF-1) ELISA试剂盒</a></p>
+                </div>
+            </div>
+            <div class="bq2-panel">
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/proteins/native-proteins/2091883323505950722.html"><img src="/upload/1/cms/content/2091883064819982336.jpg" alt="测试2222"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/proteins/native-proteins/2091883323505950722.html">测试2222</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001445.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Carassiusauratus Leptin (N-8His)"></a>
+                    <p class="code">BQP-0001</p>
+                    <p class="name"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001445.html">Recombinant Carassiusauratus Leptin (N-8His)</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001446.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Cavia porcellus IL-1b (C-6His)"></a>
+                    <p class="code">BQP-0002</p>
+                    <p class="name"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001446.html">Recombinant Cavia porcellus IL-1b (C-6His)</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001447.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Cynomolgus FGF-21 (C-6His)"></a>
+                    <p class="code">BQP-0003</p>
+                    <p class="name"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001447.html">Recombinant Cynomolgus FGF-21 (C-6His)</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001448.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human Afamin (C-6His)"></a>
+                    <p class="code">BQP-0004</p>
+                    <p class="name"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001448.html">Recombinant Human Afamin (C-6His)</a></p>
+                </div>
+            </div>
+            <div class="bq2-panel">
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/antibodies/antibody-pairs/2096212048334352386.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="你好啊"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/antibodies/antibody-pairs/2096212048334352386.html">你好啊</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/antibodies/2096209007300317185.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="12333"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/antibodies/2096209007300317185.html">12333</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/antibodies/2096208937318354945.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="12333"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/antibodies/2096208937318354945.html">12333</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/antibodies/2096205924411486209.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="12333"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/antibodies/2096205924411486209.html">12333</a></p>
+                </div>
+                <div class="bq2-pcard">
+                    <a class="bq2-pcard-img" href="/html/web/cn/products/antibodies/2096195906941333506.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="12333"></a>
+                    <p class="code"></p>
+                    <p class="name"><a href="/html/web/cn/products/antibodies/2096195906941333506.html">12333</a></p>
+                </div>
+            </div>
+            <div class="bq2-panel">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== 热门资讯（新品促销/促销活动/公司新闻） ===== -->
+<section class="bq2-sec bq2-sec-news">
+    <div class="bq2-container bq2-wide">
+        <h3 class="bq2-sec-title">热门资讯</h3>
+        <div class="bq2-newsbox">
+            <div class="bq2-tabs bq2-newstabs" id="bq2-newstabs">
+                <button type="button" class="cur">新品促销</button>
+                <button type="button">促销活动</button>
+                <button type="button">公司新闻</button>
+            </div>
+            <div class="bq2-newsbody">
+                <div class="bq2-newsleft">
+                    <img src="/template/1/bioquanti/cn/images/newui/news-left.png" alt="资讯配图">
+                </div>
+                <div class="bq2-panels bq2-newspanels">
+                    <div class="bq2-panel cur">
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/new-products/3787212335907110001.html">新品上市 | Human IL-37 ELISA Kit 正式发布</a></p>
+                            <p class="ds">Human IL-37 ELISA Kit 正式发布：双抗体夹心法，检测范围 15.6-1000 pg/mL，灵敏度低至 5.6 pg/mL，96T/48T/24T 三种规格现货供应。</p>
+                            <p class="dt">2026-09-08</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/new-products/3787212335907110002.html">新品上架 | Mouse sICAM-1/CD54 ELISA Kit</a></p>
+                            <p class="ds">Mouse sICAM-1/CD54 ELISA Kit 上架：适用于小鼠血清、血浆及组织匀浆样本，检测范围 0.6-40 ng/mL，助力炎症与血管内皮研究。</p>
+                            <p class="dt">2026-09-03</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/new-products/3787212335907110003.html">新品上线 | Rat VEGF165 ELISA Kit 三规格齐全</a></p>
+                            <p class="ds">Rat VEGF165 ELISA Kit 上线：96T/48T/24T 三种规格齐全，检测范围 31.2-2000 pg/mL，适用于血管生成相关课题研究。</p>
+                            <p class="dt">2026-08-27</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/new-products/3787212335907110004.html">新品推荐 | 泛物种炎症因子试剂盒系列扩容</a></p>
+                            <p class="ds">泛物种炎症因子试剂盒系列扩容：新增 12 个品系组合，一次实验即可覆盖人、小鼠、大鼠等多物种平行检测需求。</p>
+                            <p class="dt">2026-08-18</p>
+                        </div>
+                    </div>
+                    <div class="bq2-panel">
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/promotions/3787212335907110005.html">开学季钜惠 | 全线 ELISA 试剂盒 8.8 折</a></p>
+                            <p class="ds">9月1日-9月30日，全线 ELISA 试剂盒享 8.8 折优惠，下单备注"开学季"再赠样本稀释液一份，多购多惠。</p>
+                            <p class="dt">2026-09-05</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/promotions/3787212335907110006.html">满 3000 减 300，多购多惠</a></p>
+                            <p class="ds">单笔订单满 3000 元立减 300 元，满 6000 元立减 700 元，可与会员折扣叠加使用，活动截止 10 月 15 日。</p>
+                            <p class="dt">2026-08-30</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/promotions/3787212335907110007.html">国庆备货周 | 热门品系检测试剂盒特惠</a></p>
+                            <p class="ds">国庆备货周开启：人/鼠/兔等热门品系检测盒参与特价，9 月 22 日-9 月 28 日下单享专属折扣并优先发货。</p>
+                            <p class="dt">2026-08-22</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/promotions/3787212335907110008.html">新客户首单立减 100 元</a></p>
+                            <p class="ds">新注册客户首笔订单立减 100 元，并免费赠送技术支持一对一实验方案设计服务一次。</p>
+                            <p class="dt">2026-08-12</p>
+                        </div>
+                    </div>
+                    <div class="bq2-panel">
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/company-news/3787212335907110009.html">BioQuanti 通过 ISO 9001:2015 质量管理体系再认证</a></p>
+                            <p class="ds">BioQuanti 顺利通过 ISO 9001:2015 质量管理体系再认证，覆盖研发、生产、质检与销售全流程，质量管理水平再上新台阶。</p>
+                            <p class="dt">2026-09-01</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/company-news/3787212335907110010.html">我司将亮相 2026 武汉国际生物技术与仪器博览会</a></p>
+                            <p class="ds">BioQuanti 将参展 2026 武汉国际生物技术与仪器博览会（10 月 16-18 日），展位号 B218，欢迎新老客户莅临交流。</p>
+                            <p class="dt">2026-08-26</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/company-news/3787212335907110011.html">光谷研发中心二期正式启用，产能全面提升</a></p>
+                            <p class="ds">位于光谷生物城的研发中心二期正式启用，洁净生产车间面积扩大一倍，常规试剂盒现货率提升至 95% 以上。</p>
+                            <p class="dt">2026-08-19</p>
+                        </div>
+                        <div class="bq2-newsitem">
+                            <p class="tt"><a href="/html/web/cn/company-news/3787212335907110012.html">与华中高校共建免疫检测联合实验室</a></p>
+                            <p class="ds">BioQuanti 与华中地区高校签署合作协议，共建免疫检测联合实验室，围绕新型标志物检测方法开展联合攻关。</p>
+                            <p class="dt">2026-08-11</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== 关于我们 ===== -->
+<section class="bq2-about">
+    <div class="bq2-container">
+        <h2>关于我们</h2>
+        <p class="bq2-about-desc">公司主要专注于ELISA试剂盒的研发、生产及销售，并提供相关技术支持与检测服务。其经营范围广泛，包括生物技术研发、化工产品及第一类医疗器械的销售、医学研究和试验发展等。</p>
+        <div class="bq2-stats">
+            <div class="st"><b>1000+</b><span>常规产品</span></div>
+            <div class="st"><b>300+</b><span>成功服务企业</span></div>
+            <div class="st"><b>1000+</b><span>常规产品</span></div>
+            <div class="st"><b>300+</b><span>成功服务企业</span></div>
+        </div>
+        <div class="bq2-about-right">
+            <img src="/template/1/bioquanti/cn/images/newui/about-map.png" alt="关于我们">
+        </div>
+    </div>
+</section>
+
+<!-- ===== NEW UI 2026-09 页脚 ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
+                <h4>产品中心</h4>
+                <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                <a href="/html/web/cn/products/others/index.html">其他</a>
+            </div>
+            <div class="bq2-ftcol">
+                <h4>关于BIOQUANTI</h4>
+                <a href="/html/web/cn/about/index.html">公司简介</a>
+                <a href="/html/web/cn/new-products/index.html">新闻动态</a>
+                <a href="/html/web/cn/contact/index.html">联系我们</a>
+            </div>
+            <div class="bq2-ftcol bq2-ftcontact">
+                <h4>联系我们</h4>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">湖北省武汉市东湖新技术开发区九峰街道高新大道大悦城商务项目1期4号商业5号办公8层2号17室（自贸区武汉片区）</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/template/1/bioquanti/cn/images/newui/footer-qr.png" alt="BioQuanti QR code">
+            </div>
+        </div>
+    </div>
+    <div class="bq2-copyright">
+        <div class="bq2-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</footer>
+<script>
+(function(){
+  function bindTabs(tabsId){
+    var root = document.getElementById(tabsId);
+    if(!root) return;
+    var btns = root.querySelectorAll('button');
+    var panelsBox = root.nextElementSibling;
+    if(!panelsBox) return;
+    var panels = panelsBox.querySelectorAll('.bq2-panel');
+    function activate(idx){
+      btns.forEach(function(x){ x.classList.remove('cur'); });
+      panels.forEach(function(p){ p.classList.remove('cur'); });
+      if(btns[idx]) btns[idx].classList.add('cur');
+      if(panels[idx]) panels[idx].classList.add('cur');
+    }
+    btns.forEach(function(b, i){
+      b.addEventListener('mouseenter', function(){ activate(i); });
+      b.addEventListener('click', function(){ activate(i); });
+    });
+  }
+  bindTabs('bq2-prodtabs');
+  bindTabs('bq2-newstabs');
+
+  // Hero 幻灯片：自动播放 + 箭头 + 圆点，悬停暂停
+  var hero = document.getElementById('bqHeroSlider');
+  if(hero){
+    var track = hero.querySelector('.bq2-hero-track');
+    var slides = hero.querySelectorAll('.bq2-hero-slide');
+    var dotsWrap = hero.querySelector('.bq2-hero-dots');
+    if(!slides.length){ hero.style.display = 'none'; }
+    else{
+      var idx = 0, timer = null;
+      slides.forEach(function(s, i){
+        var d = document.createElement('span');
+        if(i === 0) d.className = 'on';
+        d.addEventListener('click', function(){ go(i); reset(); });
+        dotsWrap.appendChild(d);
+      });
+      var dots = dotsWrap.querySelectorAll('span');
+      function go(i){
+        idx = (i + slides.length) % slides.length;
+        track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+        dots.forEach(function(d, k){ d.classList.toggle('on', k === idx); });
+      }
+      function auto(){ timer = setInterval(function(){ go(idx + 1); }, 5000); }
+      function reset(){ clearInterval(timer); auto(); }
+      hero.querySelector('.prev').addEventListener('click', function(){ go(idx - 1); reset(); });
+      hero.querySelector('.next').addEventListener('click', function(){ go(idx + 1); reset(); });
+      hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+      hero.addEventListener('mouseleave', reset);
+      auto();
+    }
+  }
+})();
+</script>
+</body>
+</html>

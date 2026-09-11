@@ -19,19 +19,33 @@
     <!-- Title -->
     <h1 class="bq2-dtitle">${field.title}</h1>
 
-    <!-- Doc buttons: Manual (shown after backend generates the attachment) + MSDS -->
+    <!-- Doc buttons: Manual (always shown, alerts when file missing) + MSDS -->
     <div class="bq2-docbtns">
-        <#if field.MANUAL?? && field.MANUAL?has_content && field.MANUAL?starts_with("[") && field.MANUAL != '[]'>
-        <a class="bq2-docbtn" href="{@ms:file field.MANUAL/}" download="${field.CATALOG_NO!''}-Manual.pdf">
+        <button type="button" class="bq2-docbtn" data-url="/upload/1/manual/${field.id}.pdf" data-name="${field.CATALOG_NO!''}-Manual.pdf">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Manual</span>
-        </a>
-        </#if>
+        </button>
         <a class="bq2-docbtn msds" href="/{ms:global.style/}files/MSDS-ELISA-Kit.pdf" download="MSDS-ELISA-Kit.pdf">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>MSDS</span>
         </a>
     </div>
+    <script>
+    (function(){
+        document.querySelectorAll('.bq2-docbtn[data-url]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                var url = btn.getAttribute('data-url');
+                var name = btn.getAttribute('data-name') || 'Manual.pdf';
+                function ok(){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+                if (window.fetch) {
+                    fetch(url, {method:'HEAD'}).then(function(r){
+                        if (r.ok) { ok(); } else { alert('Manual is being prepared and not available yet. Please contact us if needed.'); }
+                    }).catch(function(){ alert('Manual is being prepared and not available yet. Please contact us if needed.'); });
+                } else { ok(); }
+            });
+        });
+    })();
+    </script>
 
     <!-- Gallery + Spec Panel -->
     <div class="bq2-topgrid">
@@ -56,23 +70,23 @@
             </#if>
         </div>
 
-        <#-- Spec panel (hidden automatically when no model data) -->
+        <#-- Spec panel (hidden automatically when no model data): data from SPEC_PRICE JSON array, first item default -->
         <#if field.CATALOG_NO?? && field.CATALOG_NO?has_content>
-        <#assign spec = (field.SPEC)!''>
-        <#assign spec = spec?trim>
+        <#assign spRaw = ((field.SPEC_PRICE)!'')?string?trim>
+        <#assign specs = []>
+        <#if spRaw?has_content && spRaw?starts_with('[')>
+        <#assign specs = spRaw?eval>
+        </#if>
+        <#assign specFallback = ((field.SPEC)!'')?string?trim>
         <div class="bq2-specpanel">
             <div class="bq2-spec-head">${field.CATALOG_NO}</div>
-            <div class="bq2-spec-rows">
-                <#if spec?has_content>
-                <#assign p1 = (spec == '48T')?then('¥ 680', (spec == '24T')?then('¥ 480', '¥ 980'))>
-                <div class="bq2-spec-row cur"><span class="k">Spec</span><span class="v">${spec}</span><span class="p">${p1}</span></div>
-                <#if spec != '96T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">96T</span><span class="p">¥ 980</span></div></#if>
-                <#if spec != '48T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">48T</span><span class="p">¥ 680</span></div></#if>
-                <#if spec != '24T'><div class="bq2-spec-row"><span class="k">Spec</span><span class="v">24T</span><span class="p">¥ 480</span></div></#if>
-                <#else>
-                <div class="bq2-spec-row cur"><span class="k">Spec</span><span class="v">96T</span><span class="p">¥ 980</span></div>
-                <div class="bq2-spec-row"><span class="k">Spec</span><span class="v">48T</span><span class="p">¥ 680</span></div>
-                <div class="bq2-spec-row"><span class="k">Spec</span><span class="v">24T</span><span class="p">¥ 480</span></div>
+            <div class="bq2-spec-rows" id="bqSpecRows">
+                <#if specs?size gt 0>
+                <#list specs as sp>
+                <div class="bq2-spec-row <#if sp_index == 0>cur</#if>"><span class="k">Spec</span><span class="v">${(sp.spec)!''}</span><span class="p"><#if ((sp.price)!'')?string?has_content>${(sp.price)!''}<#else>Inquiry</#if></span></div>
+                </#list>
+                <#elseif specFallback?has_content>
+                <div class="bq2-spec-row cur"><span class="k">Spec</span><span class="v">${specFallback}</span><span class="p">Inquiry</span></div>
                 </#if>
             </div>
             <div class="bq2-spec-meta">
@@ -99,12 +113,12 @@
         </div>
 
         <#-- Module 2: protocol -->
-        <div class="bq-mod-sec" id="bq-mod-protocol" style="display:none;">
+        <div class="bq-mod-sec" id="bq-mod-protocol">
             <div class="bq-mod-body" id="bqProtocolBody"></div>
         </div>
 
         <#-- Module 3: references -->
-        <div class="bq-mod-sec" id="bq-mod-lit" style="display:none;">
+        <div class="bq-mod-sec" id="bq-mod-lit">
             <div class="bq-mod-body" id="bqLitBody"></div>
         </div>
 
@@ -155,13 +169,12 @@
 })();
 </script>
 <script>
-<#-- Four modules: body H3 routing ("Protocol"/"实验方案", "References"/"引用文献") + tab highlight -->
+<#-- Four modules: body H3 routing + hover-to-scroll tab navigation -->
 (function(){
     var intro = document.getElementById('bqIntro');
-    var protocolSec = document.getElementById('bq-mod-protocol');
     var protocolBody = document.getElementById('bqProtocolBody');
-    var litSec = document.getElementById('bq-mod-lit');
     var litBody = document.getElementById('bqLitBody');
+    var hasProtocol = false, hasLit = false;
     if (intro) {
         var nodes = Array.prototype.slice.call(intro.children);
         var bucket = intro;
@@ -170,10 +183,10 @@
                 var t = n.textContent.trim();
                 if ((t.indexOf('Protocol') > -1 || t.indexOf('实验方案') > -1) && protocolBody) {
                     bucket = protocolBody;
-                    protocolSec.style.display = '';
+                    hasProtocol = true;
                 } else if ((t.indexOf('References') > -1 || t.indexOf('引用文献') > -1) && litBody) {
                     bucket = litBody;
-                    litSec.style.display = '';
+                    hasLit = true;
                 }
             }
             if (bucket !== intro && n.parentNode === intro) {
@@ -183,17 +196,23 @@
     }
     var nav = document.getElementById('bqModNav');
     if (nav) {
-        if (protocolSec && protocolSec.style.display === 'none') { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
-        if (litSec && litSec.style.display === 'none') { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
+        if (!hasProtocol) { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
+        if (!hasLit) { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
     }
+    <#-- Hover/click smoothly scrolls to the target module (no click needed), scrollspy maintains highlight -->
     if (nav) {
         var links = nav.getElementsByTagName('a');
         for (var i = 0; i < links.length; i++) {
             (function(a){
-                a.onclick = function(){
+                function go(e){
+                    e.preventDefault();
                     for (var j = 0; j < links.length; j++) links[j].className = '';
                     a.className = 'on';
-                };
+                    var target = document.getElementById(a.getAttribute('href').slice(1));
+                    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+                }
+                a.addEventListener('mouseenter', go);
+                a.addEventListener('click', go);
             })(links[i]);
         }
         var secs = [];
@@ -216,6 +235,18 @@
         window.addEventListener('scroll', spy);
         spy();
     }
+})();
+</script>
+<script>
+<#-- Spec panel: click row to select -->
+(function(){
+    var rows = document.querySelectorAll('#bqSpecRows .bq2-spec-row');
+    rows.forEach(function(r){
+        r.addEventListener('click', function(){
+            rows.forEach(function(x){ x.classList.remove('cur'); });
+            r.classList.add('cur');
+        });
+    });
 })();
 </script>
 </body>

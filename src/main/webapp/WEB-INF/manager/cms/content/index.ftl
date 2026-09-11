@@ -12,7 +12,14 @@
 	<!--左侧-->
 	<el-container class="index-menu">
 		<div class="left-tree" style="position:relative;">
-			<el-scrollbar style="height: 100%;">
+			<div style="padding:10px 10px 0;">
+				<el-radio-group v-model="lang" size="small" @change="changeLang">
+					<el-radio-button label="zh">中文</el-radio-button>
+					<el-radio-button label="en">English</el-radio-button>
+					<el-radio-button label="all">全部</el-radio-button>
+				</el-radio-group>
+			</div>
+			<el-scrollbar style="height: calc(100% - 42px);">
 				<el-tree
 						ref="treeRef"
 						:indent="5"
@@ -34,8 +41,8 @@
 				</el-tree>
 			</el-scrollbar>
 		</div>
-		<content-list v-if="action=='list'" :category-id="categoryId" :leaf=leaf @form="form"></content-list>
-		<content-form v-else :category-id="categoryId" :category-type="categoryType" :id="id" @back="back"></content-form>
+		<content-list v-if="action=='list'" :key="'list-'+lang" :category-id="categoryId" :leaf=leaf :lang="lang" @form="form"></content-list>
+		<content-form v-else :key="'form-'+lang" :category-id="categoryId" :category-type="categoryType" :id="id" :default-lang="lang" @back="back"></content-form>
 	</el-container>
 </div>
 </body>
@@ -54,6 +61,7 @@
 				categoryType:'2', //1列表，2单篇
 				leaf:true, //true子栏目
 				id:null,//文章编号
+				lang:'zh',//语言Tab：zh中文(默认) en英文 all全部
 				defaultProps: {
 					children: 'children',
 					label: 'categoryTitle'
@@ -96,6 +104,19 @@
 			back: function(id) {
 				this.action = 'list';
 			},
+			//语言Tab切换：切回列表视图并重建栏目树（列表/表单组件通过 :key 随 lang 重建自动刷新）
+			changeLang: function () {
+				this.action = 'list';
+				this.treeList();
+			},
+			//按语言过滤栏目树：zh→cn/ en→en/（categoryPath 前缀），all 不过滤
+			filterTreeByLang: function (rows, lang) {
+				if (lang == 'all' || !rows) return rows;
+				var prefix = (lang == 'zh' ? 'cn' : 'en') + '/';
+				return rows.filter(function (row) {
+					return row.categoryPath && row.categoryPath.indexOf(prefix) == 0;
+				});
+			},
 			treeList: function () {
 				var that = this;
 				this.loadState = false;
@@ -112,7 +133,7 @@
 						that.treeData = [];
 					} else {
 						that.emptyText = '';
-						that.treeData = res.data.rows;
+						that.treeData = that.filterTreeByLang(res.data.rows, that.lang);
 						that.treeData = ms.util.treeData(that.treeData, 'id', 'categoryId', 'children');
 						that.treeData = [{
 							id: 0,

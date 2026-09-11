@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioQuanti-产品中心</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" href="/template/1/bioquanti/cn/css/app.css">
+<script>
+    //当前列表路径，方便第三方插件调用
+    function pageurl(val) {
+			var basePath = "/html/web/cn/products";
+            // 普通分页方式
+            if (val == 1) {
+                return basePath + "/index.html";
+            } else {
+                return basePath + "/list-" + val + ".html";
+            }
+    }
+</script>
+</head>
+<body>
+<!-- ===== NEW UI 2026-09 头部（index=顶部搜索布局 / inner=导航下搜索条布局，页面里 <#assign bq_head_variant='index'> 控制） ===== -->
+<header class="bq2-head">
+    <div class="bq2-topline">
+        <div class="bq2-container bq2-topflex">
+            <a class="bq2-logo" href="/html/web/cn/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
+            <div class="bq2-topright">
+                <div class="bq2-lang"><a href="/html/web/en/index.html">English</a></div>
+            </div>
+        </div>
+    </div>
+    <nav class="bq2-nav">
+        <div class="bq2-container">
+            <button type="button" class="bq2-nav-toggle" id="bq-nav-toggle" aria-label="菜单">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <ul id="bq-nav-menu">
+                <li ><a href="/html/web/cn/index.html">首页</a></li>
+                <li class="active">
+                    <a href="/html/web/cn/products/kits/index.html" class="bq2-drop-toggle">产品中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                        <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                        <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                        <a href="/html/web/cn/products/others/index.html">其他</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/services/index.html" class="bq2-drop-toggle">技术服务 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/services/lab-testing/index.html">实验代测</a>
+                        <a href="/html/web/cn/services/tech-support/index.html">技术支持</a>
+                        <a href="/html/web/cn/services/tech-docs/index.html">技术文档</a>
+                        <a href="/html/web/cn/services/faq/index.html">常见问题</a>
+                    </div>
+                </li>
+                <li >
+                    <a href="/html/web/cn/promotion/index.html" class="bq2-drop-toggle">促销中心 <span class="caret">▾</span></a>
+                    <div class="bq2-dropdown">
+                        <a href="/html/web/cn/promotion/monthly/index.html">当月促销</a>
+                        <a href="/html/web/cn/promotion/trial/index.html">免费试用</a>
+                        <a href="/html/web/cn/promotion/benefits/index.html">福利活动</a>
+                        <a href="/html/web/cn/promotion/hot/index.html">爆款单品</a>
+                    </div>
+                </li>
+                <li ><a href="/html/web/cn/quality/index.html">质量保障</a></li>
+                <li ><a href="/html/web/cn/about/index.html">关于我们</a></li>
+                <li ><a href="/html/web/cn/contact/index.html">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="bq2-searchbar">
+        <div class="bq2-container">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+                <div class="bq2-selwrap">
+                    <select name="categoryIds" id="bq-species-select">
+                        <option value="">全部产品</option>
+                        <option value="2787212335907000102">试剂盒</option>
+                        <option value="2787212335907000103">蛋白</option>
+                        <option value="2787212335907000104">抗体</option>
+                        <option value="2787212335907000105">其他</option>
+                    </select>
+                </div>
+                <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="">
+                <input type="hidden" name="style" value="bioquanti">
+                <input type="hidden" name="tmpl" value="cn/search.htm">
+                <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
+            </form>
+        </div>
+    </div>
+</header>
+<script>
+(function(){
+  var toggle = document.getElementById('bq-nav-toggle');
+  var menu = document.getElementById('bq-nav-menu');
+  if(toggle && menu){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    var dropToggles = document.querySelectorAll('.bq2-drop-toggle');
+    dropToggles.forEach(function(dt){
+      dt.addEventListener('click', function(e){
+        if(window.innerWidth <= 768){
+          e.preventDefault();
+          dt.parentElement.classList.toggle('open-drop');
+        }
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !toggle.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  // 搜索：关键词与产品分类独立；选择分类仅作为筛选条件
+  var spSel = document.getElementById('bq-species-select');
+  var kwInput = document.getElementById('bq-search-keyword');
+  var searchForm = document.getElementById('bq-search-form');
+  if(spSel && kwInput && searchForm){
+    var defaultPh = '请输入搜索内容';
+    function updatePlaceholder(){
+      var spText = spSel.options[spSel.selectedIndex].text;
+      if(spSel.value){
+        kwInput.placeholder = '在「' + spText + '」分类中搜索（例如：HSP70）';
+      }else{
+        kwInput.placeholder = defaultPh;
+      }
+    }
+    spSel.addEventListener('change', function(){
+      updatePlaceholder();
+      kwInput.focus();
+    });
+  }
+})();
+</script>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">您当前位置 - <a href="/html/web/cn/index.html">首页</a> &gt; <a href="/html/web/cn/products/kits/index.html">产品列表</a> &gt; 产品中心</div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- 左侧分类树 -->
+    <aside class="bq2-side">
+        <p class="bq2-side-title">产品中心</p>
+        <ul class="bq2-cattree" id="bq2-cattree">
+            <li class="cat ">
+                <a class="cat-tt" href="/html/web/cn/products/kits/index.html">试剂盒<i class="arr">▾</i></a>
+                <div class="cat-sons">
+                    <a href="/html/web/cn/products/kits/ceshi2/index.html" >测试2<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/kits/elisa-kits/index.html" >酶联免疫试剂盒<span class="cnt">(1439)</span></a>
+                    <a href="/html/web/cn/products/kits/exosome-kits/index.html" >外泌体提取试剂盒<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/kits/food-safety-kits/index.html" >食品安全及药物残留酶联免疫试剂盒<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/kits/dna-extraction-kits/index.html" >质粒DNA大量抽提试剂盒<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/kits/hcp-elisa-kits/index.html" >HCP检测ELISA试剂盒<span class="cnt">(0)</span></a>
+                </div>
+            </li>
+            <li class="cat ">
+                <a class="cat-tt" href="/html/web/cn/products/proteins/index.html">蛋白<i class="arr">▾</i></a>
+                <div class="cat-sons">
+                    <a href="/html/web/cn/products/proteins/native-proteins/index.html" >天然蛋白<span class="cnt">(1)</span></a>
+                    <a href="/html/web/cn/products/proteins/recombinant-proteins/index.html" >重组蛋白<span class="cnt">(344)</span></a>
+                    <a href="/html/web/cn/products/proteins/active-proteins/index.html" >活性蛋白<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/proteins/transmembrane-proteins/index.html" >跨膜蛋白<span class="cnt">(0)</span></a>
+                </div>
+            </li>
+            <li class="cat ">
+                <a class="cat-tt" href="/html/web/cn/products/antibodies/index.html">抗体<i class="arr">▾</i></a>
+                <div class="cat-sons">
+                    <a href="/html/web/cn/products/antibodies/polyclonal-antibodies/index.html" >多克隆抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/secondary-antibodies/index.html" >二抗<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/monoclonal-antibodies/index.html" >单克隆抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/tag-antibodies/index.html" >标签抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/small-molecule-antibodies/index.html" >小分子抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/chip-antibodies/index.html" >ChIP抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/recombinant-antibodies/index.html" >重组抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/histone-modification-antibodies/index.html" >组蛋白修饰抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/biosimilar-antibodies/index.html" >科研级生物类似抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/housekeeping-antibodies/index.html" >内参抗体<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/antibodies/antibody-pairs/index.html" >抗体对<span class="cnt">(392)</span></a>
+                </div>
+            </li>
+            <li class="cat ">
+                <a class="cat-tt" href="/html/web/cn/products/others/index.html">其他<i class="arr">▾</i></a>
+                <div class="cat-sons">
+                    <a href="/html/web/cn/products/others/cytokines/index.html" >稳转细胞株<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/others/ivd-reagents/index.html" >体外诊断试剂原料<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/others/molecular-biology/index.html" >分子生物学产品<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/others/small-molecules/index.html" >小分子产品<span class="cnt">(0)</span></a>
+                </div>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- 右侧产品行卡 -->
+    <div class="bq2-main">
+        <div class="bq2-prodrows">
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907001050.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠基质金属蛋白酶1 (MMP-1) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907001050.html">小鼠基质金属蛋白酶1 (MMP-1) ELISA试剂盒</a></p>
+                    <p class="en">Mouse MMP-1 (Matrix Metalloproteinase 1) ELISA Kit</p>
+                    <p class="no">货号：BQE-M0130</p>
+                    <p class="kv">灵敏度：75pg/mL</p>
+                    <p class="kv">检测范围：125-8000pg/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001050.pdf" data-name="BQE-M0130-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001768.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Mouse SHH (C25II)"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001768.html">Recombinant Mouse SHH (C25II)</a></p>
+                    <p class="en">Recombinant Mouse Sonic Hedgehog is produced by our E.coli expression system and the target gene encoding Cys25-Gly198(Cys25Ile-Ile) is expressed.</p>
+                    <p class="no">货号：BQP-0324</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQP-0324产品名称Recombinant Mouse SHH (C25II)产品别称Sonic Hed…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001768.pdf" data-name="BQP-0324-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000330.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人透明质酸合成酶1（Hyaluronan synthase 1）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000330.html">人透明质酸合成酶1（Hyaluronan synthase 1）ELISA试剂盒</a></p>
+                    <p class="en">Human HAS1 (Hyaluronan synthase 1) ELISA Kit</p>
+                    <p class="no">货号：BQE-H0279</p>
+                    <p class="kv">灵敏度：0.094ng/mL</p>
+                    <p class="kv">检测范围：0.156-10ng/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000330.pdf" data-name="BQE-H0279-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002113.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="小鼠 CLEC4N / CLEC6A / Dectin-2 酶联免疫配对抗体组合"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002113.html">小鼠 CLEC4N / CLEC6A / Dectin-2 酶联免疫配对抗体组合</a></p>
+                    <p class="en">Mouse CLEC4N / CLEC6A / Dectin-2 ELISA Pair Set</p>
+                    <p class="no">货号：BQAP-0325</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQAP-0325名称Mouse CLEC4N / CLEC6A / Dectin-2 ELISA Pair…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002113.pdf" data-name="BQAP-0325-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907001051.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠基质金属蛋白酶12 (MMP-12) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907001051.html">小鼠基质金属蛋白酶12 (MMP-12) ELISA试剂盒</a></p>
+                    <p class="en">Mouse MMP-12 (Matrix Metalloproteinase 12) ELISA Kit</p>
+                    <p class="no">货号：BQE-M0131</p>
+                    <p class="kv">灵敏度：0.094ng/mL</p>
+                    <p class="kv">检测范围：0.156-10ng/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001051.pdf" data-name="BQE-M0131-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001769.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Mouse SHH (C-6His)"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001769.html">Recombinant Mouse SHH (C-6His)</a></p>
+                    <p class="en">Recombinant Mouse Sonic Hedgehog is produced by our Mammalian expression system and the target gene encoding Cys25­Gly198 is expressed with a 6His tag at the C-terminus.</p>
+                    <p class="no">货号：BQP-0325</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQP-0325产品名称Recombinant Mouse SHH (C-6His)产品别称Sonic He…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001769.pdf" data-name="BQP-0325-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000331.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人糖化血红蛋白A1c（Glycosylated hemoglobin A1c）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000331.html">人糖化血红蛋白A1c（Glycosylated hemoglobin A1c）ELISA试剂盒</a></p>
+                    <p class="en">Human HbA1c (Glycosylated hemoglobin A1c) ELISA Kit</p>
+                    <p class="no">货号：BQE-H0280</p>
+                    <p class="kv">灵敏度：37.5pg/mL</p>
+                    <p class="kv">检测范围：62.5-4000pg/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000331.pdf" data-name="BQE-H0280-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002114.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="小鼠 C-Reactive Protein/CRP 酶联免疫配对抗体组合"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002114.html">小鼠 C-Reactive Protein/CRP 酶联免疫配对抗体组合</a></p>
+                    <p class="en">Mouse C-Reactive Protein/CRP ELISA Pair Set</p>
+                    <p class="no">货号：BQAP-0326</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQAP-0326名称Mouse C-Reactive Protein/CRP ELISA Pair Set…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002114.pdf" data-name="BQAP-0326-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907001052.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠髓鞘少突胶质细胞糖蛋白 (MOG) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907001052.html">小鼠髓鞘少突胶质细胞糖蛋白 (MOG) ELISA试剂盒</a></p>
+                    <p class="en">Mouse MOG (Myelin Oligodendrocyte Glycoprotein) ELISA Kit</p>
+                    <p class="no">货号：BQE-M0132</p>
+                    <p class="kv">灵敏度：0.094ng/mL</p>
+                    <p class="kv">检测范围：0.156-10ng/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001052.pdf" data-name="BQE-M0132-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001770.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Mouse TGFBR2 (C-6His)"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001770.html">Recombinant Mouse TGFBR2 (C-6His)</a></p>
+                    <p class="en">Recombinant Mouse Transforming Growth Factor-beta Receptor Type II is produced by our Mammalian expression system and the target gene encoding Ile24-Asp159 is expressed with a 6His tag at the C-termin</p>
+                    <p class="no">货号：BQP-0326</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQP-0326产品名称Recombinant Mouse TGFBR2 (C-6His)产品别称TGF-b…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001770.pdf" data-name="BQP-0326-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000332.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人高糖化绒毛膜促性腺激素（Hyperglycosylated Chorionic Gonadotropin）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000332.html">人高糖化绒毛膜促性腺激素（Hyperglycosylated Chorionic Gonadotropin）ELISA试剂盒</a></p>
+                    <p class="en">Human hCG-H (Hyperglycosylated Chorionic Gonadotropin) ELISA Kit</p>
+                    <p class="no">货号：BQE-H0281</p>
+                    <p class="kv">灵敏度：4.688mIU/mL</p>
+                    <p class="kv">检测范围：7.813-500mIU/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000332.pdf" data-name="BQE-H0281-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002115.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="小鼠 DKK3 酶联免疫配对抗体组合"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002115.html">小鼠 DKK3 酶联免疫配对抗体组合</a></p>
+                    <p class="en">Mouse DKK3 ELISA Pair Set</p>
+                    <p class="no">货号：BQAP-0327</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQAP-0327名称Mouse DKK3 ELISA Pair Set中文名称小鼠 DKK3 酶联免疫配对…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002115.pdf" data-name="BQAP-0327-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907001053.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠髓过氧化物酶 (MPO) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907001053.html">小鼠髓过氧化物酶 (MPO) ELISA试剂盒</a></p>
+                    <p class="en">Mouse MPO (Myeloperoxidase) ELISA Kit</p>
+                    <p class="no">货号：BQE-M0133</p>
+                    <p class="kv">灵敏度：0.094ng/mL</p>
+                    <p class="kv">检测范围：0.156-10ng/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001053.pdf" data-name="BQE-M0133-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001771.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Mouse TGFBR2 (C-Fc)"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001771.html">Recombinant Mouse TGFBR2 (C-Fc)</a></p>
+                    <p class="en">Recombinant Mouse Transforming Growth Factor-beta Receptor Type II is produced by our Mammalian expression system and the target gene encoding Ile24-Asp159 is expressed with a human IgG1 Fc tag at the</p>
+                    <p class="no">货号：BQP-0327</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQP-0327产品名称Recombinant Mouse TGFBR2 (C-Fc)产品别称TGF-bet…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001771.pdf" data-name="BQP-0327-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000333.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人食欲素（Orexin）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000333.html">人食欲素（Orexin）ELISA试剂盒</a></p>
+                    <p class="en">Human HCRT (Orexin) ELISA Kit</p>
+                    <p class="no">货号：BQE-H0282</p>
+                    <p class="kv">灵敏度：9.375pg/mL</p>
+                    <p class="kv">检测范围：15.625-1000pg/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000333.pdf" data-name="BQE-H0282-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002116.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="小鼠 DLL4 酶联免疫配对抗体组合"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002116.html">小鼠 DLL4 酶联免疫配对抗体组合</a></p>
+                    <p class="en">Mouse DLL4 ELISA Pair Set</p>
+                    <p class="no">货号：BQAP-0328</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQAP-0328名称Mouse DLL4 ELISA Pair Set中文名称小鼠 DLL4 酶联免疫配对…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002116.pdf" data-name="BQAP-0328-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907001054.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠生长/分化因子8 (Mstn) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907001054.html">小鼠生长/分化因子8 (Mstn) ELISA试剂盒</a></p>
+                    <p class="en">Mouse Mstn (Growth/differentiation factor 8) ELISA Kit</p>
+                    <p class="no">货号：BQE-M0134</p>
+                    <p class="kv">灵敏度：18.75pg/mL</p>
+                    <p class="kv">检测范围：31.25-2000pg/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001054.pdf" data-name="BQE-M0134-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001772.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Mouse TNF alpha"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001772.html">Recombinant Mouse TNF alpha</a></p>
+                    <p class="en">Recombinant Mouse Tumor Necrosis Factor Alpha is produced by our E.coli expression system and the target gene encoding Asp89-Leu235 is expressed.</p>
+                    <p class="no">货号：BQP-0328</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQP-0328产品名称Recombinant Mouse TNF alpha产品别称Tumor Necro…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001772.pdf" data-name="BQP-0328-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000334.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人组蛋白去乙酰化酶7（Histone deacetylase 7）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000334.html">人组蛋白去乙酰化酶7（Histone deacetylase 7）ELISA试剂盒</a></p>
+                    <p class="en">Human HDAC7 (Histone deacetylase 7) ELISA Kit</p>
+                    <p class="no">货号：BQE-H0283</p>
+                    <p class="kv">灵敏度：0.188ng/mL</p>
+                    <p class="kv">检测范围：0.313-20ng/mL</p>
+                    
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000334.pdf" data-name="BQE-H0283-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002117.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="小鼠 Endoglin / CD105 / ENG 酶联免疫配对抗体组合"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002117.html">小鼠 Endoglin / CD105 / ENG 酶联免疫配对抗体组合</a></p>
+                    <p class="en">Mouse Endoglin / CD105 / ENG ELISA Pair Set</p>
+                    <p class="no">货号：BQAP-0329</p>
+                    <p class="kv">灵敏度：</p>
+                    <p class="kv">检测范围：</p>
+                    <p class="ds">产品参数货号BQAP-0329名称Mouse Endoglin / CD105 / ENG ELISA Pair Set…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002117.pdf" data-name="BQAP-0329-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <p class="price">询价</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空分类友好提示 -->
+        <div id="bq-empty-cat-tip" style="display:none;text-align:center;padding:40px 20px;background:#f8f9fa;border-radius:8px;margin:20px 0;">
+            <p style="font-size:18px;color:#333;margin-bottom:12px;">该分类暂无产品</p>
+            <p style="color:#666;">推荐浏览以下有产品的分类：</p>
+            <p style="margin-top:16px;">
+                <a href="/html/web/cn/products/kits/index.html" style="display:inline-block;margin:6px 12px;color:#1e88c7;">试剂盒（1430+）</a>
+                <a href="/html/web/cn/products/proteins/index.html" style="display:inline-block;margin:6px 12px;color:#1e88c7;">蛋白（344+）</a>
+                <a href="/html/web/cn/products/antibodies/index.html" style="display:inline-block;margin:6px 12px;color:#1e88c7;">抗体（391+）</a>
+            </p>
+        </div>
+        <script>
+        (function(){
+            var rows = document.querySelectorAll('.bq2-row');
+            if(rows.length === 0){
+                var tip = document.getElementById('bq-empty-cat-tip');
+                if(tip) tip.style.display = 'block';
+            }
+        })();
+        </script>
+
+        <!-- 分页 -->
+        <div class="bq-pagination">
+            <a href="/html/web/cn/products/index.html">首页</a>
+            <a href="/html/web/cn/products/list-65.html">上一页</a>
+            <span class="cur">66</span><span>/ 109</span>
+            <a href="/html/web/cn/products/list-67.html">下一页</a>
+            <a href="/html/web/cn/products/list-109.html">末页</a>
+            <span style="margin-left:10px;color:#999;">共 2180 条</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NEW UI 2026-09 页脚 ===== -->
+<footer class="bq2-footer">
+    <div class="bq2-container">
+        <div class="bq2-ftcols">
+            <div class="bq2-ftcol">
+                <h4>产品中心</h4>
+                <a href="/html/web/cn/products/kits/index.html">试剂盒</a>
+                <a href="/html/web/cn/products/proteins/index.html">蛋白</a>
+                <a href="/html/web/cn/products/antibodies/index.html">抗体</a>
+                <a href="/html/web/cn/products/others/index.html">其他</a>
+            </div>
+            <div class="bq2-ftcol">
+                <h4>关于BIOQUANTI</h4>
+                <a href="/html/web/cn/about/index.html">公司简介</a>
+                <a href="/html/web/cn/new-products/index.html">新闻动态</a>
+                <a href="/html/web/cn/contact/index.html">联系我们</a>
+            </div>
+            <div class="bq2-ftcol bq2-ftcontact">
+                <h4>联系我们</h4>
+                <p class="bq2-fttel">400-111-1200</p>
+                <p class="bq2-ftmail">WUHAN@BIOQUANTI.CN</p>
+                <p class="bq2-ftaddr">湖北省武汉市东湖新技术开发区九峰街道高新大道大悦城商务项目1期4号商业5号办公8层2号17室（自贸区武汉片区）</p>
+            </div>
+            <div class="bq2-ftqr">
+                <img src="/template/1/bioquanti/cn/images/newui/footer-qr.png" alt="BioQuanti QR code">
+            </div>
+        </div>
+    </div>
+    <div class="bq2-copyright">
+        <div class="bq2-container">
+            © 2026 BioQuanti · 鄂ICP备2024082069号-1 · BioQuanti
+        </div>
+    </div>
+</footer>
+<script>
+(function(){
+  // 分类树：点击顶级展开/收起；默认打开当前栏目所在分支
+  var tree = document.getElementById('bq2-cattree');
+  if(tree){
+    var cats = tree.querySelectorAll(':scope > li.cat');
+    cats.forEach(function(li){
+      var tt = li.querySelector('.cat-tt');
+      if(tt){
+        tt.addEventListener('click', function(e){
+          if(e.target.classList && e.target.classList.contains('arr')){
+            e.preventDefault();
+            li.classList.toggle('open');
+          }
+        });
+      }
+    });
+    // 打开包含当前选中子栏目的分支
+    var cur = tree.querySelector('a.cur');
+    if(cur){
+      var p = cur.closest('li.cat');
+      if(p) p.classList.add('open');
+    }
+  }
+  // 说明书下载：文件存在则下载，否则提示
+  document.querySelectorAll('.act-manual').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var url = btn.getAttribute('data-url');
+      var name = btn.getAttribute('data-name') || '说明书.pdf';
+      function ok(){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+      if (window.fetch) {
+        fetch(url, {method:'HEAD'}).then(function(r){
+          if (r.ok) { ok(); } else { alert('说明书整理中，暂未提供下载，如需请联系客服'); }
+        }).catch(function(){ alert('说明书整理中，暂未提供下载，如需请联系客服'); });
+      } else { ok(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

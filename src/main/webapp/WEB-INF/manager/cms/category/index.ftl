@@ -9,6 +9,11 @@
 <div id="index" class="ms-index" v-cloak>
     <el-header class="ms-header" height="50px">
         <el-col :span=12>
+            <el-radio-group v-model="lang" size="small" @change="changeLang" style="margin-right:15px;">
+                <el-radio-button label="zh">中文</el-radio-button>
+                <el-radio-button label="en">English</el-radio-button>
+                <el-radio-button label="all">全部</el-radio-button>
+            </el-radio-group>
             <@shiro.hasPermission name="cms:category:save">
                 <el-button type="primary" class="el-icon-plus" size="default" @click="save()">新增</el-button>
             </@shiro.hasPermission>
@@ -120,6 +125,8 @@
         el: '#index',
         data: function () {
             return {
+                //语言Tab：zh中文(默认) en英文 all全部
+                lang: 'zh',
                 //分类列表
                 dataList: [],
                 //分类列表选中
@@ -248,7 +255,8 @@
                         that.dataList = [];
                     } else {
                         that.emptyText = '';
-                        that.dataList = ms.util.treeData(res.data.rows, 'id', 'categoryId', 'children');
+                        that.dataList = that.filterByLang(res.data.rows, that.lang);
+                        that.dataList = ms.util.treeData(that.dataList, 'id', 'categoryId', 'children');
                     }
                 });
                 setTimeout(function () {
@@ -258,6 +266,18 @@
                         that.loadState = true;
                     }
                 }, 500);
+            },
+            //语言Tab切换：重新过滤栏目列表
+            changeLang: function () {
+                this.list();
+            },
+            //按语言过滤栏目：zh→cn/ en→en/（categoryPath 前缀），all 不过滤
+            filterByLang: function (rows, lang) {
+                if (lang == 'all' || !rows) return rows;
+                var prefix = (lang == 'zh' ? 'cn' : 'en') + '/';
+                return rows.filter(function (row) {
+                    return row.categoryPath && row.categoryPath.indexOf(prefix) == 0;
+                });
             },
             copyContent: function (id) {
                 var msg = "链接地址已保存到剪切板";

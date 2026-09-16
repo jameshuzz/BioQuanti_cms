@@ -21,9 +21,10 @@
     <aside class="bq2-side">
         <p class="bq2-side-title">技术服务</p>
         <ul class="bq2-cattree">
+            <#assign curid = field.typeid>
             {ms:channel typeid='1787217415207001' type='son' orderby='sort'}
             <li class="cat">
-                <a class="cat-tt" href="{ms:global.html/}${field.typelink}">${field.typetitle}<i class="arr">▸</i></a>
+                <a class="cat-tt <#if field.typeid == curid>cur</#if>" href="{ms:global.html/}${field.typelink}">${field.typetitle}<i class="arr">▸</i></a>
             </li>
             {/ms:channel}
         </ul>

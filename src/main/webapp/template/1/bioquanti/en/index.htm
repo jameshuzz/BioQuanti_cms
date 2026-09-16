@@ -103,7 +103,9 @@
                 <div class="bq2-panels bq2-newspanels">
                     <div class="bq2-panel cur">
                         {ms:arclist typeid='6097212335907010004' size=4}
-                        <div class="bq2-newsitem">
+                        <#-- thumb: take first item when litpic is a JSON array, use as-is when plain string -->
+                        <#assign nimg=''><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign pl=field.litpic?eval><#if pl?size gt 0><#assign nimg=(pl[0].url)!''></#if><#elseif field.litpic?? && field.litpic?has_content><#assign nimg=field.litpic></#if>
+                        <div class="bq2-newsitem" data-img="${nimg?html}">
                             <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                             <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
                             <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
@@ -112,7 +114,8 @@
                     </div>
                     <div class="bq2-panel">
                         {ms:arclist typeid='6097212335907010005' size=4}
-                        <div class="bq2-newsitem">
+                        <#assign nimg=''><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign pl=field.litpic?eval><#if pl?size gt 0><#assign nimg=(pl[0].url)!''></#if><#elseif field.litpic?? && field.litpic?has_content><#assign nimg=field.litpic></#if>
+                        <div class="bq2-newsitem" data-img="${nimg?html}">
                             <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                             <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
                             <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
@@ -121,7 +124,8 @@
                     </div>
                     <div class="bq2-panel">
                         {ms:arclist typeid='6097212335907010006' size=4}
-                        <div class="bq2-newsitem">
+                        <#assign nimg=''><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign pl=field.litpic?eval><#if pl?size gt 0><#assign nimg=(pl[0].url)!''></#if><#elseif field.litpic?? && field.litpic?has_content><#assign nimg=field.litpic></#if>
+                        <div class="bq2-newsitem" data-img="${nimg?html}">
                             <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                             <#if field.descrip?? && field.descrip?has_content><p class="ds">${field.descrip}</p></#if>
                             <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
@@ -150,6 +154,36 @@
         </div>
     </div>
 </section>
+<script>
+/* About stats: count up from 0 when scrolled into view */
+(function(){
+  var stats = document.querySelector('.bq2-stats');
+  if(!stats) return;
+  var nums = stats.querySelectorAll('b');
+  function run(b){
+    var m = b.textContent.match(/^(\D*?)(\d+)(.*)$/);
+    if(!m) return;
+    var pre = m[1], target = parseInt(m[2],10), suf = m[3];
+    var t0 = null, dur = 1600;
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min((ts - t0)/dur, 1);
+      var e = 1 - Math.pow(1-p, 3); /* easeOutCubic */
+      b.textContent = pre + Math.round(target*e) + suf;
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){ io.unobserve(en.target); nums.forEach(run); }
+      });
+    },{threshold:.4});
+    io.observe(stats);
+  } else { nums.forEach(run); }
+})();
+</script>
 
 <#include "/en/footer.htm"/>
 <script>
@@ -174,6 +208,31 @@
   }
   bindTabs('bq2-prodtabs');
   bindTabs('bq2-newstabs');
+
+  /* Hot news: left image syncs with hovered item / active tab, fallback to default banner when no thumb */
+  var newsBox = document.querySelector('.bq2-newsbody');
+  if(newsBox){
+    var nimg = newsBox.querySelector('.bq2-newsleft img');
+    var NFB = '/{ms:global.style/}en/images/newui/about-building.jpg';
+    function nshow(it){
+      if(!nimg) return;
+      var u = (it && it.getAttribute('data-img')) || NFB;
+      if(nimg.getAttribute('src') !== u) nimg.src = u;
+    }
+    function nfirst(){ var p = newsBox.querySelector('.bq2-panel.cur'); return p ? p.querySelector('.bq2-newsitem') : null; }
+    nshow(nfirst());
+    var npb = newsBox.querySelector('.bq2-newspanels');
+    npb.addEventListener('mouseover', function(e){
+      var it = e.target.closest ? e.target.closest('.bq2-newsitem') : null;
+      if(it) nshow(it);
+    });
+    npb.addEventListener('mouseleave', function(){ nshow(nfirst()); });
+    document.querySelectorAll('#bq2-newstabs button').forEach(function(b){
+      ['mouseenter','click'].forEach(function(ev){
+        b.addEventListener(ev, function(){ setTimeout(function(){ nshow(nfirst()); }, 0); });
+      });
+    });
+  }
 
   // Hero slideshow: autoplay + arrows + dots, pause on hover
   var hero = document.getElementById('bqHeroSlider');

@@ -196,7 +196,7 @@
         track.style.transform = 'translateX(-' + (idx * 100) + '%)';
         dots.forEach(function(d, k){ d.classList.toggle('on', k === idx); });
       }
-      function auto(){ timer = setInterval(function(){ go(idx + 1); }, 5000); }
+      function auto(){ timer = setInterval(function(){ go(idx + 1); }, 3000); }
       function reset(){ clearInterval(timer); auto(); }
       hero.querySelector('.prev').addEventListener('click', function(){ go(idx - 1); reset(); });
       hero.querySelector('.next').addEventListener('click', function(){ go(idx + 1); reset(); });

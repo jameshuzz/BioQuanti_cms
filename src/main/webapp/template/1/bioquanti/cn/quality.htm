@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-质量保障</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}cn/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/cn/header.htm"/>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">您当前位置 - <a href="{ms:global.html/}cn/index.html">首页</a> &gt; 质量保障</div>
+</div>
+
+<!-- 顶部横幅 -->
+<div class="bq2-qbanner" style="background-image:url('/{ms:global.style/}cn/images/newui/quality-bg.jpg')">
+    <div class="bq2-container">
+        <h2>坚守科研本质，严控试剂品质，保证实验数据可靠</h2>
+        <p>武汉拜康迪生物科技有限公司（BIOQUANTI）位于武汉光谷自贸区，专注 ELISA 科研试剂盒研发、生产、销售及配套技术服务。产品覆盖多物种，服务免疫、肿瘤、代谢、神经、微生物等方向科研实验，可提供生化试剂、技术开发、进出口一体化服务，专注为广大科研工作者提供稳定可靠的实验试剂与技术支撑。</p>
+    </div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- 左侧锚点导航 -->
+    <aside class="bq2-side">
+        <ul class="bq2-qnav" id="bq2-qnav">
+            <#assign qicons=["rd","team","tech","qa","svc"]>
+            {ms:arclist typeid='3787212335907250000' size=10}
+            <li><a href="#bq2-sec-${field.index}"><#assign ic=(qicons[field.index?number-1])!""><#if ic!=""><img class="ico" src="/{ms:global.style/}cn/images/newui/qnav-${ic}.png" alt=""></#if>${field.title}</a></li>
+            {/ms:arclist}
+        </ul>
+    </aside>
+
+    <!-- 右侧：分区内容（每篇文章=一个分区） -->
+    <div class="bq2-main">
+        {ms:arclist typeid='3787212335907250000' size=10}
+        <div class="bq2-qsec" id="bq2-sec-${field.index}">
+            <#if field.litpic?? && field.litpic?has_content>
+            <img class="pic" src="{@ms:file field.litpic/}" alt="${field.title}">
+            <#elseif field.index == 1>
+            <img class="pic" src="/{ms:global.style/}cn/images/newui/dna-quality.png" alt="${field.title}">
+            </#if>
+            <h3>${field.title}</h3>
+            <div class="rich">${field.content}</div>
+        </div>
+        {/ms:arclist}
+    </div>
+</div>
+
+<#include "/cn/footer.htm"/>
+<script>
+(function(){
+  var nav = document.getElementById('bq2-qnav');
+  if(!nav) return;
+  var links = nav.querySelectorAll('a');
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      links.forEach(function(x){ x.classList.remove('cur'); });
+      a.classList.add('cur');
+    });
+  });
+})();
+</script>
+</body>
+</html>

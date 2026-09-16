@@ -508,5 +508,41 @@
 
 	</select>
 
+	<!-- 搜索联想：标题模糊匹配 + 热度降序前10条（供前台搜索框下拉，链接拼接与arclist静态页规则一致） -->
+	<select id="suggest" resultType="java.util.HashMap">
+		select
+		a.id as "id",
+		a.content_title as "title",
+		a.content_hit as "hit",
+		concat(c.category_path,'/',case c.category_type when '2' then 'index' else a.id end,'.html') as "link"
+		from cms_content a
+		left join cms_category c
+		ON a.category_id = c.id
+		<where>
+			a.del=0
+			and a.content_display='0'
+			and c.category_display='enable'
+			and c.category_is_search='enable'
+			<if test="keyword!=null and keyword!=''">
+				and (a.content_title like CONCAT(CONCAT('%',#{keyword}),'%')
+					or a.content_short_title like CONCAT(CONCAT('%',#{keyword}),'%')
+					or a.content_keyword like CONCAT(CONCAT('%',#{keyword}),'%'))
+			</if>
+			<if test="lang!=null and lang!=''">
+				and FIND_IN_SET(#{lang}, a.content_tags) > 0
+			</if>
+			<if test="categoryIds!=null and categoryIds.size() > 0">
+				and
+				<foreach item="item" index="index" collection="categoryIds" open="(" separator="or" close=")">
+					a.category_id=#{item}
+					or a.category_id in (select id FROM cms_category category where category.del=0
+					and FIND_IN_SET(#{item},CATEGORY_PARENT_IDS) > 0)
+				</foreach>
+			</if>
+		</where>
+		order by a.content_hit desc, a.content_datetime desc
+		limit 10
+	</select>
+
 
 </mapper>

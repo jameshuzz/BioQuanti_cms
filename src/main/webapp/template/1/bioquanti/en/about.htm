@@ -22,10 +22,10 @@
 <div class="bq2-container bq2-listwrap">
     <!-- Left anchor nav -->
     <aside class="bq2-side">
-        <p class="bq2-side-title">About Us</p>
         <ul class="bq2-qnav" id="bq2-anav">
+            <#assign qicons=["join","intro"]>
             {ms:arclist typeid='3707212335907000006' size=10 orderby='sort' order='asc'}
-            <li><a href="#bq2-sec-${field.index}">${field.title}</a></li>
+            <li><a href="#bq2-sec-${field.index}"><#assign ic=(qicons[field.index?number-1])!""><#if ic!=""><img class="ico" src="/{ms:global.style/}en/images/newui/qnav-${ic}.png" alt=""></#if>${field.title}</a></li>
             {/ms:arclist}
         </ul>
     </aside>
@@ -36,6 +36,8 @@
         <div class="bq2-qsec" id="bq2-sec-${field.index}">
             <#if field.litpic?? && field.litpic?has_content>
             <img class="pic" src="{@ms:file field.litpic/}" alt="${field.title}">
+            <#elseif field.index == 1>
+            <img class="pic" src="/{ms:global.style/}en/images/newui/dna-about.png" alt="${field.title}">
             </#if>
             <h3>${field.title}</h3>
             <div class="rich">${field.content}</div>

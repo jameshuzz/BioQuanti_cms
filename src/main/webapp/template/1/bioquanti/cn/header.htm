@@ -6,7 +6,7 @@
             <a class="bq2-logo" href="{ms:global.html/}cn/index.html"><img src="{@ms:file global.logo/}" alt="{ms:global.name/}" title="{ms:global.name/}"></a>
             <#if bq_variant == 'index'>
             <div class="bq2-topright">
-                <form class="bq2-search" action="{ms:global.contextpath/}/mcms/search.do" method="post" id="bq-search-form">
+                <form class="bq2-search" action="{ms:global.contextpath/}/mcms/search.do" method="post" id="bq-search-form" data-lang="zh">
                     <div class="bq2-selwrap">
                         <select name="categoryIds" id="bq-species-select">
                             <option value="">全部产品</option>
@@ -15,7 +15,10 @@
                             {/ms:channel}
                         </select>
                     </div>
-                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}</#if>">
+                    <div class="bq2-kwwrap">
+                        <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}</#if>" autocomplete="off">
+                        <div class="bq2-sug" id="bq2-sug"></div>
+                    </div>
                     <input type="hidden" name="style" value="bioquanti">
                     <input type="hidden" name="tmpl" value="cn/search.htm">
                     <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
@@ -74,7 +77,7 @@
     <#if bq_variant != 'index'>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="{ms:global.contextpath/}/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="{ms:global.contextpath/}/mcms/search.do" method="post" id="bq-search-form" data-lang="zh">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">全部产品</option>
@@ -83,7 +86,10 @@
                         {/ms:channel}
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}</#if>">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="<#if search?? && search.content_title?? && search.content_title?has_content>${MUtil.escape(search.content_title)}</#if>" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="cn/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
@@ -134,7 +140,67 @@
       updatePlaceholder();
       kwInput.focus();
     });
-    <#if search?? && search.categoryIds??>
+  <#-- 搜索联想：输入关键词下拉展示热度最高的10条文章，点击/回车直达静态详情页 -->
+  var sugBox = document.getElementById('bq2-sug');
+  if(sugBox && kwInput && searchForm){
+    var sugTimer = null, sugItems = [], sugIdx = -1;
+    var htmlPre = '{ms:global.html/}';
+    function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+    function sugRender(list){
+      sugBox.innerHTML = '';
+      sugItems = list || []; sugIdx = -1;
+      if(!sugItems.length){ sugHide(); return; }
+      sugItems.forEach(function(item){
+        var li = document.createElement('div');
+        li.className = 'bq2-sug-item';
+        var tt = document.createElement('span');
+        tt.className = 'bq2-sug-tt';
+        tt.textContent = item.title;
+        var hit = document.createElement('span');
+        hit.className = 'bq2-sug-hit';
+        hit.textContent = '热度 ' + (item.hit || 0);
+        li.appendChild(tt); li.appendChild(hit);
+        li.addEventListener('mousedown', function(e){
+          e.preventDefault();
+          window.location.href = htmlPre + item.link;
+        });
+        sugBox.appendChild(li);
+      });
+      sugBox.style.display = 'block';
+    }
+    function sugFetch(){
+      var kw = kwInput.value.trim();
+      if(!kw){ sugHide(); return; }
+      var cat = (spSel && spSel.value) ? spSel.value : '';
+      var url = '{ms:global.contextpath/}/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+      fetch(url).then(function(r){ return r.json(); }).then(function(res){
+        sugRender(res && res.data);
+      }).catch(function(){ sugHide(); });
+    }
+    kwInput.addEventListener('input', function(){
+      clearTimeout(sugTimer);
+      sugTimer = setTimeout(sugFetch, 250);
+    });
+    kwInput.addEventListener('keydown', function(e){
+      if(sugBox.style.display === 'none' || !sugItems.length) return;
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+        e.preventDefault();
+        sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+        for(var i = 0; i < sugBox.children.length; i++){
+          sugBox.children[i].classList.toggle('on', i === sugIdx);
+        }
+      }else if(e.key === 'Enter' && sugIdx > -1){
+        e.preventDefault();
+        window.location.href = htmlPre + sugItems[sugIdx].link;
+      }else if(e.key === 'Escape'){
+        sugHide();
+      }
+    });
+    document.addEventListener('click', function(e){
+      if(!searchForm.contains(e.target)) sugHide();
+    });
+  }
+  <#if search?? && search.categoryIds??>
     try { spSel.value = '${search.categoryIds?js_string}'; updatePlaceholder(); } catch(e){}
     </#if>
   }

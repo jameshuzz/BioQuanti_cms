@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.title}</title>
+<meta name="keywords" content="${field.keyword!''}">
+<meta name="description" content="${field.descrip!''}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}cn/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/cn/header.htm"/>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">您当前位置 - <a href="{ms:global.html/}cn/index.html">首页</a> &gt; <a href="{ms:global.html/}cn/services/index.html">技术服务</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- 左侧分类树 -->
+    <aside class="bq2-side">
+        <p class="bq2-side-title">技术服务</p>
+        <ul class="bq2-cattree">
+            <#assign curid = field.typeid>
+            {ms:channel typeid='1787217415207001' type='son' orderby='sort'}
+            <li class="cat">
+                <a class="cat-tt <#if field.typeid == curid>cur</#if>" href="{ms:global.html/}${field.typelink}">${field.typetitle}<i class="arr">▸</i></a>
+            </li>
+            {/ms:channel}
+        </ul>
+    </aside>
+
+    <!-- 右侧：文章详情 -->
+    <div class="bq2-main">
+        <div class="bq2-detail">
+            <h1>${field.title}</h1>
+            <div class="meta">发布时间：${field.date?string("yyyy-MM-dd")}<#if field.author?? && field.author?has_content>　|　作者：${field.author}</#if></div>
+            <div class="rich">${field.content}</div>
+            <div class="bq2-back"><a href="{ms:global.html/}${field.typelink}">← 返回列表</a></div>
+        </div>
+    </div>
+</div>
+
+<#include "/cn/footer.htm"/>
+</body>
+</html>

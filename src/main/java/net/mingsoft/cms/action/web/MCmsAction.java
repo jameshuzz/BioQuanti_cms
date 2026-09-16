@@ -7,9 +7,11 @@ import freemarker.core.ParseException;
 import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.mingsoft.base.constant.Const;
+import net.mingsoft.base.entity.ResultData;
 import net.mingsoft.basic.util.BasicUtil;
 import net.mingsoft.cms.biz.ICategoryBiz;
 import net.mingsoft.cms.biz.IContentBiz;
@@ -32,8 +34,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -289,6 +293,40 @@ public class MCmsAction extends net.mingsoft.cms.action.BaseAction {
             e.printStackTrace();
         }
         return content;
+    }
+
+    /**
+     * 搜索联想接口：输入关键词返回热度最高的前10篇文章（标题/简称/关键词模糊匹配），供前台搜索框下拉选择
+     * @param keyword 关键词
+     * @param lang 语言标签 zh/en（按文章标签过滤，保证中英文站各自联想；与search.do的语言隔离规则一致）
+     * @param categoryIds 栏目编号集合（可选，逗号分隔，与搜索表单的分类筛选一致，含子栏目）
+     */
+    @Operation(summary = "搜索联想")
+    @RequestMapping(value = "suggest", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @ResponseBody
+    public ResultData suggest(HttpServletRequest request, HttpServletResponse response) {
+        String keyword = BasicUtil.getString("keyword");
+        if (StringUtils.isBlank(keyword) || "null".equals(keyword)) {
+            return ResultData.build().success().data(new ArrayList<>());
+        }
+        // 防止超长关键词拖慢查询
+        if (keyword.length() > 50) {
+            keyword = keyword.substring(0, 50);
+        }
+        String lang = BasicUtil.getString("lang");
+        if (!"zh".equals(lang) && !"en".equals(lang)) {
+            lang = null;
+        }
+        List<String> categoryIdList = new ArrayList<>();
+        String categoryIds = BasicUtil.getString("categoryIds");
+        if (StringUtils.isNotBlank(categoryIds) && !"null".equals(categoryIds)) {
+            for (String cid : categoryIds.split(",")) {
+                if (StringUtils.isNotBlank(cid)) {
+                    categoryIdList.add(cid.trim());
+                }
+            }
+        }
+        return ResultData.build().success().data(contentBiz.suggest(keyword, lang, categoryIdList.isEmpty() ? null : categoryIdList));
     }
 
 }

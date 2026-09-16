@@ -56,9 +56,13 @@
         </#if>
         <div class="bq2-gallery">
             <#if picList?size gt 1>
-            <div class="bq2-slider" id="bqSlider" data-pics='${field.litpic?js_string}'>
+            <div class="bq2-slider" id="bqSlider">
+                <div class="bq2-slider-track">
+                    <#list picList as p>
+                    <div class="bq2-slide"><img class="bq2-slider-img" src="${p.url}" alt="${field.title}"></div>
+                    </#list>
+                </div>
                 <button type="button" class="bq2-slider-arrow prev" aria-label="Previous">&#10094;</button>
-                <img class="bq2-slider-img" src="${picList[0].url}" alt="${field.title}">
                 <button type="button" class="bq2-slider-arrow next" aria-label="Next">&#10095;</button>
             </div>
             <#elseif picList?size == 1>
@@ -149,27 +153,27 @@
 <#include "/en/footer.htm"/>
 
 <script>
+<#-- Slider: horizontal slide animation (all images rendered server-side into track, arrows move it) -->
 (function(){
     var slider = document.getElementById('bqSlider');
     if (!slider) return;
-    var img = slider.querySelector('.bq2-slider-img');
+    var track = slider.querySelector('.bq2-slider-track');
     var prev = slider.querySelector('.bq2-slider-arrow.prev');
     var next = slider.querySelector('.bq2-slider-arrow.next');
-    if (!img) return;
-    var urls = [];
-    try { urls = JSON.parse(slider.getAttribute('data-pics')).map(function(p){ return p.url; }); } catch (e) {}
-    if (urls.length === 0) { urls = [img.getAttribute('src')]; }
+    if (!track) return;
+    var slides = track.querySelectorAll('.bq2-slide');
+    if (!slides.length) return;
     var cur = 0;
     function show(i) {
-        cur = (i + urls.length) % urls.length;
-        img.src = urls[cur];
+        cur = (i + slides.length) % slides.length;
+        track.style.transform = 'translateX(-' + (cur * 100) + '%)';
     }
     if (prev) prev.onclick = function(){ show(cur - 1); };
     if (next) next.onclick = function(){ show(cur + 1); };
 })();
 </script>
 <script>
-<#-- Four modules: body H3 routing + hover-to-scroll tab navigation -->
+<#-- Four modules: body H3 routing + click-to-scroll tab navigation -->
 (function(){
     var intro = document.getElementById('bqIntro');
     var protocolBody = document.getElementById('bqProtocolBody');
@@ -199,7 +203,7 @@
         if (!hasProtocol) { var a1 = nav.querySelector('a[href="#bq-mod-protocol"]'); if (a1) a1.parentNode.removeChild(a1); }
         if (!hasLit) { var a2 = nav.querySelector('a[href="#bq-mod-lit"]'); if (a2) a2.parentNode.removeChild(a2); }
     }
-    <#-- Hover/click smoothly scrolls to the target module (no click needed), scrollspy maintains highlight -->
+    <#-- TAB click smoothly scrolls to the target module, scrollspy maintains highlight -->
     if (nav) {
         var links = nav.getElementsByTagName('a');
         for (var i = 0; i < links.length; i++) {
@@ -211,7 +215,6 @@
                     var target = document.getElementById(a.getAttribute('href').slice(1));
                     if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
                 }
-                a.addEventListener('mouseenter', go);
                 a.addEventListener('click', go);
             })(links[i]);
         }

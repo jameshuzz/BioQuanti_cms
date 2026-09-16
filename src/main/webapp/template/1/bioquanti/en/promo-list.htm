@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.typetitle}</title>
+<meta name="keywords" content="${field.typekeyword}">
+<meta name="description" content="${field.typedescrip}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; <a href="{ms:global.html/}en/promotion/index.html">Promotions</a> &gt; ${field.typetitle}</div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- Left category nav -->
+    <aside class="bq2-side">
+        <p class="bq2-side-title">Promotions</p>
+        <ul class="bq2-promonavs">
+            <#assign curid = field.typeid>
+            <#assign topid = '4787212335907240000'>
+            <#if field.typeid == topid><#assign curid = ''></#if>
+            {ms:channel typeid='4787212335907240000' type='son' orderby='sort'}
+            <li><a class="<#if field.typeid == curid>cur</#if>" href="{ms:global.html/}${field.typelink}">${field.typetitle}</a></li>
+            {/ms:channel}
+        </ul>
+    </aside>
+
+    <!-- Right: promo article rows -->
+    <div class="bq2-main">
+        <div class="bq2-promorows">
+            {ms:arclist ispaging=true size=10}
+            <div class="bq2-promorow">
+                <a class="img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/promo-thumb.png" alt="${field.title}"></#if></a>
+                <div class="info">
+                    <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
+                    <p class="ds">${field.descrip}</p>
+                    <p class="dt">${field.date?string("yyyy-MM-dd")}</p>
+                </div>
+            </div>
+            {/ms:arclist}
+        </div>
+
+        <div class="bq2-pagination">
+            <a href="{ms:global.html/}{ms:page.index/}">First</a>
+            <a href="{ms:global.html/}{ms:page.pre/}">Prev</a>
+            <span class="cur">{ms:page.cur/}</span><span>/ {ms:page.total/}</span>
+            <a href="{ms:global.html/}{ms:page.next/}">Next</a>
+            <a href="{ms:global.html/}{ms:page.last/}">Last</a>
+            <span class="cnt">Total: {ms:page.rcount/}</span>
+        </div>
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

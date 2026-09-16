@@ -68,4 +68,13 @@ public interface IContentDao extends IBaseDao<ContentEntity> {
      * @param ids
      */
     void deleteEntityByCategoryIds(@Param("ids") String[] ids);
+
+    /**
+     * 搜索联想：按标题模糊匹配，热度降序取前10条（供前台搜索框下拉）
+     * @param keyword 关键词（标题模糊匹配）
+     * @param lang 语言标签 cn/en（按文章标签过滤，可空）
+     * @param categoryIds 栏目id集合（可空）
+     * @return id/title/hit/link（静态页相对路径）
+     */
+    List<Map<String, Object>> suggest(@Param("keyword") String keyword, @Param("lang") String lang, @Param("categoryIds") List<String> categoryIds);
 }

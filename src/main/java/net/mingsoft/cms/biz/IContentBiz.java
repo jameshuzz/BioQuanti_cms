@@ -63,5 +63,14 @@ public interface IContentBiz extends IBaseBiz<ContentEntity> {
      */
     Map<String,Object> get(Map<String,Object> map);
 
+    /**
+     * 搜索联想：按标题模糊匹配，热度降序取前10条（供前台搜索框下拉）
+     * @param keyword 关键词
+     * @param lang 语言标签 cn/en（可空）
+     * @param categoryIds 栏目id集合（可空）
+     * @return id/title/hit/link 集合
+     */
+    List<Map<String,Object>> suggest(String keyword, String lang, List<String> categoryIds);
+
 
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-${field.title}</title>
+<meta name="keywords" content="${field.keyword!''}">
+<meta name="description" content="${field.descrip!''}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; <a href="{ms:global.html/}en/services/index.html">Services</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- Left category tree -->
+    <aside class="bq2-side">
+        <p class="bq2-side-title">Services</p>
+        <ul class="bq2-cattree">
+            <#assign curid = field.typeid>
+            {ms:channel typeid='3707217415207001' type='son' orderby='sort'}
+            <li class="cat">
+                <a class="cat-tt <#if field.typeid == curid>cur</#if>" href="{ms:global.html/}${field.typelink}">${field.typetitle}<i class="arr">▸</i></a>
+            </li>
+            {/ms:channel}
+        </ul>
+    </aside>
+
+    <!-- Right: article detail -->
+    <div class="bq2-main">
+        <div class="bq2-detail">
+            <h1>${field.title}</h1>
+            <div class="meta">Date: ${field.date?string("yyyy-MM-dd")}</div>
+            <div class="rich">${field.content}</div>
+            <div class="bq2-back"><a href="{ms:global.html/}${field.typelink}">← Back to List</a></div>
+        </div>
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+</body>
+</html>

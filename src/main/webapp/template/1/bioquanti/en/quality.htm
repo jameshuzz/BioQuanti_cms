@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{ms:global.name/}-Quality Assurance</title>
+<meta name="keywords" content="{ms:global.keyword/}">
+<meta name="description" content="{ms:global.descrip/}">
+<link rel="stylesheet" href="${base}/{ms:global.style/}en/css/app.css">
+{@ms:pageurl/}
+</head>
+<body>
+<#include "/en/header.htm"/>
+
+<div class="bq2-crumbbar">
+    <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; Quality Assurance</div>
+</div>
+
+<!-- Top banner -->
+<div class="bq2-qbanner" style="background-image:url('/{ms:global.style/}en/images/newui/quality-bg.jpg')">
+    <div class="bq2-container">
+        <h2>Committed to the Essence of Research, Strict Quality Control, Reliable Experimental Data</h2>
+        <p>Wuhan Bioquanti Biotechnology Co., Ltd. (BIOQUANTI) is located in the Wuhan Free Trade Zone, focusing on the R&D, production, sales and supporting technical services of ELISA research kits. Our products cover multiple species and serve research in immunology, oncology, metabolism, neurobiology and microbiology. We provide biochemical reagents, technology development and integrated import/export services, dedicated to offering stable and reliable experimental reagents and technical support for researchers.</p>
+    </div>
+</div>
+
+<div class="bq2-container bq2-listwrap">
+    <!-- Left anchor nav -->
+    <aside class="bq2-side">
+        <ul class="bq2-qnav" id="bq2-qnav">
+            <#assign qicons=["rd","team","tech","qa","svc"]>
+            {ms:arclist typeid='4787212335907250000' size=10}
+            <li><a href="#bq2-sec-${field.index}"><#assign ic=(qicons[field.index?number-1])!""><#if ic!=""><img class="ico" src="/{ms:global.style/}en/images/newui/qnav-${ic}.png" alt=""></#if>${field.title}</a></li>
+            {/ms:arclist}
+        </ul>
+    </aside>
+
+    <!-- Right: sections (one article = one section) -->
+    <div class="bq2-main">
+        {ms:arclist typeid='4787212335907250000' size=10}
+        <div class="bq2-qsec" id="bq2-sec-${field.index}">
+            <#if field.litpic?? && field.litpic?has_content>
+            <img class="pic" src="{@ms:file field.litpic/}" alt="${field.title}">
+            <#elseif field.index == 1>
+            <img class="pic" src="/{ms:global.style/}en/images/newui/dna-quality.png" alt="${field.title}">
+            </#if>
+            <h3>${field.title}</h3>
+            <div class="rich">${field.content}</div>
+        </div>
+        {/ms:arclist}
+    </div>
+</div>
+
+<#include "/en/footer.htm"/>
+<script>
+(function(){
+  var nav = document.getElementById('bq2-qnav');
+  if(!nav) return;
+  var links = nav.querySelectorAll('a');
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      links.forEach(function(x){ x.classList.remove('cur'); });
+      a.classList.add('cur');
+    });
+  });
+})();
+</script>
+</body>
+</html>

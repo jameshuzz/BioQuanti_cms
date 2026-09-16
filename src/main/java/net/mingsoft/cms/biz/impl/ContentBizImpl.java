@@ -84,6 +84,11 @@ public class ContentBizImpl  extends BaseBizImpl<IContentDao, ContentEntity> imp
 	}
 
 	@Override
+	public List<Map<String, Object>> suggest(String keyword, String lang, List<String> categoryIds) {
+		return contentDao.suggest(keyword, lang, categoryIds);
+	}
+
+	@Override
 	public EUListBean list(Map<String,Object> map ) {
 		//通过tagSqlBiz获取arclist对应的sql
 		QueryWrapper<TagEntity> tagWrapper = new QueryWrapper<>();

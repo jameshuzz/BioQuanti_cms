@@ -212,6 +212,13 @@ img{border:0;max-width:100%;}
 .bq-mod-body{line-height:1.9;font-size:14px;color:#444;overflow-x:auto;}
 .bq-mod-body h3{font-size:17px;color:#29568F;border-left:4px solid #F60;padding-left:10px;margin:22px 0 14px;}
 .bq-mod-body h3:first-child{margin-top:0;}
+/* 产品简介信息表（富文本骨架，后台简介模板插入） */
+.bq-intro{margin:0 0 18px;}
+.bq-introtab{border-collapse:collapse;width:100%;max-width:760px;}
+.bq-introtab th,.bq-introtab td{border:1px solid #dfe5ee;padding:9px 14px;font-size:13px;line-height:1.7;text-align:left;vertical-align:top;}
+.bq-introtab th{width:170px;background:#F4F8FC;color:#29568F;font-weight:600;white-space:nowrap;}
+.bq-introtab td{color:#444;background:#fff;}
+.bq-introtab tr:first-child th,.bq-introtab tr:first-child td{border-top:1px solid #dfe5ee;}
 /* 相关产品 */
 .bq-related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .bq-related-item{display:block;border:1px solid #e0e6ef;border-radius:6px;padding:14px;text-decoration:none;background:#fff;transition:box-shadow .2s;}

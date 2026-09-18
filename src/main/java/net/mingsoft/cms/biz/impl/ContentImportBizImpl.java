@@ -305,6 +305,10 @@ public class ContentImportBizImpl implements IContentImportBiz {
 					}
 					article.setContentTitle(title);
 					article.setCategoryId(category.getId());
+					// 简称默认取货号（与存量产品一致，列表页编码展示用），仅在为空时补齐，不覆盖手工简称
+					if (StrUtil.isBlank(article.getContentShortTitle())) {
+						article.setContentShortTitle(catalogNo);
+					}
 					// 标签：填字典标签名（中文/英文）或值（zh/en），多个逗号分隔，映射为字典值存储；
 					// 留空时新增默认zh、更新保持原标签（见搜索语言隔离方案）
 					String tagRaw = vals.get("contentTags");

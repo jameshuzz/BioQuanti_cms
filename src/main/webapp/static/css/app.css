@@ -202,3 +202,13 @@ textarea::-webkit-input-placeholder {
 .el-tabs--top {
     flex-direction: column;
 }
+/* ---- login page: blue-white theme ---- */
+.class-3 {
+    overflow: hidden;
+    border-radius: 12px 0 0 12px;
+}
+.class-4 {
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}

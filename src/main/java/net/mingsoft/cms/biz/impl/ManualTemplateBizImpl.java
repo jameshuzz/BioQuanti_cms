@@ -172,7 +172,10 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 
 	@Override
 	public Map<String, Object> queryProducts(String categoryId, String search, String bindFilter, String currentTemplateId, int page, int size) {
-		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
+		StringBuilder where = new StringBuilder(" WHERE 1=1 ")
+				// 仅有效产品：文章未软删、规格行有效，且只取中英文产品中心树下的文章
+				.append(" AND c.del = 0 AND s.DEL = 0 ")
+				.append(" AND (ca.category_path LIKE 'cn/products%' OR ca.category_path LIKE 'en/products%') ");
 		List<Object> params = new ArrayList<>();
 		if (StringUtils.isNotBlank(categoryId) && !"0".equals(categoryId)) {
 			// 栏目筛选含全部子孙栏目（选中父栏目如"产品中心"可查出子栏目下的产品）

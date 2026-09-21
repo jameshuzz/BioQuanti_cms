@@ -149,7 +149,11 @@
                 var that = this;
                 ms.http.get(ms.manager + "/cms/generate/list.do", {pageSize: 9999}).then(function (res) {
                     if (res.result) {
-                        that.treeList[0].children = ms.util.treeData(res.data.rows, 'id', 'categoryId', 'children');
+                        // 只保留中英文产品中心及其子集（简介模板仅对产品栏目有意义）
+                        var rows = (res.data.rows || []).filter(function (r) {
+                            return r.categoryPath && (r.categoryPath.indexOf('cn/products') == 0 || r.categoryPath.indexOf('en/products') == 0);
+                        });
+                        that.treeList[0].children = ms.util.treeData(rows, 'id', 'categoryId', 'children');
                         that.flattenTree(that.treeList[0].children);
                     }
                 });

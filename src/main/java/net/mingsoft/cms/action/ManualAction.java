@@ -60,29 +60,32 @@ public class ManualAction extends BaseAction {
 	}
 
 	/**
-	 * 一键生成附件：对该模板已绑定的全部产品生成说明书PDF附件（回填MANUAL字段）并定向静态化产品页面
+	 * 一键生成附件（异步受理）：对该模板已绑定的全部产品后台生成说明书PDF附件（回填MANUAL字段）并定向静态化产品页面，
+	 * 立即返回受理结果，进度通过 /attach/progress 轮询查询
 	 */
-	@Operation(summary = "一键生成说明书附件")
+	@Operation(summary = "一键生成说明书附件（异步）")
 	@PostMapping("/attach/generate")
 	@ResponseBody
 	@LogAnn(title = "一键生成说明书附件", businessType = BusinessTypeEnum.UPDATE)
 	@RequiresPermissions("cms:manual:bind")
 	public ResultData generateAttach(@RequestParam String templateId) {
-		Map<String, Object> result = manualTemplateBiz.generateAttachments(templateId);
-		// 失败明细放msg，成功数放data
-		List<String> errors = (List<String>) result.get("errors");
-		if (errors != null && !errors.isEmpty()) {
-			StringBuilder msg = new StringBuilder("共" + result.get("total") + "个产品，成功" + result.get("success")
-					+ "个，失败" + errors.size() + "个：");
-			for (int i = 0; i < errors.size() && i < 10; i++) {
-				msg.append("[").append(errors.get(i)).append("]");
-			}
-			if (errors.size() > 10) {
-				msg.append("等");
-			}
-			return ResultData.build().error(msg.toString());
+		Map<String, Object> result = manualTemplateBiz.generateAttachmentsAsync(templateId);
+		if (!Boolean.TRUE.equals(result.get("accepted"))) {
+			return ResultData.build().error(String.valueOf(result.get("message")));
 		}
 		return ResultData.build().success(result);
+	}
+
+	/**
+	 * 查询附件生成进度（前端轮询）
+	 * @return {total, done, success, failed, current, stage, running, pages, errors, message}
+	 */
+	@Operation(summary = "附件生成进度查询")
+	@GetMapping("/attach/progress")
+	@ResponseBody
+	@RequiresPermissions("cms:manual:bind")
+	public ResultData attachProgress(@RequestParam String templateId) {
+		return ResultData.build().success(manualTemplateBiz.getGenerateProgress(templateId));
 	}
 
 	/**

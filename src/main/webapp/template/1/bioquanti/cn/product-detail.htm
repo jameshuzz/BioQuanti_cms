@@ -90,7 +90,7 @@
             <div class="bq2-spec-rows" id="bqSpecRows">
                 <#if specs?size gt 0>
                 <#list specs as sp>
-                <div class="bq2-spec-row <#if sp_index == 0>cur</#if>"><span class="k">规格</span><span class="v">${(sp.spec)!''}</span><span class="p"><#if ((sp.price)!'')?string?has_content>${(sp.price)!''}<#else>询价</#if></span></div>
+                <div class="bq2-spec-row <#if sp_index == 0>cur</#if>"><span class="k">规格</span><span class="v">${(sp.spec)!''}</span><span class="p"><#if ((sp.price)!'')?string?has_content>¥${(sp.price)!''}<#else>询价</#if></span></div>
                 </#list>
                 <#elseif specFallback?has_content>
                 <div class="bq2-spec-row cur"><span class="k">规格</span><span class="v">${specFallback}</span><span class="p">询价</span></div>
@@ -141,7 +141,7 @@
                     <#if field.id?string != curId && shown lt 9>
                     <#assign shown=shown+1>
                     <a class="bq-related-item" href="{ms:global.html/}${field.link}">
-                        <div class="pic"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></div>
+                        <div class="pic"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></div>
                         <div class="no">${field.shorttitle}</div>
                         <div class="tt">${field.title}</div>
                     </a>

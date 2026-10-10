@@ -35,7 +35,7 @@
         <div class="bq2-artrows">
             {ms:arclist ispaging=true size=10}
             <div class="bq2-artrow">
-                <a class="img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                <a class="img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
                 <div class="info">
                     <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                     <p class="ds">${field.descrip}</p>

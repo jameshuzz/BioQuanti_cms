@@ -62,7 +62,7 @@
         <div class="bq2-prodrows">
             {ms:arclist ispaging=true size=20 tableName='mdiy_model_cpspecprod'}
             <div class="bq2-row">
-                <a class="bq2-row-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
+                <a class="bq2-row-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
                 <div class="bq2-row-info">
                     <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                     <#if field.descrip?? && field.descrip?has_content><p class="en">${field.descrip}</p></#if>
@@ -89,7 +89,7 @@
                     <#if specs?size gt 0>
                     <select class="bq-specsel">
                         <#list specs as sp>
-                        <option value="${sp_index}">${((sp.spec)!'')?string}${((sp.price)!'')?string?has_content?then(' | ' + ((sp.price)!'')?string, '')}</option>
+                        <option value="${sp_index}">${((sp.spec)!'')?string}${((sp.price)!'')?string?has_content?then(' | ¥' + ((sp.price)!'')?string, '')}</option>
                         </#list>
                     </select>
                     <#else>

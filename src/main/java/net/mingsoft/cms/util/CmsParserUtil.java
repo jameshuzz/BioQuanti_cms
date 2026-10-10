@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 文章解析工具类
@@ -185,6 +186,15 @@ public class CmsParserUtil {
      * @throws TemplateNotFoundException
      */
     public static void generateBasic(List<CategoryBean> articleIdList, String htmlDir,Date datetime) {
+        generateBasic(articleIdList, htmlDir, datetime, null);
+    }
+
+    /**
+     * 生成文章静态页面（支持进度回调，原有三参方法行为不变）
+     * @param onProgress 静态化进度回调：每写出一个页面回调一次，参数为(已写出页面数, 文章总数)，可为null
+     */
+    public static void generateBasic(List<CategoryBean> articleIdList, String htmlDir, Date datetime,
+                                     java.util.function.BiConsumer<Integer, Integer> onProgress) {
 
 
         Map<String, Object> parserParams = new HashMap<String, Object>();
@@ -194,7 +204,15 @@ public class CmsParserUtil {
             parserParams.put(ParserUtil.URL, BasicUtil.getWebsiteApp().getAppHostUrl());
             parserParams.put(ParserUtil.APP_ID, BasicUtil.getWebsiteApp().getAppId());
         } else {
-            parserParams.put(ParserUtil.URL, BasicUtil.getUrl());
+            // 后台线程（如异步生成附件任务）没有request上下文，getUrl()会返回null，
+            // 导致global标签SQL中${url}渲染报InvalidReferenceException；此处兜底取默认站点地址。
+            // 请求线程中getUrl()永远非空，此兜底不会触发，静态化页面原有行为不变。
+            String url = BasicUtil.getUrl();
+            if (StringUtils.isBlank(url)) {
+                net.mingsoft.basic.entity.AppEntity firstApp = BasicUtil.getApp();
+                url = (firstApp != null && StringUtils.isNotBlank(firstApp.getAppUrl())) ? firstApp.getAppUrl() : "";
+            }
+            parserParams.put(ParserUtil.URL, url);
             parserParams.put(ParserUtil.APP_DIR, BasicUtil.getApp().getAppDir());
         }
 
@@ -213,6 +231,8 @@ public class CmsParserUtil {
         ModelEntity contentModel = null;
         // 记录已经生成了文章编号
         List<String> generateIds = new ArrayList<>();
+        // 已写出页面计数（供进度回调使用）
+        java.util.concurrent.atomic.AtomicInteger written = new AtomicInteger(0);
         // 生成文章
         for (int artId = 0; artId < articleIdList.size(); ) {
 
@@ -305,6 +325,9 @@ public class CmsParserUtil {
             try {
                 content = ParserUtil.rendering(columnUrl, cloneMap);
                 FileUtil.writeString(content, finalWritePath, Const.UTF8);
+                if (onProgress != null) {
+                    onProgress.accept(written.incrementAndGet(), articleIdList.size());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

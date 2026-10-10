@@ -254,6 +254,50 @@
             </template>
         </el-dialog>
 
+        <#-- ================= 附件生成进度弹窗 ================= -->
+        <el-dialog v-model="progressDialog.visible" :title="'生成附件 - ' + (progressDialog.name || '')"
+                   width="600px" :close-on-click-modal="false" :before-close="beforeCloseProgress" @close="stopProgressDialog">
+            <div style="margin-bottom:15px;">
+                <el-progress :percentage="progressDialog.percentage" :status="progressDialog.status"
+                             :stroke-width="20" :text-inside="true"></el-progress>
+            </div>
+            <div style="line-height:26px;">
+                <div>
+                    <el-tag size="small" :type="progressDialog.running ? 'primary' : (progressDialog.failed > 0 ? 'warning' : 'success')">
+                        {{ progressDialog.running ? (progressDialog.stage == 'staticizing' ? '静态化中' : '生成中') : '已完成' }}
+                    </el-tag>
+                    <span style="margin-left:8px;">
+                        已完成 <b>{{ progressDialog.done }}</b> / {{ progressDialog.total }}
+                        （成功 <b style="color:#67C23A;">{{ progressDialog.success }}</b>，
+                        失败 <b style="color:#F56C6C;">{{ progressDialog.failed }}</b>）
+                    </span>
+                </div>
+                <div style="margin-top:6px;" v-if="progressDialog.running && progressDialog.stage == 'generating' && progressDialog.current">
+                    当前生成：{{ progressDialog.current }}
+                </div>
+                <div style="margin-top:12px;" v-if="progressDialog.stage == 'staticizing'">
+                    <el-progress :percentage="staticPercentage" color="#E6A23C"
+                                 :stroke-width="20" :text-inside="true"></el-progress>
+                    <div class="manual-tip" style="margin-top:6px;">
+                        静态化进度：{{ progressDialog.staticDone }} / {{ progressDialog.staticTotal }} 个页面（附件已全部生成，正在静态化产品页面，页面立即生效）
+                    </div>
+                </div>
+                <div style="margin-top:6px;" v-if="!progressDialog.running && progressDialog.message">{{ progressDialog.message }}</div>
+                <div style="margin-top:10px;" v-if="progressDialog.errors.length > 0">
+                    <div style="color:#F56C6C;font-size:12px;margin-bottom:4px;">失败明细（{{ progressDialog.errors.length }} 条）：</div>
+                    <div style="max-height:140px;overflow-y:auto;font-size:12px;color:#909399;line-height:20px;">
+                        <div v-for="(e, i) in progressDialog.errors.slice(0, 50)" :key="i">{{ e }}</div>
+                        <div v-if="progressDialog.errors.length > 50">...等共 {{ progressDialog.errors.length }} 条</div>
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <el-button type="primary" @click="progressDialog.visible = false">
+                    {{ progressDialog.running ? '后台运行，关闭窗口' : '关闭' }}
+                </el-button>
+            </template>
+        </el-dialog>
+
     </el-main>
 </div>
 </body>
@@ -281,6 +325,13 @@
                 bindSaving: false,
                 // 在线编辑弹窗
                 editDialog: {visible: false, id: '', name: '', content: '', loading: false, saving: false},
+                // 附件生成进度弹窗（轮询 /attach/progress）
+                progressDialog: {
+                    visible: false, templateId: '', name: '', timer: null,
+                    stage: 'idle', running: false, total: 0, done: 0, success: 0, failed: 0,
+                    current: '', pages: 0, message: '', errors: [], percentage: 0, status: '',
+                    staticTotal: 0, staticDone: 0
+                },
                 // 编辑器配置（仿模板管理的htm编辑器）
                 cmOption: {
                     tabSize: 4,
@@ -305,6 +356,11 @@
                 return that.selection.filter(function (r) {
                     return r.templateId && r.templateId != that.bindDialog.template.id;
                 }).length;
+            },
+            // 静态化阶段进度百分比（橙色进度条）
+            staticPercentage: function () {
+                var d = this.progressDialog;
+                return d.staticTotal > 0 ? Math.min(100, Math.round(d.staticDone / d.staticTotal * 100)) : 0;
             }
         },
         methods: {
@@ -404,37 +460,85 @@
                 });
             },
             // ============ 一键生成附件 ============
-            // 对已绑定产品批量生成说明书PDF（回填MANUAL附件字段）并定向静态化产品页面
+            // 异步受理：后台逐个生成说明书PDF（回填MANUAL附件字段），完成后定向静态化产品页面
             generateAttach: function (row) {
                 var that = this;
-                that.$confirm('将对本模板已绑定的 ' + row.bindCount + ' 个产品生成说明书PDF附件，并同步静态化对应产品页面（页面立即生效）。绑定产品较多时耗时较长，请耐心等待', '一键生成附件', {
+                that.$confirm('将对本模板已绑定的 ' + row.bindCount + ' 个产品生成说明书PDF附件，并同步静态化对应产品页面（页面立即生效）。生成过程中可实时查看进度', '一键生成附件', {
                     confirmButtonText: '开始生成', cancelButtonText: '取消', type: 'warning'
                 }).then(function () {
-                    var loading = that.$notify({
-                        title: '正在生成', type: 'info', duration: 0,
-                        message: '正在生成说明书附件并静态化页面，请勿关闭页面...'
-                    });
                     ms.http.post(ms.manager + '/cms/manual/attach/generate.do', {
                         templateId: row.id
-                    }, {
-                        timeout: 600000,
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
                     }).then(function (res) {
-                        loading.close();
                         if (res.result) {
-                            var d = res.data;
-                            that.$notify({
-                                title: '生成完成', type: 'success', duration: 0,
-                                message: '共 ' + d.total + ' 个产品，成功生成附件 ' + d.success + ' 个，静态化页面 ' + d.pages + ' 个，前台详情页已生效'
-                            });
+                            that.openProgressDialog(row);
                         } else {
                             that.$notify({title: '生成失败', message: res.msg, type: 'error', duration: 0});
                         }
                     });
                 });
+            },
+            // 打开进度弹窗并开始轮询
+            openProgressDialog: function (row) {
+                var that = this, d = that.progressDialog;
+                d.templateId = row.id; d.name = row.templateName;
+                d.stage = 'generating'; d.running = true;
+                d.total = row.bindCount || 0; d.done = 0; d.success = 0; d.failed = 0;
+                d.current = ''; d.pages = 0; d.message = ''; d.errors = [];
+                d.percentage = 0; d.status = '';
+                d.staticTotal = 0; d.staticDone = 0;
+                d.visible = true;
+                that.pollProgress();
+                d.timer = setInterval(function () { that.pollProgress(); }, 1500);
+            },
+            // 轮询生成进度（每1.5秒，每个附件生成完成进度条走一格）
+            pollProgress: function () {
+                var that = this, d = that.progressDialog;
+                ms.http.get(ms.manager + '/cms/manual/attach/progress.do', {templateId: d.templateId}).then(function (res) {
+                    if (!res.result || !res.data) return;
+                    var p = res.data;
+                    if (p.stage == 'idle') {
+                        // 任务状态丢失（服务重启等），停止轮询
+                        that.stopProgressDialog();
+                        d.running = false;
+                        d.message = '任务状态丢失（服务可能已重启），请重新发起生成';
+                        return;
+                    }
+                    d.stage = p.stage; d.running = !!p.running;
+                    d.total = p.total; d.done = p.done; d.success = p.success; d.failed = p.failed;
+                    d.current = p.current; d.pages = p.pages; d.message = p.message;
+                    d.errors = p.errors || [];
+                    d.staticTotal = p.staticTotal || 0; d.staticDone = p.staticDone || 0;
+                    d.percentage = d.total > 0 ? Math.min(100, Math.round(d.done / d.total * 100)) : 0;
+                    d.status = d.failed > 0 ? 'exception' : (d.percentage >= 100 ? 'success' : '');
+                    if (!d.running) {
+                        that.stopProgressDialog();
+                        var msg = '共 ' + d.total + ' 个产品，成功 ' + d.success + ' 个，失败 ' + d.failed + ' 个，静态化页面 ' + d.pages + ' 个，前台详情页已生效';
+                        that.$notify({
+                            title: d.failed > 0 ? '生成完成（部分失败）' : '生成完成',
+                            type: d.failed > 0 ? 'warning' : 'success', duration: 0, message: msg
+                        });
+                        that.loadList();
+                    }
+                });
+            },
+            // 停止轮询
+            stopProgressDialog: function () {
+                var d = this.progressDialog;
+                if (d.timer) {
+                    clearInterval(d.timer);
+                    d.timer = null;
+                }
+            },
+            // 生成中关闭进度窗口需确认（任务不中断，仅不再显示进度）
+            beforeCloseProgress: function (done) {
+                var that = this, d = that.progressDialog;
+                if (!d.running) {
+                    done();
+                    return;
+                }
+                that.$confirm('任务仍在后台执行，关闭后将看不到实时进度（任务不会中断）', '提示', {
+                    confirmButtonText: '仍要关闭', cancelButtonText: '继续查看', type: 'warning'
+                }).then(done).catch(function () {});
             },
             // ============ 预览/下载 ============
             // 模板预览：原始模板转PDF，占位符原样显示，无需绑定产品

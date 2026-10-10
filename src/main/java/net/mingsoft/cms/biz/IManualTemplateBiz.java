@@ -117,6 +117,21 @@ public interface IManualTemplateBiz extends IBaseBiz<ManualTemplateEntity> {
 	Map<String, Object> generateAttachments(String templateId);
 
 	/**
+	 * 异步启动一键生成附件任务（后台线程执行，立即返回）
+	 * @param templateId 模板id
+	 * @return {total:绑定产品数, accepted:是否受理}；同模板已有任务进行中时 accepted=false
+	 */
+	Map<String, Object> generateAttachmentsAsync(String templateId);
+
+	/**
+	 * 查询附件生成进度
+	 * @param templateId 模板id
+	 * @return {templateId, total, done, success, failed, current, stage, running, pages, errors, message}
+	 * stage: idle=无任务 generating=生成中 staticizing=静态化中 done=已完成
+	 */
+	Map<String, Object> getGenerateProgress(String templateId);
+
+	/**
 	 * 说明书目录扫描（孤儿文件检测）
 	 * @return {templates:模板文件数, templateSize:字节数, orphans:[{name,size,lastModified}], orphanSize}
 	 */

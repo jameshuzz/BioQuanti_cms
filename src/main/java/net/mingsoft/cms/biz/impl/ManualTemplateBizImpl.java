@@ -15,6 +15,8 @@ import net.mingsoft.mdiy.biz.IModelBiz;
 import net.mingsoft.mdiy.entity.ModelEntity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
 @Service("manualTemplateBizImpl")
 @Transactional
 public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, ManualTemplateEntity> implements IManualTemplateBiz {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ManualTemplateBizImpl.class);
 
 	/**
 	 * 产品规格模型表名（说明书占位符数据源，加字段后占位符清单自动扩展）
@@ -362,10 +366,106 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 
 	// ==================== 一键生成附件（静态化说明书） ====================
 
+	/**
+	 * 附件生成任务进度（templateId -> 进度数据），供前端轮询展示
+	 * stage: idle=无任务 generating=生成中 staticizing=静态化中 done=已完成
+	 */
+	public static final Map<String, Map<String, Object>> GENERATE_PROGRESS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * 附件生成单线程池：多模板任务排队串行执行，避免PDF渲染资源争抢
+	 */
+	private static final java.util.concurrent.ExecutorService GENERATE_POOL =
+			java.util.concurrent.Executors.newSingleThreadExecutor(r -> new Thread(r, "manual-generate"));
+
 	@Override
 	public Map<String, Object> generateAttachments(String templateId) {
+		// 同步接口保留（向后兼容），不写进度
+		Map<String, Object> progress = newProgress(templateId);
+		progress.put("stage", "done");
+		progress.put("running", false);
+		return runGenerateTask(templateId, progress);
+	}
+
+	@Override
+	public Map<String, Object> generateAttachmentsAsync(String templateId) {
+		Map<String, Object> old = GENERATE_PROGRESS.get(templateId);
+		if (old != null && Boolean.TRUE.equals(old.get("running"))) {
+			Map<String, Object> r = new HashMap<>();
+			r.put("accepted", false);
+			r.put("total", old.get("total"));
+			r.put("message", "该模板的生成任务正在进行中，请等待完成");
+			return r;
+		}
+		Map<String, Object> progress = newProgress(templateId);
+		GENERATE_PROGRESS.put(templateId, progress);
+		GENERATE_POOL.submit(() -> {
+			try {
+				runGenerateTask(templateId, progress);
+			} catch (Exception e) {
+				progress.put("stage", "done");
+				progress.put("running", false);
+				progress.put("message", "任务异常终止: " + e.getMessage());
+				LOG.error("说明书附件生成任务异常 templateId={}", templateId, e);
+			}
+		});
+		Map<String, Object> r = new HashMap<>();
+		r.put("accepted", true);
+		r.put("total", progress.get("total"));
+		return r;
+	}
+
+	@Override
+	public Map<String, Object> getGenerateProgress(String templateId) {
+		Map<String, Object> p = GENERATE_PROGRESS.get(templateId);
+		if (p == null) {
+			Map<String, Object> idle = new HashMap<>();
+			idle.put("templateId", templateId);
+			idle.put("stage", "idle");
+			idle.put("running", false);
+			idle.put("total", 0);
+			idle.put("done", 0);
+			idle.put("success", 0);
+			idle.put("failed", 0);
+			idle.put("staticTotal", 0);
+			idle.put("staticDone", 0);
+			idle.put("errors", new ArrayList<>());
+			return idle;
+		}
+		return p;
+	}
+
+	/**
+	 * 新建进度对象（查询绑定产品数并预填）
+	 */
+	private Map<String, Object> newProgress(String templateId) {
+		Map<String, Object> p = new HashMap<>();
+		p.put("templateId", templateId);
+		p.put("stage", "generating");
+		p.put("running", true);
+		p.put("done", 0);
+		p.put("success", 0);
+		p.put("failed", 0);
+		p.put("current", "");
+		p.put("pages", 0);
+		p.put("staticTotal", 0);
+		p.put("staticDone", 0);
+		p.put("errors", new ArrayList<String>());
+		return p;
+	}
+
+	/**
+	 * 执行完整的附件生成流程（逐个渲染PDF+回填MANUAL+最后定向静态化）
+	 * @param progress 非空时实时更新进度供前端轮询
+	 */
+	private Map<String, Object> runGenerateTask(String templateId, Map<String, Object> progress) {
 		ManualTemplateEntity entity = getTemplate(templateId);
 		if (!"1".equals(entity.getStatus())) {
+			if (progress != null) {
+				progress.put("stage", "done");
+				progress.put("running", false);
+				progress.put("message", "说明书模板已停用");
+			}
 			throw new BusinessException("说明书模板已停用");
 		}
 		// 绑定的产品（仅已发布、未删除且栏目启用的才生成）
@@ -377,10 +477,18 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 				templateId);
 		Map<String, Object> result = new HashMap<>();
 		result.put("total", products.size());
+		if (progress != null) {
+			progress.put("total", products.size());
+		}
 		if (products.isEmpty()) {
 			result.put("success", 0);
 			result.put("pages", 0);
 			result.put("errors", new ArrayList<>());
+			if (progress != null) {
+				progress.put("stage", "done");
+				progress.put("running", false);
+				progress.put("message", "该模板没有绑定产品");
+			}
 			return result;
 		}
 		File dir = manualDir();
@@ -389,6 +497,9 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		for (Map<String, Object> p : products) {
 			String linkId = String.valueOf(p.get("linkId"));
 			String catalogNo = String.valueOf(p.get("catalogNo"));
+			if (progress != null) {
+				progress.put("current", catalogNo);
+			}
 			try {
 				// 1. 渲染PDF并落盘（文件名用文章id，重复生成直接覆盖不产生垃圾文件）
 				Map<String, Object> rendered = renderManual(linkId, templateId);
@@ -400,21 +511,46 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 				String json = "[{\"url\":\"" + url + "\",\"name\":\"" + displayName.replace("\\", "\\\\").replace("\"", "\\\"") + "\"}]";
 				update("UPDATE " + SPEC_TABLE + " SET MANUAL = ? WHERE LINK_ID = ?", json, linkId);
 				okIds.add(linkId);
+				if (progress != null) {
+					progress.put("success", okIds.size());
+				}
 			} catch (Exception e) {
 				errors.add(catalogNo + "/" + linkId + ": " + e.getMessage());
 				LOG.error("说明书附件生成失败 linkId={}", linkId, e);
+			} finally {
+				if (progress != null) {
+					progress.put("done", ((Number) progress.get("done")).intValue() + 1);
+					progress.put("failed", errors.size());
+					// errors为live引用，轮询端可实时看到失败明细
+					progress.put("errors", errors);
+				}
 			}
 		}
 		// 3. 对生成成功的产品定向静态化（复用栏目静态化管线，仅生成选中的文章）
 		int pages = 0;
 		if (!okIds.isEmpty()) {
 			List<net.mingsoft.cms.bean.CategoryBean> beans = contentDao.queryBeansByArticleIds(okIds);
-			net.mingsoft.cms.util.CmsParserUtil.generateBasic(beans, htmlDir, null);
+			if (progress != null) {
+				progress.put("stage", "staticizing");
+				progress.put("staticTotal", beans.size());
+				progress.put("staticDone", 0);
+			}
+			net.mingsoft.cms.util.CmsParserUtil.generateBasic(beans, htmlDir, null, (staticDone, staticTotal) -> {
+				if (progress != null) {
+					progress.put("staticDone", staticDone);
+				}
+			});
 			pages = beans.size();
 		}
 		result.put("success", okIds.size());
 		result.put("pages", pages);
 		result.put("errors", errors);
+		if (progress != null) {
+			progress.put("stage", "done");
+			progress.put("running", false);
+			progress.put("pages", pages);
+			progress.put("message", "完成");
+		}
 		return result;
 	}
 

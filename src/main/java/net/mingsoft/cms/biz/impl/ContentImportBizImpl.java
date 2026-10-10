@@ -228,11 +228,16 @@ public class ContentImportBizImpl implements IContentImportBiz {
 		// 标签字典：中文标签名 -> 字典值（中文->zh、英文->en），导入时映射后存储
 		Map<String, String> tagDict = queryTagDict();
 
-		// 已有货号 -> 规格行(ID, LINK_ID)，用于按货号匹配更新
+		// 已有货号+语言 -> 规格行(ID, LINK_ID)，用于同语言按货号匹配更新
+		// 双语双文章模式：同一货号在中英文栏目各有独立文章和规格行，键加语言维度（货号|zh/en）隔离，避免跨语言覆盖
+		// 仅载有效规格行（未软删）且文章未软删的行，孤儿行不参与匹配
 		Map<String, Map<String, Object>> specMap = new HashMap<>();
 		for (Map<String, Object> row : jdbcTemplate.queryForList(
-				"SELECT ID, LINK_ID, CATALOG_NO FROM " + SPEC_TABLE + " WHERE CATALOG_NO IS NOT NULL AND CATALOG_NO != ''")) {
-			specMap.put(String.valueOf(row.get("CATALOG_NO")).trim(), row);
+				"SELECT s.ID, s.LINK_ID, s.CATALOG_NO, ca.category_path AS CAT_PATH FROM " + SPEC_TABLE + " s "
+				+ "INNER JOIN cms_content c ON c.ID = s.LINK_ID "
+				+ "INNER JOIN cms_category ca ON ca.ID = c.CATEGORY_ID "
+				+ "WHERE s.CATALOG_NO IS NOT NULL AND s.CATALOG_NO != '' AND s.DEL = 0 AND c.del = 0")) {
+			specMap.put(String.valueOf(row.get("CATALOG_NO")).trim() + "|" + langOfPath(String.valueOf(row.get("CAT_PATH"))), row);
 		}
 
 		try (Workbook wb = WorkbookFactory.create(file.getInputStream())) {
@@ -287,8 +292,10 @@ public class ContentImportBizImpl implements IContentImportBiz {
 						throw new RuntimeException("栏目不存在：" + catTitle);
 					}
 
-					// 文章：货号已有规格行则更新对应文章，否则新增
-					Map<String, Object> specRow = specMap.get(catalogNo);
+					// 文章：同货号且同语言（按所填栏目路径判断）已有规格行则更新对应文章，否则新增
+					// 中英文各自成文互不覆盖，导入顺序不再敏感
+					String lang = langOfPath(category.getCategoryPath());
+					Map<String, Object> specRow = specMap.get(catalogNo + "|" + lang);
 					ContentEntity article;
 					boolean isNew = specRow == null;
 					if (!isNew) {
@@ -310,12 +317,12 @@ public class ContentImportBizImpl implements IContentImportBiz {
 						article.setContentShortTitle(catalogNo);
 					}
 					// 标签：填字典标签名（中文/英文）或值（zh/en），多个逗号分隔，映射为字典值存储；
-					// 留空时新增默认zh、更新保持原标签（见搜索语言隔离方案）
+					// 留空时新增按栏目语言默认（英文栏目en、其余zh），更新保持原标签（见搜索语言隔离方案）
 					String tagRaw = vals.get("contentTags");
 					if (StrUtil.isNotBlank(tagRaw)) {
 						article.setContentTags(mapTags(tagRaw, tagDict));
 					} else if (isNew) {
-						article.setContentTags("zh");
+						article.setContentTags("en".equals(lang) ? "en" : "zh");
 					}
 					String img = vals.get("contentImg");
 					// 缩略图按 category_img/litpic 同款JSON数组格式存储
@@ -358,7 +365,7 @@ public class ContentImportBizImpl implements IContentImportBiz {
 							Map<String, Object> newSpec = new HashMap<>();
 							newSpec.put("LINK_ID", article.getId());
 							newSpec.put("ID", idRows.get(0).get("ID"));
-							specMap.put(catalogNo, newSpec);
+							specMap.put(catalogNo + "|" + lang, newSpec);
 						}
 					} else {
 						updated++;
@@ -420,6 +427,13 @@ public class ContentImportBizImpl implements IContentImportBiz {
 		return categoryBiz.list(new LambdaQueryWrapper<CategoryEntity>()
 				.eq(CategoryEntity::getCategoryType, CategoryTypeEnum.LIST.toString())
 				.orderByAsc(CategoryEntity::getCategoryPath));
+	}
+
+	/**
+	 * 栏目路径 -> 语言标识：category_path 首段为语言（cn/...为中文、en/...为英文，如 cn/products、en/products）
+	 */
+	private String langOfPath(String categoryPath) {
+		return categoryPath != null && categoryPath.trim().toLowerCase().startsWith("en/") ? "en" : "zh";
 	}
 
 	/**

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /ms/
+Sitemap: https://zh.bioquanti.com/sitemap.xml

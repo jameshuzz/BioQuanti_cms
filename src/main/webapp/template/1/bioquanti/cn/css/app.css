@@ -671,7 +671,16 @@ button.bq2-docbtn{border:0;cursor:pointer;font-family:inherit;}
   .bq2-nav ul li a{border-bottom:0;padding:13px 20px;}
   .bq2-dropdown{position:static;display:none;box-shadow:none;padding:0 0 6px 20px;}
   .bq2-nav ul li.open-drop .bq2-dropdown{display:block;}
-  .bq2-search input[type=text]{width:150px;}
+  /* 语言切换上移到搜索框上方一行（logo 下、靠右），搜索框独占一行且按钮拉宽 */
+  .bq2-topright{width:100%;box-sizing:border-box;flex-direction:column;align-items:stretch;gap:8px;}
+  .bq2-lang{order:-1;align-self:flex-end;padding-right:6px;}
+  .bq2-search{width:100%;}
+  .bq2-search .bq2-selwrap select{max-width:112px;flex:0 0 auto;}
+  .bq2-search input[type=text]{width:auto;flex:1;min-width:0;}
+  .bq2-search button{flex:1;justify-content:center;}
+  /* 热门资讯三个 tab 均分一行，不溢出不截断 */
+  .bq2-newstabs{justify-content:stretch;margin-bottom:12px;}
+  .bq2-newstabs button{flex:1 1 0;margin-left:0;padding:7px 4px;font-size:13px;text-align:center;white-space:nowrap;}
   .bq2-topflex{min-height:0;padding:10px 0;}
   .bq2-searchbar{display:none;}
   .bq2-hero-slide img{height:220px;}
@@ -686,7 +695,7 @@ button.bq2-docbtn{border:0;cursor:pointer;font-family:inherit;}
   .bq2-side{width:100%;}
   .bq2-row{flex-wrap:wrap;}
   .bq2-row-img{width:40%;height:130px;}
-  .bq2-row-side{width:100%;border-left:0;padding-left:0;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px solid #F0F3F6;padding-top:10px;}
+  .bq2-row-side{width:100%;border-left:0;padding-left:0;flex-direction:row;justify-content:flex-end;align-items:center;border-top:1px solid #F0F3F6;padding-top:10px;}
   .bq2-row-side .view{padding:8px 26px;}
   .bq2-topgrid{flex-direction:column;}
   .bq2-specpanel{width:100%;}

@@ -10,6 +10,8 @@
 </head>
 <body>
 <#include "/en/header.htm"/>
+<!--Hit counter beacon: requests the app hit API on every page view (same mechanism as the official theme ${field.hit}, count only, not displayed)-->
+<span style="display:none"><script type="text/javascript" src="/cms/content/${field.id}/hit.do"></script></span>
 
 <div class="bq2-crumbbar">
     <div class="bq2-container">Location - <a href="{ms:global.html/}en/index.html">Home</a> &gt; <a href="{ms:global.html/}en/products/kits/index.html">Products</a> &gt; <a href="{ms:global.html/}${field.typelink}">${field.typetitle}</a> &gt; ${field.title}</div>

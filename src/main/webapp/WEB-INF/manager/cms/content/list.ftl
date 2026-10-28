@@ -436,7 +436,7 @@
 
                 var form = JSON.parse(JSON.stringify(that.form));
 
-                if (form.contentType!=null && form.contentType.length > 0) {
+                if (Array.isArray(form.contentType) && form.contentType.length > 0) {
                     form.contentType = form.contentType.join(',');
                 }
 
@@ -672,6 +672,10 @@
                 var _history = JSON.parse(sessionStorage.getItem(this.historyKey))
                 if(_history.form) {
                     this.form = _history.form;
+                    //历史中文章类型可能存的是逗号字符串（list()序列化后写入），多选下拉和list()需要数组，此处还原
+                    if (this.form.contentType != null && !Array.isArray(this.form.contentType)) {
+                        this.form.contentType = this.form.contentType ? String(this.form.contentType).split(',') : [];
+                    }
                 }
                 if(_history.total) {
                     this.total = parseInt(_history.total);

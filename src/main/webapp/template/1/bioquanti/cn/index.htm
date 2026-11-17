@@ -47,11 +47,14 @@
         </div>
         <div class="bq2-panels bq2-prodpanels">
             <div class="bq2-panel cur">
-                <#-- 试剂盒tab：只显示后台勾选"推荐"(content_type=c)的产品，热度优先时间兜底，无推荐时该tab为空 -->
-                {ms:arclist typeid='2787212335907000102' size=5 flag='c' orderby='hit,date,sort' order='desc,desc,desc'}
+                <#-- 试剂盒tab：只显示后台勾选"推荐"(content_type=c)的产品，按后台排序字段固定顺序 -->
+                {ms:arclist typeid='2787212335907000102' size=5 flag='c' orderby='sort' order='desc'}
+                <#assign _code = ((field.keyword!'')?string)?trim>
+                <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+                <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
                 <div class="bq2-pcard">
                     <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}cn/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
-                    <p class="code">${field.shorttitle}</p>
+                    <p class="code">${_code}</p>
                     <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                 </div>
                 {/ms:arclist}

@@ -278,6 +278,18 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			throw new BusinessException("该产品无规格数据");
 		}
 		Map<String, Object> specData = specRows.get(0);
+		// 标曲单位：从STD_TOP（如"10ng/mL"）提取，供模板{{CAL_UNIT}}动态表头
+		String calUnit = null;
+		if (specData.get("STD_TOP") != null) {
+			java.util.regex.Matcher mu = java.util.regex.Pattern
+					.compile("^[0-9.]+\\s*([a-zA-Z\\u03bc/]+)$").matcher(String.valueOf(specData.get("STD_TOP")).trim());
+			if (mu.matches()) {
+				calUnit = mu.group(1).trim();
+			}
+		}
+		if (StringUtils.isNotBlank(calUnit)) {
+			specData.put("CAL_UNIT", calUnit);
+		}
 		String tid = StringUtils.isNotBlank(templateId) ? templateId : String.valueOf(specData.get("TEMPLATE_ID"));
 		if (StringUtils.isBlank(tid) || "null".equals(tid)) {
 			throw new BusinessException("该产品未绑定说明书模板");

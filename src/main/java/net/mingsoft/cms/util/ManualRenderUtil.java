@@ -31,11 +31,12 @@ import java.util.regex.Pattern;
  *   {{X}}         整值渲染：表格文本（多行Tab/竖线分隔）转完整HTML表格（首行th），其余转义文本
  *   {{X_ROWS}}    数据行模式：表格文本只转 &lt;tr&gt;&lt;td&gt; 序列（表头由模板固定），配合模板中写死的表头使用
  *   {{X_LINES}}   行列表模式：每行转 &lt;li&gt;，配合模板 &lt;ol&gt;/&lt;ul&gt; 使用（如参考文献）
- *   {{X_CHART}}   图表模式：按X列表格数据生成标准曲线PNG（log-x折线图），输出 &lt;img&gt; data URI
+ *   {{X_CHART}}   图表模式：按X列表格数据生成标准曲线PNG（线性浓度轴+4PL拟合曲线），输出 &lt;img&gt; data URI
  * @version
- * 版本号：1.1.0<br/>
+ * 版本号：1.2.0<br/>
  * 创建日期：2026-08-30<br/>
- * 历史修订：2026-09-05 增加_ROWS/_LINES/_CHART渲染模式与字段默认值支持
+ * 历史修订：2026-09-05 增加_ROWS/_LINES/_CHART渲染模式与字段默认值支持<br/>
+ * 历史修订：2026-11-17 图表改为客户规格：4PL拟合曲线、X轴线性nice刻度、Y轴0.5步进、动态浓度单位
  */
 public class ManualRenderUtil {
 
@@ -91,6 +92,14 @@ public class ManualRenderUtil {
 				mode = "CHART";
 				col = token.substring(0, token.length() - 6);
 			}
+			// 图表轴单位：优先取 <列名>_UNIT（如CAL_TABLE_UNIT），回退CAL_UNIT（渲染时由STD_TOP提取）
+			String chartUnit = null;
+			if ("CHART".equals(mode)) {
+				chartUnit = lookupValue(values, col + "_UNIT");
+				if (chartUnit == null) {
+					chartUnit = lookupValue(values, "CAL_UNIT");
+				}
+			}
 			// 取值：先按完整token找列，再按去后缀列名找，再走默认值
 			String value = lookupValue(values, token);
 			if (value == null) {
@@ -116,7 +125,7 @@ public class ManualRenderUtil {
 					rendered = toLines(value);
 					break;
 				case "CHART":
-					rendered = toChartImg(value);
+					rendered = toChartImg(value, chartUnit);
 					break;
 				default:
 					rendered = renderValue(value);
@@ -262,15 +271,15 @@ public class ManualRenderUtil {
 	 * 图表模式：按表格数据生成标准曲线图（log-x浓度轴 + 线性OD轴折线），
 	 * 输出内嵌data URI的img标签；无有效数据返回空串
 	 * 数据格式：首行为表头（跳过），首列=浓度，末列优先取Corrected列（倒数第1列），
-	 * 无则取Average（倒数第2列），浓度&lt;=0的点跳过（log轴无意义）
+	 * 无则取Average（倒数第2列），浓度&lt;0的点跳过
 	 */
-	private static String toChartImg(String value) {
+	private static String toChartImg(String value, String unit) {
 		double[][] points = parseCurvePoints(value);
 		if (points.length < 2) {
 			return "";
 		}
 		try {
-			byte[] png = renderStdCurvePng(points);
+			byte[] png = renderStdCurvePng(points, unit);
 			String base64 = Base64.getEncoder().encodeToString(png);
 			return "<img style=\"width:270px;\" src=\"data:image/png;base64," + base64 + "\"/>";
 		} catch (Exception e) {
@@ -305,7 +314,8 @@ public class ManualRenderUtil {
 				if (Double.isNaN(y) && cells.length >= 3) {
 					y = parseDoubleSafe(cells[cells.length - 2]);
 				}
-				if (x > 0 && !Double.isNaN(y)) {
+				if (x >= 0 && !Double.isNaN(y)) {
+					// 保留x=0的Blank点（画在原点，不参与4PL拟合）
 					pts.add(new double[]{x, y});
 				}
 			} catch (NumberFormatException ignore) {
@@ -325,11 +335,15 @@ public class ManualRenderUtil {
 	}
 
 	/**
-	 * Java2D绘制标准曲线PNG（无第三方依赖）：log-x折线图，含坐标轴/刻度/数据点
+	 * Java2D绘制标准曲线PNG（无第三方依赖）：
+	 * X轴=线性浓度轴（上限取不小于浓度最大值的最小"整齐"值，4~5个均匀整刻度），
+	 * Y轴=OD轴（0.5步进刻度，上限=数据最大值向上取整到0.5），
+	 * 曲线=4PL(Logistic四参数)拟合平滑曲线（拟合失败回退折线），
+	 * 散点=全部数据点（含原点Blank点，Blank不参与拟合）
 	 */
-	private static byte[] renderStdCurvePng(double[][] points) throws Exception {
+	private static byte[] renderStdCurvePng(double[][] points, String unit) throws Exception {
 		int w = 320, h = 250;
-		int left = 48, right = 12, top = 14, bottom = 34;
+		int left = 48, right = 14, top = 14, bottom = 36;
 		BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -339,78 +353,300 @@ public class ManualRenderUtil {
 		Font font = new Font("SansSerif", Font.PLAIN, 10);
 		g.setFont(font);
 
-		double minX = points[0][0], maxX = points[points.length - 1][0];
-		double maxY = 0;
+		// 拟合点(x>0)与原点Blank点(x=0)
+		List<double[]> fitList = new ArrayList<>();
+		double[] blank = null;
 		for (double[] p : points) {
-			maxY = Math.max(maxY, p[1]);
+			if (p[0] > 0) {
+				fitList.add(p);
+			} else if (blank == null) {
+				blank = p;
+			}
 		}
-		// 纵轴上限取整到0.5步进（对齐Word参考图 0/0.5/1/1.5/2/2.5 刻度）
-		maxY = Math.ceil(maxY * 1.02 / 0.5) * 0.5;
-		if (maxY <= 0) {
-			maxY = 1;
+		if (blank != null) {
+			// Blank点排最前（points已按浓度升序，x=0本就在首位，此处置为冗余保险）
 		}
-		double lgMin = Math.log10(minX), lgMax = Math.log10(maxX);
+		double[][] fitPts = fitList.toArray(new double[0][]);
+		double xMax = fitPts[fitPts.length - 1][0];
+		double yMax = 0;
+		for (double[] p : points) {
+			yMax = Math.max(yMax, p[1]);
+		}
+
+		// X轴：线性，nice上限+4~5个均匀整刻度
+		double[] xa = niceXAxis(xMax);
+		double xUpper = xa[0], xStep = xa[1];
+		// Y轴：0.5步进，上限=数据最大值向上取整到0.5（不低于1.0）
+		double yUpper = Math.max(1.0, Math.ceil(yMax / 0.5 - 1e-9) * 0.5);
+		int yTicks = (int) Math.round(yUpper / 0.5);
+		int xTicks = (int) Math.round(xUpper / xStep);
 		int plotW = w - left - right, plotH = h - top - bottom;
 
-		// 虚线网格与坐标刻度
-		g.setColor(new Color(90, 90, 90));
-		g.setStroke(new BasicStroke(0.7f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+		// 虚线网格（横纵，浅灰）
+		g.setColor(new Color(150, 150, 150));
+		g.setStroke(new BasicStroke(0.6f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
 				10f, new float[]{1.5f, 1.5f}, 0f));
-		int ySteps = 5;
-		for (int i = 0; i <= ySteps; i++) {
-			int y = top + plotH - (int) Math.round(plotH * i / (double) ySteps);
+		for (int i = 0; i <= yTicks; i++) {
+			double yv = 0.5 * i;
+			int y = top + plotH - (int) Math.round(plotH * yv / yUpper);
 			g.drawLine(left, y, left + plotW, y);
-			g.setColor(Color.BLACK);
-			String label = trimNum(maxY * i / ySteps);
-			g.drawString(label, left - 30, y + 4);
-			g.setColor(new Color(90, 90, 90));
 		}
-		// x刻度用实际数据浓度值，密集时隔一个标注
+		for (int i = 0; i <= xTicks; i++) {
+			double xv = xStep * i;
+			int x = left + (int) Math.round(plotW * xv / xUpper);
+			g.drawLine(x, top, x, top + plotH);
+		}
+		// 刻度标签与刻度线
 		g.setColor(Color.BLACK);
-		int step = points.length > 7 ? 2 : 1;
-		for (int i = 0; i < points.length; i += step) {
-			int x = left + (int) Math.round(plotW * (Math.log10(points[i][0]) - lgMin) / (lgMax - lgMin));
+		for (int i = 0; i <= yTicks; i++) {
+			double yv = 0.5 * i;
+			int y = top + plotH - (int) Math.round(plotH * yv / yUpper);
+			g.drawLine(left - 3, y, left, y);
+			String label = trimNum(yv);
+			g.drawString(label, left - 8 - g.getFontMetrics().stringWidth(label), y + 4);
+		}
+		for (int i = 0; i <= xTicks; i++) {
+			double xv = xStep * i;
+			int x = left + (int) Math.round(plotW * xv / xUpper);
 			g.drawLine(x, top + plotH, x, top + plotH + 3);
-			String label = trimNum(points[i][0]);
+			String label = trimNum(xv);
 			int tw = g.getFontMetrics().stringWidth(label);
-			g.drawString(label, x - tw / 2, top + plotH + 15);
+			// 0标签右移防出界，末标签左移防出界
+			int lx = x - tw / 2;
+			if (i == 0) {
+				lx = x;
+			} else if (i == xTicks) {
+				lx = x - tw;
+			}
+			g.drawString(label, lx, top + plotH + 15);
 		}
 		// 坐标轴
 		g.setColor(Color.BLACK);
 		g.setStroke(new BasicStroke(1.2f));
 		g.drawLine(left, top, left, top + plotH);
 		g.drawLine(left, top + plotH, left + plotW, top + plotH);
-		// 纵轴标签OD450纵向绘制（对齐Word参考图）
+		// 轴标签：Y轴OD450纵向居中，X轴浓度单位底部居中
 		Graphics2D gy = (Graphics2D) g.create();
-		gy.rotate(-Math.PI / 2, 6, top + plotH / 2.0);
-		gy.drawString("OD450", 6 - gy.getFontMetrics().stringWidth("OD450") / 2, top + plotH / 2 + 4);
+		gy.rotate(-Math.PI / 2, 10, top + plotH / 2.0);
+		gy.drawString("OD450", 10 - gy.getFontMetrics().stringWidth("OD450") / 2, top + plotH / 2 + 4);
 		gy.dispose();
-		String unit = "pg/mL";
-		g.drawString(unit, left + plotW - g.getFontMetrics().stringWidth(unit), top + plotH + 27);
+		String unitText = (unit == null || unit.trim().isEmpty()) ? "pg/mL" : unit.trim();
+		g.drawString(unitText, left + plotW / 2 - g.getFontMetrics().stringWidth(unitText) / 2, top + plotH + 28);
 
-		// 折线与数据点（红色曲线，对齐Word参考样式）
+		// 4PL拟合平滑曲线（红色），拟合失败回退折线
+		double[] params = fit4PL(fitPts);
 		g.setColor(new Color(192, 0, 0));
-		g.setStroke(new BasicStroke(1.6f));
-		for (int i = 0; i < points.length; i++) {
-			int x = left + (int) Math.round(plotW * (Math.log10(points[i][0]) - lgMin) / (lgMax - lgMin));
-			int y = top + plotH - (int) Math.round(plotH * points[i][1] / maxY);
-			if (i == 0) {
-				g.drawLine(x, y, x, y);
-			} else {
-				int px = left + (int) Math.round(plotW * (Math.log10(points[i - 1][0]) - lgMin) / (lgMax - lgMin));
-				int py = top + plotH - (int) Math.round(plotH * points[i - 1][1] / maxY);
-				g.drawLine(px, py, x, y);
+		g.setStroke(new BasicStroke(1.5f));
+		if (params != null) {
+			double xMin = fitPts[0][0];
+			int prevX = -1, prevY = -1;
+			for (int i = 0; i <= 300; i++) {
+				double xv = xMin + (xMax - xMin) * i / 300.0;
+				double yv = model4pl(xv, params);
+				if (Double.isNaN(yv)) {
+					continue;
+				}
+				yv = Math.max(0, Math.min(yv, yUpper));
+				int px = left + (int) Math.round(plotW * xv / xUpper);
+				int py = top + plotH - (int) Math.round(plotH * yv / yUpper);
+				if (i > 0) {
+					g.drawLine(prevX, prevY, px, py);
+				}
+				prevX = px;
+				prevY = py;
+			}
+		} else {
+			for (int i = 0; i < points.length; i++) {
+				int x = left + (int) Math.round(plotW * points[i][0] / xUpper);
+				int y = top + plotH - (int) Math.round(plotH * points[i][1] / yUpper);
+				if (i > 0) {
+					int px = left + (int) Math.round(plotW * points[i - 1][0] / xUpper);
+					int py = top + plotH - (int) Math.round(plotH * points[i - 1][1] / yUpper);
+					g.drawLine(px, py, x, y);
+				}
 			}
 		}
+		// 数据散点（红色实心，含原点Blank点）
 		for (double[] p : points) {
-			int x = left + (int) Math.round(plotW * (Math.log10(p[0]) - lgMin) / (lgMax - lgMin));
-			int y = top + plotH - (int) Math.round(plotH * p[1] / maxY);
+			int x = left + (int) Math.round(plotW * p[0] / xUpper);
+			int y = top + plotH - (int) Math.round(plotH * p[1] / yUpper);
 			g.fill(new Ellipse2D.Double(x - 2.5, y - 2.5, 5, 5));
 		}
 		g.dispose();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ImageIO.write(img, "png", out);
 		return out.toByteArray();
+	}
+
+	/**
+	 * 4PL(Logistic四参数)模型：y = d + (a-d) / (1 + (x/c)^b)
+	 * p[0]=a下渐近线(低浓度响应) p[1]=b斜率因子 p[2]=c EC50 p[3]=d上渐近线
+	 */
+	private static double model4pl(double x, double[] p) {
+		return p[3] + (p[0] - p[3]) / (1.0 + Math.pow(x / p[2], p[1]));
+	}
+
+	private static double sse4pl(double[][] pts, double[] p) {
+		double s = 0;
+		for (double[] pt : pts) {
+			double e = pt[1] - model4pl(pt[0], p);
+			s += e * e;
+		}
+		return s;
+	}
+
+	/**
+	 * 4PL拟合（Levenberg-Marquardt + 数值雅可比，无第三方依赖）
+	 * 点数<4或迭代不收敛返回null（调用方回退折线）
+	 */
+	private static double[] fit4PL(double[][] pts) {
+		int n = pts.length;
+		if (n < 4) {
+			return null;
+		}
+		double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE, geoLog = 0;
+		for (double[] pt : pts) {
+			minY = Math.min(minY, pt[1]);
+			maxY = Math.max(maxY, pt[1]);
+			geoLog += Math.log10(pt[0]);
+		}
+		double span = maxY - minY;
+		if (span < 1e-9 || minY < 0) {
+			return null;
+		}
+		double[] p = {minY - span * 0.05, 1.0, Math.pow(10, geoLog / n), maxY + span * 0.05};
+		if (p[2] <= 0) {
+			return null;
+		}
+		double lambda = 1e-3;
+		double sse = sse4pl(pts, p);
+		for (int iter = 0; iter < 200; iter++) {
+			double[][] J = new double[n][4];
+			double[] r = new double[n];
+			for (int i = 0; i < n; i++) {
+				r[i] = pts[i][1] - model4pl(pts[i][0], p);
+				for (int j = 0; j < 4; j++) {
+					double eps = Math.max(1e-9, Math.abs(p[j]) * 1e-6);
+					double[] p2 = p.clone();
+					p2[j] += eps;
+					J[i][j] = (model4pl(pts[i][0], p2) - model4pl(pts[i][0], p)) / eps;
+				}
+			}
+			double[][] N = new double[4][4];
+			double[] gvec = new double[4];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < 4; j++) {
+					gvec[j] += J[i][j] * r[i];
+					for (int k = 0; k < 4; k++) {
+						N[j][k] += J[i][j] * J[i][k];
+					}
+				}
+			}
+			for (int j = 0; j < 4; j++) {
+				N[j][j] *= (1.0 + lambda);
+			}
+			double[] delta = solve4(N, gvec);
+			if (delta == null) {
+				return null;
+			}
+			double[] pNew = {p[0] + delta[0], p[1] + delta[1], p[2] + delta[2], p[3] + delta[3]};
+			if (pNew[1] <= 0 || pNew[2] <= 0 || Double.isNaN(pNew[0]) || Double.isNaN(pNew[3])) {
+				lambda *= 10;
+				if (lambda > 1e12) {
+					return null;
+				}
+				continue;
+			}
+			double sseNew = sse4pl(pts, pNew);
+			if (sseNew < sse) {
+				double improve = sse - sseNew;
+				p = pNew;
+				sse = sseNew;
+				lambda = Math.max(lambda / 3, 1e-14);
+				if (improve < 1e-14) {
+					break;
+				}
+			} else {
+				lambda *= 10;
+				if (lambda > 1e12) {
+					break;
+				}
+			}
+		}
+		if (Double.isNaN(p[0]) || Double.isNaN(p[3]) || p[1] <= 0 || p[1] > 1000 || p[2] <= 0) {
+			return null;
+		}
+		return p;
+	}
+
+	/**
+	 * 解4x4线性方程组（高斯消元+部分主元），奇异返回null
+	 */
+	private static double[] solve4(double[][] a, double[] b) {
+		double[][] m = new double[4][5];
+		for (int i = 0; i < 4; i++) {
+			System.arraycopy(a[i], 0, m[i], 0, 4);
+			m[i][4] = b[i];
+		}
+		for (int col = 0; col < 4; col++) {
+			int piv = col;
+			for (int row = col + 1; row < 4; row++) {
+				if (Math.abs(m[row][col]) > Math.abs(m[piv][col])) {
+					piv = row;
+				}
+			}
+			if (Math.abs(m[piv][col]) < 1e-14) {
+				return null;
+			}
+			double[] tmp = m[col];
+			m[col] = m[piv];
+			m[piv] = tmp;
+			for (int row = 0; row < 4; row++) {
+				if (row == col) {
+					continue;
+				}
+				double f = m[row][col] / m[col][col];
+				for (int k = col; k <= 4; k++) {
+					m[row][k] -= f * m[col][k];
+				}
+			}
+		}
+		double[] x = new double[4];
+		for (int i = 0; i < 4; i++) {
+			x[i] = m[i][4] / m[i][i];
+		}
+		return x;
+	}
+
+	/**
+	 * X轴nice刻度：上限=不小于浓度最大值的最小"整齐"值（1/2/2.5/5×10^n），刻度段数4~5
+	 * 返回{上限, 步长}；无解时放宽为均分5段
+	 */
+	private static double[] niceXAxis(double dataMax) {
+		if (dataMax <= 0) {
+			return new double[]{1, 0.25};
+		}
+		double[] best = null;
+		int exp = (int) Math.floor(Math.log10(dataMax));
+		for (int e = exp - 2; e <= exp + 1; e++) {
+			double base = Math.pow(10, e);
+			for (double m : new double[]{1, 2, 2.5, 5}) {
+				double step = m * base;
+				double upper = Math.ceil(dataMax / step - 1e-9) * step;
+				int seg = (int) Math.round(upper / step);
+				if (seg < 4 || seg > 5) {
+					continue;
+				}
+				if (best == null || upper < best[0] - 1e-9) {
+					best = new double[]{upper, step};
+				}
+			}
+		}
+		if (best == null) {
+			double upper = Math.ceil(dataMax / 5.0) * 5.0;
+			return new double[]{upper, upper / 5};
+		}
+		return best;
 	}
 
 	/**

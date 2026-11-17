@@ -141,7 +141,10 @@
                     <#assign shown=shown+1>
                     <a class="bq-related-item" href="{ms:global.html/}${field.link}">
                         <div class="pic"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></div>
-                        <div class="no">${field.shorttitle}</div>
+                        <#assign _code = ((field.keyword!'')?string)?trim>
+                        <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+                        <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
+                        <div class="no">${_code}</div>
                         <div class="tt">${field.title}</div>
                     </a>
                     </#if>

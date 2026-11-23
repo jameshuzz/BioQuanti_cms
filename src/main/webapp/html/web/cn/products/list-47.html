@@ -27,7 +27,7 @@
         <div class="bq2-container bq2-topflex">
             <a class="bq2-logo" href="/html/web/cn/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
             <div class="bq2-topright">
-                <div class="bq2-lang"><a href="/html/web/en/index.html">English</a></div>
+                <div class="bq2-lang"><a href="https://bioquanti.com">English</a></div>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
     </nav>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form" data-lang="zh">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">全部产品</option>
@@ -83,7 +83,10 @@
                         <option value="2787212335907000105">其他</option>
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="cn/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
@@ -133,6 +136,65 @@
       updatePlaceholder();
       kwInput.focus();
     });
+  var sugBox = document.getElementById('bq2-sug');
+  if(sugBox && kwInput && searchForm){
+    var sugTimer = null, sugItems = [], sugIdx = -1;
+    var htmlPre = '/html/web/';
+    function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+    function sugRender(list){
+      sugBox.innerHTML = '';
+      sugItems = list || []; sugIdx = -1;
+      if(!sugItems.length){ sugHide(); return; }
+      sugItems.forEach(function(item){
+        var li = document.createElement('div');
+        li.className = 'bq2-sug-item';
+        var tt = document.createElement('span');
+        tt.className = 'bq2-sug-tt';
+        tt.textContent = item.title;
+        var hit = document.createElement('span');
+        hit.className = 'bq2-sug-hit';
+        hit.textContent = '热度 ' + (item.hit || 0);
+        li.appendChild(tt); li.appendChild(hit);
+        li.addEventListener('mousedown', function(e){
+          e.preventDefault();
+          window.location.href = htmlPre + item.link;
+        });
+        sugBox.appendChild(li);
+      });
+      sugBox.style.display = 'block';
+    }
+    function sugFetch(){
+      var kw = kwInput.value.trim();
+      if(!kw){ sugHide(); return; }
+      var cat = (spSel && spSel.value) ? spSel.value : '';
+      var url = '/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+      fetch(url).then(function(r){ return r.json(); }).then(function(res){
+        sugRender(res && res.data);
+      }).catch(function(){ sugHide(); });
+    }
+    kwInput.addEventListener('input', function(){
+      clearTimeout(sugTimer);
+      sugTimer = setTimeout(sugFetch, 250);
+    });
+    kwInput.addEventListener('keydown', function(e){
+      if(sugBox.style.display === 'none' || !sugItems.length) return;
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+        e.preventDefault();
+        sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+        for(var i = 0; i < sugBox.children.length; i++){
+          sugBox.children[i].classList.toggle('on', i === sugIdx);
+        }
+      }else if(e.key === 'Enter' && sugIdx > -1){
+        e.preventDefault();
+        window.location.href = htmlPre + sugItems[sugIdx].link;
+      }else if(e.key === 'Escape'){
+        sugHide();
+      }
+    });
+    document.addEventListener('click', function(e){
+      if(!searchForm.contains(e.target)) sugHide();
+    });
+  }
   }
 })();
 </script>
@@ -149,46 +211,37 @@
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/cn/products/kits/index.html">试剂盒<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/cn/products/kits/ceshi2/index.html" >测试2<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/kits/elisa-kits/index.html" >酶联免疫试剂盒<span class="cnt">(1439)</span></a>
-                    <a href="/html/web/cn/products/kits/exosome-kits/index.html" >外泌体提取试剂盒<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/kits/food-safety-kits/index.html" >食品安全及药物残留酶联免疫试剂盒<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/kits/dna-extraction-kits/index.html" >质粒DNA大量抽提试剂盒<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/kits/hcp-elisa-kits/index.html" >HCP检测ELISA试剂盒<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/kits/easy-step-elisa-kits/index.html" >Easy-Step ELISA试剂盒<span class="cnt">(124)</span></a>
+                    <a href="/html/web/cn/products/kits/high-sensitivity-elisa-kits/index.html" >高敏ELISA试剂盒<span class="cnt">(3)</span></a>
+                    <a href="/html/web/cn/products/kits/ko-validation-elisa-kits/index.html" >KO验证ELISA试剂盒<span class="cnt">(48)</span></a>
+                    <a href="/html/web/cn/products/kits/human-elisa-kits/index.html" >人ELISA试剂盒<span class="cnt">(788)</span></a>
+                    <a href="/html/web/cn/products/kits/mouse-elisa-kits/index.html" >小鼠ELISA试剂盒<span class="cnt">(224)</span></a>
+                    <a href="/html/web/cn/products/kits/rat-elisa-kits/index.html" >大鼠ELISA试剂盒<span class="cnt">(179)</span></a>
+                    <a href="/html/web/cn/products/kits/universal-elisa-kits/index.html" >种属通用ELISA试剂盒<span class="cnt">(64)</span></a>
+                    <a href="/html/web/cn/products/kits/rare-species-elisa-kits/index.html" >稀有种属ELISA试剂盒<span class="cnt">(43)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/cn/products/proteins/index.html">蛋白<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/cn/products/proteins/native-proteins/index.html" >天然蛋白<span class="cnt">(1)</span></a>
-                    <a href="/html/web/cn/products/proteins/recombinant-proteins/index.html" >重组蛋白<span class="cnt">(344)</span></a>
-                    <a href="/html/web/cn/products/proteins/active-proteins/index.html" >活性蛋白<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/proteins/transmembrane-proteins/index.html" >跨膜蛋白<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/proteins/recombinant-proteins/index.html" >重组蛋白<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/proteins/cytokines/index.html" >细胞因子<span class="cnt">(0)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/cn/products/antibodies/index.html">抗体<i class="arr">▾</i></a>
                 <div class="cat-sons">
+                    <a href="/html/web/cn/products/antibodies/monoclonal-antibodies/index.html" >单克隆抗体<span class="cnt">(0)</span></a>
                     <a href="/html/web/cn/products/antibodies/polyclonal-antibodies/index.html" >多克隆抗体<span class="cnt">(0)</span></a>
                     <a href="/html/web/cn/products/antibodies/secondary-antibodies/index.html" >二抗<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/monoclonal-antibodies/index.html" >单克隆抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/tag-antibodies/index.html" >标签抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/small-molecule-antibodies/index.html" >小分子抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/chip-antibodies/index.html" >ChIP抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/recombinant-antibodies/index.html" >重组抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/histone-modification-antibodies/index.html" >组蛋白修饰抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/biosimilar-antibodies/index.html" >科研级生物类似抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/housekeeping-antibodies/index.html" >内参抗体<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/antibodies/antibody-pairs/index.html" >抗体对<span class="cnt">(392)</span></a>
+                    <a href="/html/web/cn/products/antibodies/antibody-pairs/index.html" >抗体对<span class="cnt">(0)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/cn/products/others/index.html">其他<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/cn/products/others/cytokines/index.html" >稳转细胞株<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/others/ivd-reagents/index.html" >体外诊断试剂原料<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/others/molecular-biology/index.html" >分子生物学产品<span class="cnt">(0)</span></a>
-                    <a href="/html/web/cn/products/others/small-molecules/index.html" >小分子产品<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/others/biochemical-kits/index.html" >生化试剂盒<span class="cnt">(0)</span></a>
+                    <a href="/html/web/cn/products/others/other-reagents/index.html" >其他科研试剂<span class="cnt">(0)</span></a>
                 </div>
             </li>
         </ul>
@@ -198,363 +251,383 @@
     <div class="bq2-main">
         <div class="bq2-prodrows">
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001673.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat Activin A"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456604435628033.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人胶质纤维酸性蛋白（Glial fibrillary acidic protein）ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001673.html">Recombinant Human/Mouse/Rat Activin A</a></p>
-                    <p class="en">Recombinant Human Activin A is produced by our Mammalian expression system and the target gene encoding Gly311-Ser426 is expressed.</p>
-                    <p class="no">货号：BQP-0229</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0229产品名称Recombinant Human/Mouse/Rat Activin A产品别称I…</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001673.pdf" data-name="BQP-0229-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000235.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人Dickkopf相关蛋白1（Dickkopf-related protein 1）ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000235.html">人Dickkopf相关蛋白1（Dickkopf-related protein 1）ELISA试剂盒</a></p>
-                    <p class="en">Human DKK-1 (Dickkopf-related protein 1) ELISA Kit</p>
-                    <p class="no">货号：BQE-H0184</p>
-                    <p class="kv">灵敏度：18.75pg/mL</p>
-                    <p class="kv">检测范围：31.25-2000pg/mL</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456604435628033.html">人胶质纤维酸性蛋白（Glial fibrillary acidic protein）ELISA试剂盒</a></p>
                     
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000235.pdf" data-name="BQE-H0184-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000955.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠肌酸激酶MB同工酶 (CK-MB) ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000955.html">小鼠肌酸激酶MB同工酶 (CK-MB) ELISA试剂盒</a></p>
-                    <p class="en">Mouse CK-MB (Creatine Kinase MB Isoenzyme) ELISA Kit</p>
-                    <p class="no">货号：BQE-M0035</p>
-                    <p class="kv">灵敏度：46.9pg/mL</p>
-                    <p class="kv">检测范围：78.125-5000pg/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000955.pdf" data-name="BQE-M0035-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002018.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="人 NGF / NGFB 酶联免疫配对抗体组合"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002018.html">人 NGF / NGFB 酶联免疫配对抗体组合</a></p>
-                    <p class="en">Human NGF / NGFB ELISA Pair Set</p>
-                    <p class="no">货号：BQAP-0230</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQAP-0230名称Human NGF / NGFB ELISA Pair Set中文名称人 NGF / …</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002018.pdf" data-name="BQAP-0230-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001674.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat BMP-2"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001674.html">Recombinant Human/Mouse/Rat BMP-2</a></p>
-                    <p class="en">Recombinant Human/Mouse/Rat Bone Morphogenetic Protein 2 is produced by our E.coli expression system and the target gene encoding Gln283-Arg396 is expressed.</p>
-                    <p class="no">货号：BQP-0230</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0230产品名称Recombinant Human/Mouse/Rat BMP-2产品别称Bone …</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001674.pdf" data-name="BQP-0230-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000236.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人蛋白delta同源物1（Protein delta homolog 1）ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000236.html">人蛋白delta同源物1（Protein delta homolog 1）ELISA试剂盒</a></p>
-                    <p class="en">Human DLK-1 (Protein delta homolog 1 ) ELISA Kit</p>
-                    <p class="no">货号：BQE-H0185</p>
-                    <p class="kv">灵敏度：0.094ng/mL</p>
-                    <p class="kv">检测范围：0.156-10ng/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000236.pdf" data-name="BQE-H0185-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000956.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠类心肌营养因子1 (CLCF1) ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000956.html">小鼠类心肌营养因子1 (CLCF1) ELISA试剂盒</a></p>
-                    <p class="en">Mouse CLCF1 (Cardiotrophin Like Cytokine Factor 1) ELISA Kit</p>
-                    <p class="no">货号：BQE-M0036</p>
-                    <p class="kv">灵敏度：18.75pg/mL</p>
-                    <p class="kv">检测范围：31.25-2000pg/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000956.pdf" data-name="BQE-M0036-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001675.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat GDF-11"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001675.html">Recombinant Human/Mouse/Rat GDF-11</a></p>
-                    <p class="en">Recombinant Human/Mouse/Rat Growth Differentiation Factor 11 is produced by our Mammalian expression system and the target gene encoding Asn299-Ser407 is expressed.</p>
-                    <p class="no">货号：BQP-0231</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0231产品名称Recombinant Human/Mouse/Rat GDF-11产品别称Grow…</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001675.pdf" data-name="BQP-0231-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002019.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="人 NPC2 酶联免疫配对抗体组合"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002019.html">人 NPC2 酶联免疫配对抗体组合</a></p>
-                    <p class="en">Human NPC2 ELISA Pair Set</p>
-                    <p class="no">货号：BQAP-0231</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQAP-0231名称Human NPC2 ELISA Pair Set中文名称人 NPC2 酶联免疫配对抗…</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002019.pdf" data-name="BQAP-0231-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000237.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人牙本质基质酸性磷蛋白1（Dentin matrix acidic phosphoprotein 1）ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000237.html">人牙本质基质酸性磷蛋白1（Dentin matrix acidic phosphoprotein 1）ELISA试剂盒</a></p>
-                    <p class="en">Human DMP1 (Dentin matrix acidic phosphoprotein 1) ELISA Kit</p>
-                    <p class="no">货号：BQE-H0186</p>
-                    <p class="kv">灵敏度：4.688pg/mL</p>
-                    <p class="kv">检测范围：7.813-500pg/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000237.pdf" data-name="BQE-H0186-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000957.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠闭合蛋白-3 (Cldn3) ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000957.html">小鼠闭合蛋白-3 (Cldn3) ELISA试剂盒</a></p>
-                    <p class="en">Mouse Cldn3 (Claudin-3) ELISA Kit</p>
-                    <p class="no">货号：BQE-M0037</p>
-                    <p class="kv">灵敏度：0.094ng/mL</p>
-                    <p class="kv">检测范围：0.156-10ng/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000957.pdf" data-name="BQE-M0037-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002020.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="人 OSMR / IL-31RB 酶联免疫配对抗体组合"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002020.html">人 OSMR / IL-31RB 酶联免疫配对抗体组合</a></p>
-                    <p class="en">Human OSMR / IL-31RB ELISA Pair Set</p>
-                    <p class="no">货号：BQAP-0232</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQAP-0232名称Human OSMR / IL-31RB ELISA Pair Set中文名称人 OS…</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002020.pdf" data-name="BQAP-0232-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001676.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat GDF-8"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001676.html">Recombinant Human/Mouse/Rat GDF-8</a></p>
-                    <p class="en">Recombinant Human/Mouse/Rat Growth Differentiation Factor 8 is produced by our Mammalian expression system and the target gene encoding Lys262-Ser375 is expressed.</p>
-                    <p class="no">货号：BQP-0232</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0232产品名称Recombinant Human/Mouse/Rat GDF-8产品别称Growt…</p>
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001676.pdf" data-name="BQP-0232-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <p class="price">询价</p>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000238.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人脱氧核糖核酸酶1（Deoxyribonuclease-1）ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000238.html">人脱氧核糖核酸酶1（Deoxyribonuclease-1）ELISA试剂盒</a></p>
-                    <p class="en">Human DNASE1 (Deoxyribonuclease-1) ELISA Kit</p>
-                    <p class="no">货号：BQE-H0187</p>
-                    <p class="kv">灵敏度：0.094ng/mL</p>
-                    <p class="kv">检测范围：0.156-10ng/mL</p>
-                    
-                    <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000238.pdf" data-name="BQE-H0187-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
-                    </div>
-                </div>
-                <div class="bq2-row-side">
-                    <select class="bq-specsel">
-                        <option value="0">96T</option>
-                    </select>
-                </div>
-            </div>
-            <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000958.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠Ⅰ型胶原蛋白 (COL1) ELISA试剂盒"></a>
-                <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000958.html">小鼠Ⅰ型胶原蛋白 (COL1) ELISA试剂盒</a></p>
-                    <p class="en">Mouse COL1 (Collagen Type I) ELISA Kit</p>
-                    <p class="no">货号：BQE-M0038</p>
-                    <p class="kv">灵敏度：0.188ng/mL</p>
+                    <p class="no">货号：BQE-H0261</p>
+                    <p class="kv">灵敏度：0.12ng/mL</p>
                     <p class="kv">检测范围：0.313-20ng/mL</p>
-                    
+                    <p class="ds">产品简介产品名称人胶质纤维酸性蛋白（Glial fibrillary acidic protein）ELISA试剂盒货号…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000958.pdf" data-name="BQE-M0038-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456604435628033.pdf" data-name="BQE-H0261-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
                     <select class="bq-specsel">
-                        <option value="0">96T</option>
+                        <option value="0">96T | ¥1980</option>
                     </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001677.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat Irisin (C-6His)"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456604754395138.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人抗酒石酸酸性磷酸酶5b(TRACP-5b) ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001677.html">Recombinant Human/Mouse/Rat Irisin (C-6His)</a></p>
-                    <p class="en">Recombinant Human/Mouse/Rat Fibronectin Type III Domain-containing Protein 5  is produced by our Mammalian expression system and the target gene encoding Asp32-Glu143 is expressed with a 6His tag at t</p>
-                    <p class="no">货号：BQP-0233</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0233产品名称Recombinant Human/Mouse/Rat Irisin (C-6His…</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456604754395138.html">人抗酒石酸酸性磷酸酶5b(TRACP-5b) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0616</p>
+                    <p class="kv">灵敏度：0.12mIU/mL</p>
+                    <p class="kv">检测范围：0.313-20mIU/mL</p>
+                    <p class="ds">产品简介产品名称人抗酒石酸酸性磷酸酶5b(TRACP-5b) ELISA试剂盒货号BQE-H0616别称 种属Human…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001677.pdf" data-name="BQP-0233-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456604754395138.pdf" data-name="BQE-H0616-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">询价</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002021.html"><img src="/upload/1/bioquanti/pimg_ab.jpg" alt="人 P4HB 酶联免疫配对抗体组合"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598290972673.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人ADP-核糖基环化酶1（CD38）ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/antibodies/antibody-pairs/1787212335907002021.html">人 P4HB 酶联免疫配对抗体组合</a></p>
-                    <p class="en">Human P4HB ELISA Pair Set</p>
-                    <p class="no">货号：BQAP-0233</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQAP-0233名称Human P4HB ELISA Pair Set中文名称人 P4HB 酶联免疫配对抗…</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598290972673.html">人ADP-核糖基环化酶1（CD38）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0703</p>
+                    <p class="kv">灵敏度：46.59pg/mL</p>
+                    <p class="kv">检测范围：93.75-6000pg/mL</p>
+                    <p class="ds">产品简介产品名称人ADP-核糖基环化酶1（CD38）ELISA试剂盒货号BQE-H0703别称 种属HumanUniPr…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907002021.pdf" data-name="BQAP-0233-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598290972673.pdf" data-name="BQE-H0703-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">询价</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000239.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="人脱氧核糖核酸酶γ（Deoxyribonuclease gamma）ELISA试剂盒"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598928506882.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人肝细胞生长因子样蛋白（HGFL）ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000239.html">人脱氧核糖核酸酶γ（Deoxyribonuclease gamma）ELISA试剂盒</a></p>
-                    <p class="en">Human DNASE1L3 (Deoxyribonuclease gamma) ELISA KIT</p>
-                    <p class="no">货号：BQE-H0188</p>
-                    <p class="kv">灵敏度：0.094ng/mL</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598928506882.html">人肝细胞生长因子样蛋白（HGFL）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0764</p>
+                    <p class="kv">灵敏度：37.27pg/mL</p>
+                    <p class="kv">检测范围：93.75-6000pg/mL</p>
+                    <p class="ds">产品简介产品名称人肝细胞生长因子样蛋白（HGFL）ELISA试剂盒货号BQE-H0764别称 种属HumanUniPro…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598928506882.pdf" data-name="BQE-H0764-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456600526536705.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人巨噬细胞清道夫受体1（MSR1）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456600526536705.html">人巨噬细胞清道夫受体1（MSR1）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0807</p>
+                    <p class="kv">灵敏度：30.11pg/mL</p>
+                    <p class="kv">检测范围：78.13-5000pg/mL</p>
+                    <p class="ds">产品简介产品名称人巨噬细胞清道夫受体1（MSR1）ELISA试剂盒货号BQE-H0807别称 种属HumanUniPro…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456600526536705.pdf" data-name="BQE-H0807-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456600463622146.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人成纤维细胞生长因子受体2（FGFR2）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456600463622146.html">人成纤维细胞生长因子受体2（FGFR2）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0754</p>
+                    <p class="kv">灵敏度：8.88pg/mL</p>
+                    <p class="kv">检测范围：23.44-1500pg/mL</p>
+                    <p class="ds">产品简介产品名称人成纤维细胞生长因子受体2（FGFR2）ELISA试剂盒货号BQE-H0754别称 种属HumanUni…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456600463622146.pdf" data-name="BQE-H0754-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598035120130.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人半胱天冬酶-1 (CASP1) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598035120130.html">人半胱天冬酶-1 (CASP1) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0103</p>
+                    <p class="kv">灵敏度：26.62pg/mL</p>
+                    <p class="kv">检测范围：78.125-5000pg/mL</p>
+                    <p class="ds">产品简介产品名称人半胱天冬酶-1 (CASP1) ELISA试剂盒货号BQE-H0103别称 种属HumanUniPro…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598035120130.pdf" data-name="BQE-H0103-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456597330477057.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人细胞间粘附分子3（ICAM-3）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456597330477057.html">人细胞间粘附分子3（ICAM-3）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0767</p>
+                    <p class="kv">灵敏度：31.08pg/mL</p>
+                    <p class="kv">检测范围：62.5-4000pg/mL</p>
+                    <p class="ds">产品简介产品名称人细胞间粘附分子3（ICAM-3）ELISA试剂盒货号BQE-H0767别称 种属HumanUniPro…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456597330477057.pdf" data-name="BQE-H0767-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456597972205569.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人水通道蛋白-1 (AQP1) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456597972205569.html">人水通道蛋白-1 (AQP1) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0052</p>
+                    <p class="kv">灵敏度：58.21pg/mL</p>
+                    <p class="kv">检测范围：125-8000pg/mL</p>
+                    <p class="ds">产品简介产品名称人水通道蛋白-1 (AQP1) ELISA试剂盒货号BQE-H0052别称 种属HumanUniProt…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456597972205569.pdf" data-name="BQE-H0052-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456596500004866.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人磷脂氢过氧化物谷胱甘肽过氧化物酶(GPX4) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456596500004866.html">人磷脂氢过氧化物谷胱甘肽过氧化物酶(GPX4) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0665</p>
+                    <p class="kv">灵敏度：26.48pg/mL</p>
+                    <p class="kv">检测范围：78.125-5000pg/mL</p>
+                    <p class="ds">产品简介产品名称人磷脂氢过氧化物谷胱甘肽过氧化物酶(GPX4) ELISA试剂盒货号BQE-H0665别称 种属Huma…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456596500004866.pdf" data-name="BQE-H0665-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456596562919425.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人NUDT1（7,8-二氢-8-氧鸟嘌呤三磷酸酶）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456596562919425.html">人NUDT1（7,8-二氢-8-氧鸟嘌呤三磷酸酶）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0444</p>
+                    <p class="kv">灵敏度：0.33ng/mL</p>
+                    <p class="kv">检测范围：0.781-50ng/mL</p>
+                    <p class="ds">产品简介产品名称人NUDT1（7,8-二氢-8-氧鸟嘌呤三磷酸酶）ELISA试剂盒货号BQE-H0444别称 种属Hum…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456596562919425.pdf" data-name="BQE-H0444-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456597527609345.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人5-羟色胺转运体(SERT) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456597527609345.html">人5-羟色胺转运体(SERT) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0558</p>
+                    <p class="kv">灵敏度：0.74pg/mL</p>
+                    <p class="kv">检测范围：1.563-100pg/mL</p>
+                    <p class="ds">产品简介产品名称人5-羟色胺转运体(SERT) ELISA试剂盒货号BQE-H0558别称 种属HumanUniProt…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456597527609345.pdf" data-name="BQE-H0558-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456597783461889.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人D-多巴色素互变异构酶（D-Dopachrome Tautomerase）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456597783461889.html">人D-多巴色素互变异构酶（D-Dopachrome Tautomerase）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0179</p>
+                    <p class="kv">灵敏度：0.1ng/mL</p>
+                    <p class="kv">检测范围：0.313-20ng/mL</p>
+                    <p class="ds">产品简介产品名称人D-多巴色素互变异构酶（D-Dopachrome Tautomerase）ELISA试剂盒货号BQE-…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456597783461889.pdf" data-name="BQE-H0179-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598672654338.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人钙网蛋白 (CALR) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598672654338.html">人钙网蛋白 (CALR) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0098</p>
+                    <p class="kv">灵敏度：0.08ng/mL</p>
                     <p class="kv">检测范围：0.156-10ng/mL</p>
-                    
+                    <p class="ds">产品简介产品名称人钙网蛋白 (CALR) ELISA试剂盒货号BQE-H0098别称 种属HumanUniProt ID…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000239.pdf" data-name="BQE-H0188-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598672654338.pdf" data-name="BQE-H0098-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
                     <select class="bq-specsel">
-                        <option value="0">96T</option>
+                        <option value="0">96T | ¥1980</option>
                     </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/kits/elisa-kits/1787212335907000959.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="小鼠Ⅲ型胶原蛋白 (COL3) ELISA试剂盒"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598165143553.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人白介素-12 p35（Interleukin 12 p35）ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/kits/elisa-kits/1787212335907000959.html">小鼠Ⅲ型胶原蛋白 (COL3) ELISA试剂盒</a></p>
-                    <p class="en">Mouse COL3 (Collagen Type III) ELISA Kit</p>
-                    <p class="no">货号：BQE-M0039</p>
-                    <p class="kv">灵敏度：0.375ng/mL</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598165143553.html">人白介素-12 p35（Interleukin 12 p35）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0334</p>
+                    <p class="kv">灵敏度：9.03pg/mL</p>
+                    <p class="kv">检测范围：31.25-2000pg/mL</p>
+                    <p class="ds">产品简介产品名称人白介素-12 p35（Interleukin 12 p35）ELISA试剂盒货号BQE-H0334别称…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598165143553.pdf" data-name="BQE-H0334-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456598609739777.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人钙连蛋白 (CNX) ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456598609739777.html">人钙连蛋白 (CNX) ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0143</p>
+                    <p class="kv">灵敏度：0.29ng/mL</p>
                     <p class="kv">检测范围：0.625-40ng/mL</p>
-                    
+                    <p class="ds">产品简介产品名称人钙连蛋白 (CNX) ELISA试剂盒货号BQE-H0143别称 种属HumanUniProt IDP…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907000959.pdf" data-name="BQE-M0039-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456598609739777.pdf" data-name="BQE-H0143-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
                     <select class="bq-specsel">
-                        <option value="0">96T</option>
+                        <option value="0">96T | ¥1980</option>
                     </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001678.html"><img src="/upload/1/bioquanti/pimg_prot.jpg" alt="Recombinant Human/Mouse/Rat Irisin (C-Fc)"></a>
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456599054336001.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人顶体囊泡蛋白1（ACRV1）ELISA试剂盒"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/cn/products/proteins/recombinant-proteins/1787212335907001678.html">Recombinant Human/Mouse/Rat Irisin (C-Fc)</a></p>
-                    <p class="en">Recombinant Human/Mouse/Rat Fibronectin Type III Domain-containing Protein 5  is produced by our Mammalian expression system and the target gene encoding Asp32-Glu143 is expressed with a human IgG1 Fc</p>
-                    <p class="no">货号：BQP-0234</p>
-                    <p class="kv">灵敏度：</p>
-                    <p class="kv">检测范围：</p>
-                    <p class="ds">产品参数货号BQP-0234产品名称Recombinant Human/Mouse/Rat Irisin (C-Fc)产…</p>
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456599054336001.html">人顶体囊泡蛋白1（ACRV1）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0675</p>
+                    <p class="kv">灵敏度：21.19pg/mL</p>
+                    <p class="kv">检测范围：46.88-3000pg/mL</p>
+                    <p class="ds">产品简介产品名称人顶体囊泡蛋白1（ACRV1）ELISA试剂盒货号BQE-H0675别称 种属HumanUniProt …</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/1787212335907001678.pdf" data-name="BQP-0234-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456599054336001.pdf" data-name="BQE-H0675-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">询价</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456599310188545.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人肿瘤坏死因子受体超家族成员5/CD40 ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456599310188545.html">人肿瘤坏死因子受体超家族成员5/CD40 ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0850</p>
+                    <p class="kv">灵敏度：1.57pg/mL</p>
+                    <p class="kv">检测范围：3.91-250pg/mL</p>
+                    <p class="ds">产品简介产品名称人肿瘤坏死因子受体超家族成员5/CD40 ELISA试剂盒货号BQE-H0850别称 种属HumanUn…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456599310188545.pdf" data-name="BQE-H0850-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456596881686530.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人酪氨酸蛋白激酶受体Tie-1（TIE1）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456596881686530.html">人酪氨酸蛋白激酶受体Tie-1（TIE1）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0847</p>
+                    <p class="kv">灵敏度：32.23pg/mL</p>
+                    <p class="kv">检测范围：78.13-5000pg/mL</p>
+                    <p class="ds">产品简介产品名称人酪氨酸蛋白激酶受体Tie-1（TIE1）ELISA试剂盒货号BQE-H0847别称 种属HumanUn…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456596881686530.pdf" data-name="BQE-H0847-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bq2-row">
+                <a class="bq2-row-img" href="/html/web/cn/products/kits/human-elisa-kits/2108456599440211970.html"><img src="/template/1/bioquanti/cn/images/newui/kit-photo-sm.png" alt="人组织蛋白酶S（Cathepsin S）ELISA试剂盒"></a>
+                <div class="bq2-row-info">
+                    <p class="tt"><a href="/html/web/cn/products/kits/human-elisa-kits/2108456599440211970.html">人组织蛋白酶S（Cathepsin S）ELISA试剂盒</a></p>
+                    
+                    <p class="no">货号：BQE-H0163</p>
+                    <p class="kv">灵敏度：35.99pg/mL</p>
+                    <p class="kv">检测范围：78.125-5000pg/mL</p>
+                    <p class="ds">产品简介产品名称人组织蛋白酶S（Cathepsin S）ELISA试剂盒货号BQE-H0163别称 种属HumanUni…</p>
+                    <div class="bq2-row-acts">
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108456599440211970.pdf" data-name="BQE-H0163-说明书.pdf"><img src="/template/1/bioquanti/cn/images/newui/icon-manual.png" alt="">说明书</button>
+                    </div>
+                </div>
+                <div class="bq2-row-side">
+                    <select class="bq-specsel">
+                        <option value="0">96T | ¥1980</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -583,10 +656,10 @@
         <div class="bq-pagination">
             <a href="/html/web/cn/products/index.html">首页</a>
             <a href="/html/web/cn/products/list-46.html">上一页</a>
-            <span class="cur">47</span><span>/ 109</span>
+            <span class="cur">47</span><span>/ 74</span>
             <a href="/html/web/cn/products/list-48.html">下一页</a>
-            <a href="/html/web/cn/products/list-109.html">末页</a>
-            <span style="margin-left:10px;color:#999;">共 2180 条</span>
+            <a href="/html/web/cn/products/list-74.html">末页</a>
+            <span style="margin-left:10px;color:#999;">共 1473 条</span>
         </div>
     </div>
 </div>

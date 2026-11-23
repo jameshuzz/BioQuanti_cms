@@ -67,11 +67,14 @@
                     <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                     <#if field.descrip?? && field.descrip?has_content><p class="en">${field.descrip}</p></#if>
                     <#assign aid = field.link?string?keep_after_last('/')?replace('.html','')>
+                    <#-- 货号：试剂盒取规格表CATALOG_NO，抗体等回退文章关键字第一段（BQA货号），再回退副标题 -->
                     <#assign codeNo = ((field.CATALOG_NO)!'')?string>
+                    <#if !codeNo?has_content><#assign codeNo = ((field.keyword!'')?string)?trim></#if>
+                    <#assign codeNo = (codeNo?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim>
                     <#if !codeNo?has_content><#assign codeNo = (field.shorttitle)!''></#if>
                     <p class="no">货号：${codeNo}</p>
-                    <p class="kv">灵敏度：${(field.SENSITIVITY)!''}</p>
-                    <p class="kv">检测范围：${(field.DETECT_RANGE)!''}</p>
+                    <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><p class="kv">灵敏度：${field.SENSITIVITY}</p></#if>
+                    <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><p class="kv">检测范围：${field.DETECT_RANGE}</p></#if>
                     <#assign intro = ((field.content)!'')?string?replace('<[^>]+>','','r')?replace('&nbsp;',' ')?replace('\\s+',' ','r')?trim>
                     <#if intro?length gt 60><#assign intro = intro[0..59] + '…'></#if>
                     <#if intro?has_content><p class="ds">${intro}</p></#if>

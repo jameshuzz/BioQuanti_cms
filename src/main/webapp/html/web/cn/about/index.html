@@ -27,7 +27,7 @@
         <div class="bq2-container bq2-topflex">
             <a class="bq2-logo" href="/html/web/cn/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
             <div class="bq2-topright">
-                <div class="bq2-lang"><a href="/html/web/en/index.html">English</a></div>
+                <div class="bq2-lang"><a href="https://bioquanti.com">English</a></div>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
     </nav>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form" data-lang="zh">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">全部产品</option>
@@ -83,7 +83,10 @@
                         <option value="2787212335907000105">其他</option>
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="请输入搜索内容" value="" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="cn/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>搜索</button>
@@ -133,6 +136,65 @@
       updatePlaceholder();
       kwInput.focus();
     });
+  var sugBox = document.getElementById('bq2-sug');
+  if(sugBox && kwInput && searchForm){
+    var sugTimer = null, sugItems = [], sugIdx = -1;
+    var htmlPre = '/html/web/';
+    function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+    function sugRender(list){
+      sugBox.innerHTML = '';
+      sugItems = list || []; sugIdx = -1;
+      if(!sugItems.length){ sugHide(); return; }
+      sugItems.forEach(function(item){
+        var li = document.createElement('div');
+        li.className = 'bq2-sug-item';
+        var tt = document.createElement('span');
+        tt.className = 'bq2-sug-tt';
+        tt.textContent = item.title;
+        var hit = document.createElement('span');
+        hit.className = 'bq2-sug-hit';
+        hit.textContent = '热度 ' + (item.hit || 0);
+        li.appendChild(tt); li.appendChild(hit);
+        li.addEventListener('mousedown', function(e){
+          e.preventDefault();
+          window.location.href = htmlPre + item.link;
+        });
+        sugBox.appendChild(li);
+      });
+      sugBox.style.display = 'block';
+    }
+    function sugFetch(){
+      var kw = kwInput.value.trim();
+      if(!kw){ sugHide(); return; }
+      var cat = (spSel && spSel.value) ? spSel.value : '';
+      var url = '/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+      fetch(url).then(function(r){ return r.json(); }).then(function(res){
+        sugRender(res && res.data);
+      }).catch(function(){ sugHide(); });
+    }
+    kwInput.addEventListener('input', function(){
+      clearTimeout(sugTimer);
+      sugTimer = setTimeout(sugFetch, 250);
+    });
+    kwInput.addEventListener('keydown', function(e){
+      if(sugBox.style.display === 'none' || !sugItems.length) return;
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+        e.preventDefault();
+        sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+        for(var i = 0; i < sugBox.children.length; i++){
+          sugBox.children[i].classList.toggle('on', i === sugIdx);
+        }
+      }else if(e.key === 'Enter' && sugIdx > -1){
+        e.preventDefault();
+        window.location.href = htmlPre + sugItems[sugIdx].link;
+      }else if(e.key === 'Escape'){
+        sugHide();
+      }
+    });
+    document.addEventListener('click', function(e){
+      if(!searchForm.contains(e.target)) sugHide();
+    });
+  }
   }
 })();
 </script>
@@ -147,17 +209,16 @@
 <div class="bq2-container bq2-listwrap">
     <!-- 左侧锚点导航 -->
     <aside class="bq2-side">
-        <p class="bq2-side-title">关于我们</p>
         <ul class="bq2-qnav" id="bq2-anav">
-            <li><a href="#bq2-sec-1">公司简介</a></li>
-            <li><a href="#bq2-sec-2">加入我们</a></li>
+            <li><a href="#bq2-sec-1"><img class="ico" src="/template/1/bioquanti/cn/images/newui/qnav-join.png" alt="">公司简介</a></li>
+            <li><a href="#bq2-sec-2"><img class="ico" src="/template/1/bioquanti/cn/images/newui/qnav-intro.png" alt="">加入我们</a></li>
         </ul>
     </aside>
 
     <!-- 右侧：分区内容（每篇文章=一个分区） -->
     <div class="bq2-main">
         <div class="bq2-qsec" id="bq2-sec-1">
-            <img class="pic" src="/template/1/bioquanti/cn/images/newui/about-building.jpg" alt="公司简介">
+            <img class="pic" src="/template/1/bioquanti/cn/images/newui/dna-about.png" alt="公司简介">
             <h3>公司简介</h3>
             <div class="rich"><h3 class="lead1-title" style="box-sizing: border-box; font-weight: 500; line-height: 1.1; color: rgb(77, 109, 156); margin-top: 20px; margin-bottom: 30px; font-size: 24px; white-space: normal; background-color: rgb(255, 255, 255);">立足本土, 布局全球123</h3><p class="lead1" style="box-sizing: border-box; margin: 0px 0px 10px; text-indent: 2em; color: rgb(119, 119, 119); line-height: 1.8em; white-space: normal; background-color: rgb(255, 255, 255);">Bioquanti Technology 位于以生物医药、医疗器械为核心的国家级产业基地——武汉光谷高新技术开发区，公司专注 ELISA 试剂盒的研发、生产及销售，同时提供配套的技术支持和检测服务。</p><p class="lead1" style="box-sizing: border-box; margin: 0px 0px 10px; text-indent: 2em; color: rgb(119, 119, 119); line-height: 1.8em; white-space: normal; background-color: rgb(255, 255, 255);">Bioquanti Technology 致力于为科研工作者提供行业内高质量试剂盒，助力便捷高效的科研创新。</p><p class="lead1" style="box-sizing: border-box; margin: 0px 0px 10px; text-indent: 2em; color: rgb(119, 119, 119); line-height: 1.8em; white-space: normal; background-color: rgb(255, 255, 255);">Bioquanti Technology 依托完善的免疫试剂开发平台可提供千余种 ELISA 检测试剂盒，覆盖人、大鼠、 小鼠、兔、猪、牛、羊、鸡、豚鼠、犬等多个种属，具体领域涉及免疫炎症、肿瘤研究、慢性疾病&amp;生长 代谢、神经生物学、自身免疫疾病、微生物感染等。</p><p><br/></p></div>
         </div>

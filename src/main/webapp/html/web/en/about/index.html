@@ -27,7 +27,7 @@
         <div class="bq2-container bq2-topflex">
             <a class="bq2-logo" href="/html/web/en/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
             <div class="bq2-topright">
-                <div class="bq2-lang"><a href="/html/web/cn/index.html">中文</a></div>
+                <div class="bq2-lang"><a href="https://zh.bioquanti.com">中文</a></div>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
     </nav>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form" data-lang="en">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">All Products</option>
@@ -83,7 +83,10 @@
                         <option value="3707212335907000105">Others</option>
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="en/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search</button>
@@ -132,6 +135,65 @@
       updatePlaceholder();
       kwInput.focus();
     });
+    var sugBox = document.getElementById('bq2-sug');
+    if(sugBox && kwInput && searchForm){
+      var sugTimer = null, sugItems = [], sugIdx = -1;
+      var htmlPre = '/html/web/';
+      function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+      function sugRender(list){
+        sugBox.innerHTML = '';
+        sugItems = list || []; sugIdx = -1;
+        if(!sugItems.length){ sugHide(); return; }
+        sugItems.forEach(function(item){
+          var li = document.createElement('div');
+          li.className = 'bq2-sug-item';
+          var tt = document.createElement('span');
+          tt.className = 'bq2-sug-tt';
+          tt.textContent = item.title;
+          var hit = document.createElement('span');
+          hit.className = 'bq2-sug-hit';
+          hit.textContent = 'Hot ' + (item.hit || 0);
+          li.appendChild(tt); li.appendChild(hit);
+          li.addEventListener('mousedown', function(e){
+            e.preventDefault();
+            window.location.href = htmlPre + item.link;
+          });
+          sugBox.appendChild(li);
+        });
+        sugBox.style.display = 'block';
+      }
+      function sugFetch(){
+        var kw = kwInput.value.trim();
+        if(!kw){ sugHide(); return; }
+        var cat = (spSel && spSel.value) ? spSel.value : '';
+        var url = '/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+        fetch(url).then(function(r){ return r.json(); }).then(function(res){
+          sugRender(res && res.data);
+        }).catch(function(){ sugHide(); });
+      }
+      kwInput.addEventListener('input', function(){
+        clearTimeout(sugTimer);
+        sugTimer = setTimeout(sugFetch, 250);
+      });
+      kwInput.addEventListener('keydown', function(e){
+        if(sugBox.style.display === 'none' || !sugItems.length) return;
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+          e.preventDefault();
+          sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+          for(var i = 0; i < sugBox.children.length; i++){
+            sugBox.children[i].classList.toggle('on', i === sugIdx);
+          }
+        }else if(e.key === 'Enter' && sugIdx > -1){
+          e.preventDefault();
+          window.location.href = htmlPre + sugItems[sugIdx].link;
+        }else if(e.key === 'Escape'){
+          sugHide();
+        }
+      });
+      document.addEventListener('click', function(e){
+        if(!searchForm.contains(e.target)) sugHide();
+      });
+    }
   }
 })();
 </script>
@@ -146,17 +208,16 @@
 <div class="bq2-container bq2-listwrap">
     <!-- Left anchor nav -->
     <aside class="bq2-side">
-        <p class="bq2-side-title">About Us</p>
         <ul class="bq2-qnav" id="bq2-anav">
-            <li><a href="#bq2-sec-1">Company Profile</a></li>
-            <li><a href="#bq2-sec-2">Join Us</a></li>
+            <li><a href="#bq2-sec-1"><img class="ico" src="/template/1/bioquanti/en/images/newui/qnav-join.png" alt="">Company Profile</a></li>
+            <li><a href="#bq2-sec-2"><img class="ico" src="/template/1/bioquanti/en/images/newui/qnav-intro.png" alt="">Join Us</a></li>
         </ul>
     </aside>
 
     <!-- Right: sections (one article = one section) -->
     <div class="bq2-main">
         <div class="bq2-qsec" id="bq2-sec-1">
-            <img class="pic" src="/template/1/bioquanti/en/images/newui/about-building.jpg" alt="Company Profile">
+            <img class="pic" src="/template/1/bioquanti/en/images/newui/dna-about.png" alt="Company Profile">
             <h3>Company Profile</h3>
             <div class="rich"><p>Wuhan Bioquanti Biotechnology Co., Ltd. (brand: BIOQUANTI) was established in May 2024, registered in the East Lake High-tech Development Zone of Wuhan, located in the Hubei Free Trade Zone Wuhan Area Optics Valley Biological Creation City. Relying on the Optics Valley life-science industry cluster, it is a technology-based enterprise focusing on the R&amp;D, production and technical services of immunodiagnostic reagents for research. With a registered capital of 1 million RMB, the company is deeply engaged in ELISA enzyme-linked immunosorbent assay reagents, providing high-quality research reagents and supporting laboratory technical solutions for universities, research institutes and biopharmaceutical enterprises.</p><p>The company focuses on the development and optimization of immunodiagnostic reagents and has built a standardized reagent development platform. Its core products are ELISA research kits covering human, rat, mouse, rabbit, pig, bovine, sheep, chicken, monkey, guinea pig and other species, with indicators covering disease factors, tumor markers, metabolic factors, neural active substances, autoantibodies, pathogen-related proteins and genes, widely used in immunology, oncology mechanisms, metabolic diseases, neurobiology, autoimmune diseases, microbial infection and other basic medicine and life science research. Through continuous optimization of formulations, control of raw materials, production processes and quality control, the company keeps improving product sensitivity, specificity and inter-batch consistency to ensure reliable experimental data.</p><p>Beyond finished reagents, the company also provides customized antibody development, experimental technical consulting, sample testing and other value-added technical services. Business scope covers biotechnology development, technical consulting, technology transfer, chemical product sales (excluding hazardous chemicals), Class I medical device production and sales, medical research and trial development, goods import/export and technology import/export.</p><p>Adhering to the values of "focus, integrity, and progress", Bioquanti takes "making scientific research simpler and making experimental results more reliable" as its mission, deeply cultivating the immunoassay field. We uphold business integrity, treat every research customer sincerely, grow together with researchers, and help explore life sciences. Looking forward, the company will continue to increase R&amp;D investment, enrich the reagent product line, improve the technical service system, and steadily expand the domestic and overseas research markets, striving to become a trusted supplier of research immunoassay reagents in China.</p></div>
         </div>

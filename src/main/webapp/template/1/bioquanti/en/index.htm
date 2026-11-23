@@ -61,27 +61,39 @@
             </div>
             <div class="bq2-panel">
                 {ms:arclist typeid='3707212335907000103' size=5 orderby='hit,date,sort' order='desc,desc,desc'}
+                <#-- Code (first segment of keyword) first, fallback to shorttitle -->
+                <#assign _code = ((field.keyword!'')?string)?trim>
+                <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+                <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
                 <div class="bq2-pcard">
                     <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
-                    <p class="code">${field.shorttitle}</p>
+                    <p class="code">${_code}</p>
                     <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                 </div>
                 {/ms:arclist}
             </div>
             <div class="bq2-panel">
                 {ms:arclist typeid='3707212335907000104' size=5 orderby='hit,date,sort' order='desc,desc,desc'}
+                <#-- Code (first segment of keyword) first, fallback to shorttitle -->
+                <#assign _code = ((field.keyword!'')?string)?trim>
+                <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+                <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
                 <div class="bq2-pcard">
                     <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
-                    <p class="code">${field.shorttitle}</p>
+                    <p class="code">${_code}</p>
                     <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                 </div>
                 {/ms:arclist}
             </div>
             <div class="bq2-panel">
                 {ms:arclist typeid='3707212335907000105' size=5 orderby='hit,date,sort' order='desc,desc,desc'}
+                <#-- Code (first segment of keyword) first, fallback to shorttitle -->
+                <#assign _code = ((field.keyword!'')?string)?trim>
+                <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+                <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
                 <div class="bq2-pcard">
                     <a class="bq2-pcard-img" href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content && field.litpic?starts_with("[")><#assign _pl=field.litpic?eval><#if _pl?size gt 0 && (_pl[0].url)??><img src="${_pl[0].url}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if><#elseif field.litpic?? && field.litpic?has_content><img src="${field.litpic}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/newui/kit-photo-sm.png" alt="${field.title}"></#if></a>
-                    <p class="code">${field.shorttitle}</p>
+                    <p class="code">${_code}</p>
                     <p class="name"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                 </div>
                 {/ms:arclist}

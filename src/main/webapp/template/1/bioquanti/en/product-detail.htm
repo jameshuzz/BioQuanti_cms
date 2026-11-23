@@ -83,7 +83,7 @@
         <#if spRaw?has_content && spRaw?starts_with('[')>
         <#assign specs = spRaw?eval>
         </#if>
-        <#assign specFallback = ((field.SPEC)!'')?string?trim>
+        <#assign specFallback = (((field.SPEC)!'')?string?trim)?has_content?then(((field.SPEC)!'')?string?trim, ((field.SIZE)!'')?string?trim)>
         <div class="bq2-specpanel">
             <div class="bq2-spec-head">${field.CATALOG_NO}</div>
             <div class="bq2-spec-rows" id="bqSpecRows">

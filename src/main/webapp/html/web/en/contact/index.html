@@ -16,7 +16,7 @@
         <div class="bq2-container bq2-topflex">
             <a class="bq2-logo" href="/html/web/en/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
             <div class="bq2-topright">
-                <div class="bq2-lang"><a href="/html/web/cn/index.html">中文</a></div>
+                <div class="bq2-lang"><a href="https://zh.bioquanti.com">中文</a></div>
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@
     </nav>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form" data-lang="en">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">All Products</option>
@@ -72,7 +72,10 @@
                         <option value="3707212335907000105">Others</option>
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="en/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search</button>
@@ -121,6 +124,65 @@
       updatePlaceholder();
       kwInput.focus();
     });
+    var sugBox = document.getElementById('bq2-sug');
+    if(sugBox && kwInput && searchForm){
+      var sugTimer = null, sugItems = [], sugIdx = -1;
+      var htmlPre = '/html/web/';
+      function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+      function sugRender(list){
+        sugBox.innerHTML = '';
+        sugItems = list || []; sugIdx = -1;
+        if(!sugItems.length){ sugHide(); return; }
+        sugItems.forEach(function(item){
+          var li = document.createElement('div');
+          li.className = 'bq2-sug-item';
+          var tt = document.createElement('span');
+          tt.className = 'bq2-sug-tt';
+          tt.textContent = item.title;
+          var hit = document.createElement('span');
+          hit.className = 'bq2-sug-hit';
+          hit.textContent = 'Hot ' + (item.hit || 0);
+          li.appendChild(tt); li.appendChild(hit);
+          li.addEventListener('mousedown', function(e){
+            e.preventDefault();
+            window.location.href = htmlPre + item.link;
+          });
+          sugBox.appendChild(li);
+        });
+        sugBox.style.display = 'block';
+      }
+      function sugFetch(){
+        var kw = kwInput.value.trim();
+        if(!kw){ sugHide(); return; }
+        var cat = (spSel && spSel.value) ? spSel.value : '';
+        var url = '/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+        fetch(url).then(function(r){ return r.json(); }).then(function(res){
+          sugRender(res && res.data);
+        }).catch(function(){ sugHide(); });
+      }
+      kwInput.addEventListener('input', function(){
+        clearTimeout(sugTimer);
+        sugTimer = setTimeout(sugFetch, 250);
+      });
+      kwInput.addEventListener('keydown', function(e){
+        if(sugBox.style.display === 'none' || !sugItems.length) return;
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+          e.preventDefault();
+          sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+          for(var i = 0; i < sugBox.children.length; i++){
+            sugBox.children[i].classList.toggle('on', i === sugIdx);
+          }
+        }else if(e.key === 'Enter' && sugIdx > -1){
+          e.preventDefault();
+          window.location.href = htmlPre + sugItems[sugIdx].link;
+        }else if(e.key === 'Escape'){
+          sugHide();
+        }
+      });
+      document.addEventListener('click', function(e){
+        if(!searchForm.contains(e.target)) sugHide();
+      });
+    }
   }
 })();
 </script>
@@ -143,7 +205,9 @@
             <p class="addr">Room 17, 8th Floor, Building 5, No.4 Commercial, Phase 1, Joy City Business Project, Gaoxin Avenue, Jiufeng Sub-district, East Lake High-tech Development Zone, Wuhan, Hubei (Wuhan Free Trade Zone)</p>
         </div>
         <div class="map">
-            <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=114.40%2C30.47%2C114.52%2C30.54&amp;layer=mapnik&amp;marker=30.5063%2C114.4603" loading="lazy" title="BioQuanti Map"></iframe>
+            <a class="bmap" href="http://api.map.baidu.com/marker?location=30.503758,114.465757&title=BioQuanti&content=Joy%20City%20Business%20Project%2C%20Gaoxin%20Avenue%2C%20East%20Lake%20High-tech%20Zone%2C%20Wuhan&output=html&src=web.bioquanti.cn" target="_blank" rel="noopener">
+                <img src="https://api.map.baidu.com/staticimage?center=114.465757,30.503758&width=1024&height=480&zoom=15&markers=114.465757,30.503758" alt="BioQuanti Map (Baidu)" loading="lazy">
+            </a>
         </div>
     </div>
 </div>

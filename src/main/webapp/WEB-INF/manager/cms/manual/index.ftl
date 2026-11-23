@@ -154,7 +154,7 @@
 
             <el-pagination style="margin-top:15px;justify-content:flex-end;" layout="total, prev, pager, next, sizes"
                            :total="productTotal" :current-page="bindQuery.page" :page-size="bindQuery.size"
-                           :page-sizes="[20, 50, 100]" @current-change="loadProducts"
+                           :page-sizes="[20, 50, 100, 200, 500, 1000]" @current-change="loadProducts"
                            @size-change="function(s){bindQuery.size=s;loadProducts(1)}"></el-pagination>
             <template #footer>
                 <el-button @click="bindDialog.visible = false">关闭</el-button>

@@ -41,7 +41,11 @@
         {ms:arclist ispaging=true size=20}
         <div class="bq-prodrow">
             <div class="pic"><a href="{ms:global.html/}${field.link}"><#if field.litpic?? && field.litpic?has_content><img src="{@ms:file field.litpic/}" alt="${field.title}"><#else><img src="/{ms:global.style/}en/images/product/1.png" alt="${field.title}"></#if></a></div>
-            <span class="no">${field.shorttitle}</span>
+            <#-- Code first segment of keyword, fallback to shorttitle -->
+            <#assign _code = ((field.keyword!'')?string)?trim>
+            <#if _code?has_content><#assign _code = (_code?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim></#if>
+            <#if !_code?has_content && field.shorttitle?? && field.shorttitle?has_content><#assign _code = field.shorttitle?trim></#if>
+            <span class="no">${_code}</span>
             <span class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></span>
             <span class="go"><a href="{ms:global.html/}${field.link}">View Details →</a></span>
         </div>

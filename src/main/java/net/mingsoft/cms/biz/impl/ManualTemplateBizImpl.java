@@ -45,6 +45,11 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 	public static final String SPEC_TABLE = "MDIY_MODEL_CPSPECPROD";
 
 	/**
+	 * 抗体规格模型表名（抗体产品说明书数据源，与试剂盒规格表结构兼容）
+	 */
+	public static final String AB_SPEC_TABLE = "MDIY_MODEL_ABPROD";
+
+	/**
 	 * 模板文件存放目录（upload/{appId}/manual/）
 	 */
 	private static final String MANUAL_DIR = "manual";
@@ -129,8 +134,9 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 				.orderByDesc(ManualTemplateEntity::getCreateDate).list();
 		// 绑定数统计（一次GROUP BY）
 		Map<String, Object> bindCount = new HashMap<>();
-		for (Map<String, Object> row : queryForList("SELECT TEMPLATE_ID AS tid, COUNT(*) AS cnt FROM "
-				+ SPEC_TABLE + " WHERE TEMPLATE_ID IS NOT NULL GROUP BY TEMPLATE_ID")) {
+		for (Map<String, Object> row : queryForList("SELECT TEMPLATE_ID AS tid, COUNT(*) AS cnt FROM ("
+				+ "SELECT TEMPLATE_ID FROM " + SPEC_TABLE + " WHERE TEMPLATE_ID IS NOT NULL "
+				+ "UNION ALL SELECT TEMPLATE_ID FROM " + AB_SPEC_TABLE + " WHERE TEMPLATE_ID IS NOT NULL) t GROUP BY TEMPLATE_ID")) {
 			bindCount.put(String.valueOf(row.get("tid")), row.get("cnt"));
 		}
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -159,17 +165,37 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		if (model == null) {
 			throw new BusinessException("未找到产品规格模型:" + SPEC_TABLE);
 		}
-		List<Map> fields = JSONUtil.toList(model.getModelField(), Map.class);
 		List<Map<String, Object>> result = new ArrayList<>();
-		if (fields != null) {
-			for (Map field : fields) {
-				Map<String, Object> item = new HashMap<>();
-				item.put("key", field.get("key"));
-				item.put("name", field.get("name"));
-				result.add(item);
+		// 占位符清单：试剂盒规格模型 + 抗体规格模型（在线编辑模板时下拉可选两类产品的字段）
+		List<String> tables = new ArrayList<>(Arrays.asList(SPEC_TABLE, AB_SPEC_TABLE));
+		for (String table : tables) {
+			ModelEntity m = SPEC_TABLE.equals(table) ? model : getModelByTable(table);
+			if (m == null) {
+				continue;
+			}
+			List<Map> fields = JSONUtil.toList(m.getModelField(), Map.class);
+			if (fields != null) {
+				for (Map field : fields) {
+					Map<String, Object> item = new HashMap<>();
+					item.put("key", field.get("key"));
+					item.put("name", field.get("name"));
+					result.add(item);
+				}
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * 按表名取自定义模型实体
+	 */
+	private ModelEntity getModelByTable(String tableName) {
+		List<Map<String, Object>> rows = queryForList(
+				"SELECT ID FROM mdiy_model WHERE MODEL_TABLE_NAME = ?", tableName);
+		if (rows.isEmpty()) {
+			return null;
+		}
+		return modelBiz.getEntityById(String.valueOf(rows.get(0).values().iterator().next()));
 	}
 
 	// ==================== 绑定管理 ====================
@@ -208,12 +234,16 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			params.add(currentTemplateId);
 		}
 
-		String countSql = "SELECT COUNT(*) FROM " + SPEC_TABLE + " s INNER JOIN cms_content c ON c.ID = s.LINK_ID "
+		// 规格数据取试剂盒+抗体两个规格模型的并集（说明书模板可绑两类产品）
+		String specUnion = "(SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID, DEL FROM " + SPEC_TABLE
+				+ " UNION ALL SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID, DEL FROM " + AB_SPEC_TABLE + ") s";
+
+		String countSql = "SELECT COUNT(*) FROM " + specUnion + " INNER JOIN cms_content c ON c.ID = s.LINK_ID "
 				+ "LEFT JOIN cms_category ca ON ca.ID = c.CATEGORY_ID" + where;
 		int total = ((Number) queryForList(countSql, params.toArray()).get(0).values().iterator().next()).intValue();
 
 		String dataSql = "SELECT c.ID AS id, c.CONTENT_TITLE AS title, s.CATALOG_NO AS catalogNo, s.TEMPLATE_ID AS templateId, "
-				+ "c.CATEGORY_ID AS categoryId, ca.CATEGORY_TITLE AS categoryTitle FROM " + SPEC_TABLE + " s "
+				+ "c.CATEGORY_ID AS categoryId, ca.CATEGORY_TITLE AS categoryTitle FROM " + specUnion + " "
 				+ "INNER JOIN cms_content c ON c.ID = s.LINK_ID LEFT JOIN cms_category ca ON ca.ID = c.CATEGORY_ID" + where
 				+ " ORDER BY c.ID DESC LIMIT ? OFFSET ? ";
 		List<Object> dataParams = new ArrayList<>(params);
@@ -250,16 +280,23 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			getTemplate(templateId);
 		}
 		// 一个产品只能绑一个模板：直接覆盖更新（后保存覆盖先保存）；解绑时同步清空MANUAL附件（前台下载按钮随之消失）
+		// 试剂盒/抗体两张规格表各更新一遍（LINK_ID 只存在于其中一张，另一张0行）
 		String placeholders = productIds.stream().map(p -> "?").collect(Collectors.joining(","));
 		int rows;
 		if (StringUtils.isBlank(templateId)) {
-			rows = update("UPDATE " + SPEC_TABLE + " SET TEMPLATE_ID = NULL, MANUAL = NULL, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
-					productIds.toArray());
+			rows = 0;
+			for (String table : new String[]{SPEC_TABLE, AB_SPEC_TABLE}) {
+				rows += update("UPDATE " + table + " SET TEMPLATE_ID = NULL, MANUAL = NULL, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
+						productIds.toArray());
+			}
 			// 解绑后MANUAL字段已清空，对应PDF成为孤儿文件，立即删除避免残留（文件名=文章id，与模板无关）
 			deletePdfFiles(productIds);
 		} else {
-			rows = update("UPDATE " + SPEC_TABLE + " SET TEMPLATE_ID = ?, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
-					buildBindParams(templateId, productIds));
+			for (String table : new String[]{SPEC_TABLE, AB_SPEC_TABLE}) {
+				update("UPDATE " + table + " SET TEMPLATE_ID = ?, UPDATE_DATE = NOW() WHERE LINK_ID IN (" + placeholders + ")",
+						buildBindParams(templateId, productIds));
+			}
+			rows = productIds.size();
 		}
 		// 刷新文章更新时间：首次绑定/解绑影响静态页下载按钮显示，可通过"生成文章"按时间重新生成
 		update("UPDATE cms_content SET UPDATE_DATE = NOW() WHERE ID IN (" + placeholders + ")", productIds.toArray());
@@ -274,6 +311,10 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			throw new BusinessException("产品编号不能为空");
 		}
 		List<Map<String, Object>> specRows = queryForList("SELECT * FROM " + SPEC_TABLE + " WHERE LINK_ID = ?", linkId);
+		if (specRows.isEmpty()) {
+			// 试剂盒规格表无数据时查抗体规格表
+			specRows = queryForList("SELECT * FROM " + AB_SPEC_TABLE + " WHERE LINK_ID = ?", linkId);
+		}
 		if (specRows.isEmpty()) {
 			throw new BusinessException("该产品无规格数据");
 		}
@@ -482,7 +523,8 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		}
 		// 绑定的产品（仅已发布、未删除且栏目启用的才生成）
 		List<Map<String, Object>> products = queryForList(
-				"SELECT s.LINK_ID AS linkId, s.CATALOG_NO AS catalogNo FROM " + SPEC_TABLE + " s "
+				"SELECT s.LINK_ID AS linkId, s.CATALOG_NO AS catalogNo FROM (SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID FROM " + SPEC_TABLE
+						+ " UNION ALL SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID FROM " + AB_SPEC_TABLE + ") s "
 						+ "INNER JOIN cms_content c ON c.ID = s.LINK_ID "
 						+ "LEFT JOIN cms_category ca ON ca.ID = c.CATEGORY_ID "
 						+ "WHERE s.TEMPLATE_ID = ? AND c.del = 0 AND c.content_display = '0' AND ca.category_display = 'enable'",
@@ -522,6 +564,7 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 				String url = toUrl(pdfFile);
 				String json = "[{\"url\":\"" + url + "\",\"name\":\"" + displayName.replace("\\", "\\\\").replace("\"", "\\\"") + "\"}]";
 				update("UPDATE " + SPEC_TABLE + " SET MANUAL = ? WHERE LINK_ID = ?", json, linkId);
+			update("UPDATE " + AB_SPEC_TABLE + " SET MANUAL = ? WHERE LINK_ID = ?", json, linkId);
 				okIds.add(linkId);
 				if (progress != null) {
 					progress.put("success", okIds.size());
@@ -578,7 +621,8 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		Set<String> dbUrls = this.list().stream()
 				.map(ManualTemplateEntity::getTemplateUrl).collect(Collectors.toSet());
 		// 数据库中仍被MANUAL字段引用的PDF文件名集合（文件名=文章id.pdf）
-		Set<String> referencedPdfs = queryForList("SELECT DISTINCT MANUAL FROM " + SPEC_TABLE + " WHERE MANUAL IS NOT NULL")
+		Set<String> referencedPdfs = queryForList("SELECT DISTINCT MANUAL FROM (SELECT MANUAL FROM " + SPEC_TABLE
+				+ " WHERE MANUAL IS NOT NULL UNION ALL SELECT MANUAL FROM " + AB_SPEC_TABLE + " WHERE MANUAL IS NOT NULL) t")
 				.stream()
 				.map(r -> String.valueOf(r.get("MANUAL")))
 				.filter(m -> StringUtils.isNotBlank(m) && !"null".equals(m))
@@ -677,7 +721,8 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 	 */
 	private int getBindCount(String templateId) {
 		List<Map<String, Object>> rows = queryForList(
-				"SELECT COUNT(*) AS cnt FROM " + SPEC_TABLE + " WHERE TEMPLATE_ID = ?", templateId);
+				"SELECT COUNT(*) AS cnt FROM (SELECT TEMPLATE_ID FROM " + SPEC_TABLE + " WHERE TEMPLATE_ID = ? "
+						+ "UNION ALL SELECT TEMPLATE_ID FROM " + AB_SPEC_TABLE + " WHERE TEMPLATE_ID = ?)", templateId, templateId);
 		return ((Number) rows.get(0).get("cnt")).intValue();
 	}
 

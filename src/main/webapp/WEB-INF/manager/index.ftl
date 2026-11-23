@@ -28,7 +28,7 @@
                          text-color="rgba(255,255,255,1)" active-text-color="rgba(255,255,255,1)"
                          :collapse="collapseMenu" :unique-opened='true' ref='menu'>
                     <div class="ms-admin-logo" :style="{display: 'flex','padding-left': (collapseMenu?'5px':'22px')}">
-                        <img :src="ms.base+'/static/images/bioquanti_logo.png'"/>
+                        <img :src="ms.base+'/static/images/bioquanti_logo_white.png'"/>
                     </div>
                     <template v-for="menu in asideMenuList" :key="menu.id">
                         <el-sub-menu  v-if="!menu.isSingle" :popper-class="'ms-admin-menu-aside-submenu '+theme" :index="menu.id+''">
@@ -568,7 +568,8 @@
         display: flex;
         align-items: center;
         overflow: hidden;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        background: #0080FF !important;
+        border-bottom: none;
     }
 
     .ms-admin-logo img {

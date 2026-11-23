@@ -75,6 +75,10 @@ public class ManualRenderUtil {
 		if (StringUtils.isBlank(templateHtml)) {
 			throw new BusinessException("模板内容为空");
 		}
+		// 竞争法标记：标曲表不扣空白（无Corrected列），图表用Average列且0浓度点(B0)参与拟合
+		boolean noCorr = templateHtml.contains("<!--NO_CORRECTED-->");
+		// 条件块：<!--IF:字段=值-->内容<!--ENDIF-->（数据值匹配则保留内容，否则整块删除，用于单抗/多抗等文案分支）
+		templateHtml = renderCondBlocks(templateHtml, values);
 		Matcher matcher = PLACEHOLDER.matcher(templateHtml);
 		StringBuilder sb = new StringBuilder();
 		while (matcher.find()) {
@@ -119,13 +123,13 @@ public class ManualRenderUtil {
 			String rendered;
 			switch (mode) {
 				case "ROWS":
-					rendered = toRows(value);
+					rendered = toRows(value, noCorr);
 					break;
 				case "LINES":
 					rendered = toLines(value);
 					break;
 				case "CHART":
-					rendered = toChartImg(value, chartUnit);
+					rendered = toChartImg(value, chartUnit, noCorr);
 					break;
 				default:
 					rendered = renderValue(value);
@@ -133,7 +137,11 @@ public class ManualRenderUtil {
 			matcher.appendReplacement(sb, Matcher.quoteReplacement(rendered));
 		}
 		matcher.appendTail(sb);
-		return sb.toString();
+		String result = sb.toString();
+		if (noCorr) {
+			result = result.replace("<!--NO_CORRECTED-->", "");
+		}
+		return result;
 	}
 
 	/**
@@ -213,11 +221,34 @@ public class ManualRenderUtil {
 	}
 
 	/**
+	 * 条件块渲染：<!--IF:字段=值-->内容<!--ENDIF-->
+	 * 数据值与块声明值忽略大小写匹配则保留内容（去除标记），否则整块删除；支持同一字段多个块、模板中出现多组块
+	 */
+	private static String renderCondBlocks(String html, Map<String, Object> values) {
+		if (html == null || !html.contains("<!--IF:")) {
+			return html;
+		}
+		Pattern cond = Pattern.compile("<!--IF:([A-Za-z0-9_]+)=([^>]*)-->(.*?)<!--ENDIF-->", Pattern.DOTALL);
+		Matcher m = cond.matcher(html);
+		StringBuilder sb = new StringBuilder();
+		while (m.find()) {
+			String field = m.group(1);
+			String expect = m.group(2).trim();
+			String actual = lookupValue(values, field);
+			boolean keep = actual != null && actual.trim().equalsIgnoreCase(expect);
+			m.appendReplacement(sb, Matcher.quoteReplacement(keep ? m.group(3) : ""));
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+	/**
 	 * 数据行模式：表格文本转tr/td序列（不包table标签），配合模板中写死的表头使用。
 	 * 约定首行为表头（与编辑表格/Excel粘贴格式一致），渲染时跳过；
+	 * noCorr=true（竞争法）：数据行多于4列时裁掉末尾Corrected列，输出前4列；
 	 * 非表格文本（含未填占位"-"）返回空串，避免破坏外层表格结构
 	 */
-	private static String toRows(String value) {
+	private static String toRows(String value, boolean noCorr) {
 		if (!isTableText(value)) {
 			return "";
 		}
@@ -236,6 +267,11 @@ public class ManualRenderUtil {
 			String[] cells = line.replace("\t\t", "\t").split("\t");
 			if (cells.length == 1) {
 				cells = line.split("\\|");
+			}
+			if (noCorr && cells.length > 4) {
+				String[] c4 = new String[4];
+				System.arraycopy(cells, 0, c4, 0, 4);
+				cells = c4;
 			}
 			sb.append("<tr>");
 			for (String cell : cells) {
@@ -273,13 +309,13 @@ public class ManualRenderUtil {
 	 * 数据格式：首行为表头（跳过），首列=浓度，末列优先取Corrected列（倒数第1列），
 	 * 无则取Average（倒数第2列），浓度&lt;0的点跳过
 	 */
-	private static String toChartImg(String value, String unit) {
-		double[][] points = parseCurvePoints(value);
+	private static String toChartImg(String value, String unit, boolean noCorr) {
+		double[][] points = parseCurvePoints(value, noCorr);
 		if (points.length < 2) {
 			return "";
 		}
 		try {
-			byte[] png = renderStdCurvePng(points, unit);
+			byte[] png = renderStdCurvePng(points, unit, noCorr);
 			String base64 = Base64.getEncoder().encodeToString(png);
 			return "<img style=\"width:270px;\" src=\"data:image/png;base64," + base64 + "\"/>";
 		} catch (Exception e) {
@@ -289,8 +325,9 @@ public class ManualRenderUtil {
 
 	/**
 	 * 解析标曲数据点：[浓度, OD]，按浓度升序
+	 * noCorr=true（竞争法）：y固定取倒数第2列（Average，不扣空白），0浓度点保留参与拟合
 	 */
-	private static double[][] parseCurvePoints(String value) {
+	private static double[][] parseCurvePoints(String value, boolean noCorr) {
 		if (value == null) {
 			return new double[0][];
 		}
@@ -309,13 +346,20 @@ public class ManualRenderUtil {
 			}
 			try {
 				double x = Double.parseDouble(cells[0].trim());
-				// y优先取末列（Corrected），无则倒数第2列（Average）
-				double y = parseDoubleSafe(cells[cells.length - 1]);
-				if (Double.isNaN(y) && cells.length >= 3) {
-					y = parseDoubleSafe(cells[cells.length - 2]);
+				double y;
+				if (noCorr) {
+					// 竞争法：不扣空白，y取Average列（倒数第2列）；数据仅2列时取末列
+					y = cells.length >= 3 ? parseDoubleSafe(cells[cells.length - 2])
+							: parseDoubleSafe(cells[cells.length - 1]);
+				} else {
+					// y优先取末列（Corrected），无则倒数第2列（Average）
+					y = parseDoubleSafe(cells[cells.length - 1]);
+					if (Double.isNaN(y) && cells.length >= 3) {
+						y = parseDoubleSafe(cells[cells.length - 2]);
+					}
 				}
 				if (x >= 0 && !Double.isNaN(y)) {
-					// 保留x=0的Blank点（画在原点，不参与4PL拟合）
+					// x=0点：正比法=Blank(不参与拟合)；竞争法=B0点(参与拟合)，由noCorr区分
 					pts.add(new double[]{x, y});
 				}
 			} catch (NumberFormatException ignore) {
@@ -339,9 +383,9 @@ public class ManualRenderUtil {
 	 * X轴=线性浓度轴（上限取不小于浓度最大值的最小"整齐"值，4~5个均匀整刻度），
 	 * Y轴=OD轴（0.5步进刻度，上限=数据最大值向上取整到0.5），
 	 * 曲线=4PL(Logistic四参数)拟合平滑曲线（拟合失败回退折线），
-	 * 散点=全部数据点（含原点Blank点，Blank不参与拟合）
+	 * 散点=全部数据点；noCorr=false时x=0为Blank点不参与拟合，true（竞争法）时0浓度B0点参与拟合
 	 */
-	private static byte[] renderStdCurvePng(double[][] points, String unit) throws Exception {
+	private static byte[] renderStdCurvePng(double[][] points, String unit, boolean noCorr) throws Exception {
 		int w = 320, h = 250;
 		int left = 48, right = 14, top = 14, bottom = 36;
 		BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -353,18 +397,12 @@ public class ManualRenderUtil {
 		Font font = new Font("SansSerif", Font.PLAIN, 10);
 		g.setFont(font);
 
-		// 拟合点(x>0)与原点Blank点(x=0)
+		// 拟合点集合：正比法排除x=0的Blank点；竞争法(noCorr=true)0浓度B0点参与拟合
 		List<double[]> fitList = new ArrayList<>();
-		double[] blank = null;
 		for (double[] p : points) {
-			if (p[0] > 0) {
+			if (p[0] > 0 || noCorr) {
 				fitList.add(p);
-			} else if (blank == null) {
-				blank = p;
 			}
-		}
-		if (blank != null) {
-			// Blank点排最前（points已按浓度升序，x=0本就在首位，此处置为冗余保险）
 		}
 		double[][] fitPts = fitList.toArray(new double[0][]);
 		double xMax = fitPts[fitPts.length - 1][0];
@@ -505,16 +543,26 @@ public class ManualRenderUtil {
 			return null;
 		}
 		double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE, geoLog = 0;
+		int posN = 0;
 		for (double[] pt : pts) {
 			minY = Math.min(minY, pt[1]);
 			maxY = Math.max(maxY, pt[1]);
-			geoLog += Math.log10(pt[0]);
+			// EC50初值用正浓度点的几何均值（竞争法含x=0的B0点，log10(0)无意义需排除）
+			if (pt[0] > 0) {
+				geoLog += Math.log10(pt[0]);
+				posN++;
+			}
 		}
 		double span = maxY - minY;
-		if (span < 1e-9 || minY < 0) {
+		if (span < 1e-9 || minY < 0 || posN == 0) {
 			return null;
 		}
-		double[] p = {minY - span * 0.05, 1.0, Math.pow(10, geoLog / n), maxY + span * 0.05};
+		// 初值按曲线方向自适应：模型x→0时y→a(低浓度渐近线)、x→∞时y→d(高浓度渐近线)。
+		// 正比曲线(浓度升序首点y<末点y)：a取小值d取大值；反比竞争法曲线：a取大值d取小值
+		boolean decreasing = pts[0][1] > pts[n - 1][1];
+		double a0 = decreasing ? maxY + span * 0.05 : minY - span * 0.05;
+		double d0 = decreasing ? minY - span * 0.05 : maxY + span * 0.05;
+		double[] p = {a0, 1.0, Math.pow(10, geoLog / posN), d0};
 		if (p[2] <= 0) {
 			return null;
 		}

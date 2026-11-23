@@ -249,7 +249,7 @@ public class ManualAction extends BaseAction {
 	                           @RequestParam(required = false, defaultValue = "") String bindFilter,
 	                           @RequestParam(defaultValue = "1") int page,
 	                           @RequestParam(defaultValue = "20") int size) {
-		return ResultData.build().success(manualTemplateBiz.queryProducts(categoryId, search, bindFilter, templateId, page, Math.min(size, 100)));
+		return ResultData.build().success(manualTemplateBiz.queryProducts(categoryId, search, bindFilter, templateId, page, Math.min(size, 1000)));
 	}
 
 	/**

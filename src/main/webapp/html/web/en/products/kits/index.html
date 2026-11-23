@@ -27,7 +27,7 @@
         <div class="bq2-container bq2-topflex">
             <a class="bq2-logo" href="/html/web/en/index.html"><img src="/upload/1/appLogo/bioquanti_logo.png" alt="BioQuanti" title="BioQuanti"></a>
             <div class="bq2-topright">
-                <div class="bq2-lang"><a href="/html/web/cn/index.html">中文</a></div>
+                <div class="bq2-lang"><a href="https://zh.bioquanti.com">中文</a></div>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
     </nav>
     <div class="bq2-searchbar">
         <div class="bq2-container">
-            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form">
+            <form class="bq2-search bq2-search-inner" action="/mcms/search.do" method="post" id="bq-search-form" data-lang="en">
                 <div class="bq2-selwrap">
                     <select name="categoryIds" id="bq-species-select">
                         <option value="">All Products</option>
@@ -83,7 +83,10 @@
                         <option value="3707212335907000105">Others</option>
                     </select>
                 </div>
-                <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="">
+                <div class="bq2-kwwrap">
+                    <input type="text" name="content_title" id="bq-search-keyword" placeholder="Enter keywords" value="" autocomplete="off">
+                    <div class="bq2-sug" id="bq2-sug"></div>
+                </div>
                 <input type="hidden" name="style" value="bioquanti">
                 <input type="hidden" name="tmpl" value="en/search.htm">
                 <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search</button>
@@ -132,6 +135,65 @@
       updatePlaceholder();
       kwInput.focus();
     });
+    var sugBox = document.getElementById('bq2-sug');
+    if(sugBox && kwInput && searchForm){
+      var sugTimer = null, sugItems = [], sugIdx = -1;
+      var htmlPre = '/html/web/';
+      function sugHide(){ sugBox.style.display = 'none'; sugIdx = -1; }
+      function sugRender(list){
+        sugBox.innerHTML = '';
+        sugItems = list || []; sugIdx = -1;
+        if(!sugItems.length){ sugHide(); return; }
+        sugItems.forEach(function(item){
+          var li = document.createElement('div');
+          li.className = 'bq2-sug-item';
+          var tt = document.createElement('span');
+          tt.className = 'bq2-sug-tt';
+          tt.textContent = item.title;
+          var hit = document.createElement('span');
+          hit.className = 'bq2-sug-hit';
+          hit.textContent = 'Hot ' + (item.hit || 0);
+          li.appendChild(tt); li.appendChild(hit);
+          li.addEventListener('mousedown', function(e){
+            e.preventDefault();
+            window.location.href = htmlPre + item.link;
+          });
+          sugBox.appendChild(li);
+        });
+        sugBox.style.display = 'block';
+      }
+      function sugFetch(){
+        var kw = kwInput.value.trim();
+        if(!kw){ sugHide(); return; }
+        var cat = (spSel && spSel.value) ? spSel.value : '';
+        var url = '/mcms/suggest.do?keyword=' + encodeURIComponent(kw) + '&lang=' + (searchForm.getAttribute('data-lang') || '') + (cat ? '&categoryIds=' + encodeURIComponent(cat) : '');
+        fetch(url).then(function(r){ return r.json(); }).then(function(res){
+          sugRender(res && res.data);
+        }).catch(function(){ sugHide(); });
+      }
+      kwInput.addEventListener('input', function(){
+        clearTimeout(sugTimer);
+        sugTimer = setTimeout(sugFetch, 250);
+      });
+      kwInput.addEventListener('keydown', function(e){
+        if(sugBox.style.display === 'none' || !sugItems.length) return;
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+          e.preventDefault();
+          sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx - 1 + sugItems.length) % sugItems.length;
+          for(var i = 0; i < sugBox.children.length; i++){
+            sugBox.children[i].classList.toggle('on', i === sugIdx);
+          }
+        }else if(e.key === 'Enter' && sugIdx > -1){
+          e.preventDefault();
+          window.location.href = htmlPre + sugItems[sugIdx].link;
+        }else if(e.key === 'Escape'){
+          sugHide();
+        }
+      });
+      document.addEventListener('click', function(e){
+        if(!searchForm.contains(e.target)) sugHide();
+      });
+    }
   }
 })();
 </script>
@@ -148,45 +210,37 @@
             <li class="cat open">
                 <a class="cat-tt" href="/html/web/en/products/kits/index.html">Kits<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/en/products/kits/elisa-kits/index.html" >Inflammation & Immunity Kits<span class="cnt">(20)</span></a>
-                    <a href="/html/web/en/products/kits/exosome-kits/index.html" >Exosome Extraction Kits<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/kits/food-safety-kits/index.html" >Food Safety & Drug Residue Kits<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/kits/dna-extraction-kits/index.html" >Plasmid DNA Extraction Kits<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/kits/hcp-elisa-kits/index.html" >HCP Detection ELISA Kits<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/kits/easy-step-elisa-kits/index.html" >Easy-Step ELISA Kits<span class="cnt">(124)</span></a>
+                    <a href="/html/web/en/products/kits/high-sensitivity-elisa-kits/index.html" >High-Sensitivity ELISA Kits<span class="cnt">(3)</span></a>
+                    <a href="/html/web/en/products/kits/ko-validation-elisa-kits/index.html" >KO-Validation ELISA Kits<span class="cnt">(48)</span></a>
+                    <a href="/html/web/en/products/kits/human-elisa-kits/index.html" >Human ELISA Kits<span class="cnt">(788)</span></a>
+                    <a href="/html/web/en/products/kits/mouse-elisa-kits/index.html" >Mouse ELISA Kits<span class="cnt">(224)</span></a>
+                    <a href="/html/web/en/products/kits/rat-elisa-kits/index.html" >Rat ELISA Kits<span class="cnt">(179)</span></a>
+                    <a href="/html/web/en/products/kits/universal-elisa-kits/index.html" >Universal ELISA Kits<span class="cnt">(64)</span></a>
+                    <a href="/html/web/en/products/kits/rare-species-elisa-kits/index.html" >Rare-Species ELISA Kits<span class="cnt">(43)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/en/products/proteins/index.html">Proteins<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/en/products/proteins/native-proteins/index.html" >Native Proteins<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/proteins/recombinant-proteins/index.html" >Recombinant Proteins<span class="cnt">(12)</span></a>
-                    <a href="/html/web/en/products/proteins/active-proteins/index.html" >Active Proteins<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/proteins/transmembrane-proteins/index.html" >Transmembrane Proteins<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/proteins/recombinant-proteins/index.html" >Recombinant Proteins<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/proteins/cytokines/index.html" >Cytokines<span class="cnt">(0)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/en/products/antibodies/index.html">Antibodies<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/en/products/antibodies/polyclonal-antibodies/index.html" >Polyclonal Antibodies<span class="cnt">(12)</span></a>
-                    <a href="/html/web/en/products/antibodies/secondary-antibodies/index.html" >Secondary Antibodies<span class="cnt">(0)</span></a>
                     <a href="/html/web/en/products/antibodies/monoclonal-antibodies/index.html" >Monoclonal Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/tag-antibodies/index.html" >Tag Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/small-molecule-antibodies/index.html" >Small Molecule Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/chip-antibodies/index.html" >ChIP Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/recombinant-antibodies/index.html" >Recombinant Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/histone-modification-antibodies/index.html" >Histone Modification Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/biosimilar-antibodies/index.html" >Biosimilar Antibodies<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/antibodies/housekeeping-antibodies/index.html" >Housekeeping Antibodies<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/antibodies/polyclonal-antibodies/index.html" >Polyclonal Antibodies<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/antibodies/secondary-antibodies/index.html" >Secondary Antibodies<span class="cnt">(0)</span></a>
                     <a href="/html/web/en/products/antibodies/antibody-pairs/index.html" >Antibody Pairs<span class="cnt">(0)</span></a>
                 </div>
             </li>
             <li class="cat ">
                 <a class="cat-tt" href="/html/web/en/products/others/index.html">Others<i class="arr">▾</i></a>
                 <div class="cat-sons">
-                    <a href="/html/web/en/products/others/cytokines/index.html" >Cytokines<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/others/ivd-reagents/index.html" >IVD Reagents<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/others/molecular-biology/index.html" >Molecular Biology Products<span class="cnt">(0)</span></a>
-                    <a href="/html/web/en/products/others/small-molecules/index.html" >Small Molecules<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/others/biochemical-kits/index.html" >Biochemical Kits<span class="cnt">(0)</span></a>
+                    <a href="/html/web/en/products/others/other-reagents/index.html" >Other Research Reagents<span class="cnt">(0)</span></a>
                 </div>
             </li>
         </ul>
@@ -196,323 +250,363 @@
     <div class="bq2-main">
         <div class="bq2-prodrows">
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000001.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="human ADAM15 (Disintegrin and metalloproteinase domain-containing protein 15) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460067089432577.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat total SOD (superoxide dismutase) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000001.html">human ADAM15 (Disintegrin and metalloproteinase domain-containing protein 15) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0677</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0677Descriptionhuman A…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460067089432577.html">Rat total SOD (superoxide dismutase) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0158</p>
+                    <p class="kv">Sensitivity: 0.24ng/mL</p>
+                    <p class="kv">Detection Range: 0.781-50ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat total SOD (superoxide di…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000001.pdf" data-name="BQE-H0677-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460067089432577.pdf" data-name="BQE-R0158-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000002.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine HSP70 (Heat shock protein 70) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/universal-elisa-kits/2108460067282370561.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Poly HRP-Goat anti Rabbit IgG (H&L)"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000002.html">Bovine HSP70 (Heat shock protein 70) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0001</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/universal-elisa-kits/2108460067282370561.html">Poly HRP-Goat anti Rabbit IgG (H&L)</a></p>
+                    <p class="no">Code: BQA-0001</p>
                     <p class="kv">Sensitivity: </p>
                     <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0001DescriptionBovine …</p>
+                    <p class="ds">Product IntroductionProduct NamePoly HRP-Goat anti Rabbit Ig…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000002.pdf" data-name="BQE-B0001-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460067282370561.pdf" data-name="BQA-0001-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">100ul</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000003.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human AFP (alpha Fetoprotein) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065617231873.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat NLRP3 (Nod Like Receptor Pyrins-3) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000003.html">Human AFP (alpha Fetoprotein) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0678</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0678DescriptionHuman A…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065617231873.html">Rat NLRP3 (Nod Like Receptor Pyrins-3) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0169</p>
+                    <p class="kv">Sensitivity: 0.12ng/mL</p>
+                    <p class="kv">Detection Range: 0.313-20ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat NLRP3 (Nod Like Receptor…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000003.pdf" data-name="BQE-H0678-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065617231873.pdf" data-name="BQE-R0169-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000004.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine IGF-1 (Insulin-like growth factor 1) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066514812929.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat IgM (Immunoglobulin M) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000004.html">Bovine IGF-1 (Insulin-like growth factor 1) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0002</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0002DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066514812929.html">Rat IgM (Immunoglobulin M) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0080</p>
+                    <p class="kv">Sensitivity: 0.14ng/mL</p>
+                    <p class="kv">Detection Range: 0.313-20ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat IgM (Immunoglobulin M) E…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000004.pdf" data-name="BQE-B0002-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066514812929.pdf" data-name="BQE-R0080-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000005.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human APOA1 (Apolipoprotein A-I ) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066384789506.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat IgE (Immunoglobulin E) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000005.html">Human APOA1 (Apolipoprotein A-I ) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0679</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0679DescriptionHuman A…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066384789506.html">Rat IgE (Immunoglobulin E) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0077</p>
+                    <p class="kv">Sensitivity: 1.11ng/mL</p>
+                    <p class="kv">Detection Range: 3.125-200ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat IgE (Immunoglobulin E) E…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000005.pdf" data-name="BQE-H0679-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066384789506.pdf" data-name="BQE-R0077-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000006.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine IL-1b (Interleukin 1 Beta) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065998913537.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat Calprotectin (Calprotectin) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000006.html">Bovine IL-1b (Interleukin 1 Beta) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0003</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0003DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065998913537.html">Rat Calprotectin (Calprotectin) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0026</p>
+                    <p class="kv">Sensitivity: 2.87ng/mL</p>
+                    <p class="kv">Detection Range: 6.25-400ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat Calprotectin (Calprotect…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000006.pdf" data-name="BQE-B0003-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065998913537.pdf" data-name="BQE-R0026-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000007.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human ASGR1 (Asialoglycoprotein receptor 1) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066644836354.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat PACAP-38 (Pituitary Adenylate Cyclase Activating Polypeptide 38) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000007.html">Human ASGR1 (Asialoglycoprotein receptor 1) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0680</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0680DescriptionHuman A…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066644836354.html">Rat PACAP-38 (Pituitary Adenylate Cyclase Activating Polypeptide 38) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0124</p>
+                    <p class="kv">Sensitivity: 38.75pg/mL</p>
+                    <p class="kv">Detection Range: 125-8000pg/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat PACAP-38 (Pituitary Aden…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000007.pdf" data-name="BQE-H0680-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066644836354.pdf" data-name="BQE-R0124-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000008.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine IL-6 (Interleukin 6) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066128936962.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat CTX-II (Cross Linked C-telopeptide of Type II Collagen) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000008.html">Bovine IL-6 (Interleukin 6) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0004</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0004DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066128936962.html">Rat CTX-II (Cross Linked C-telopeptide of Type II Collagen) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0046</p>
+                    <p class="kv">Sensitivity: 0.07ng/mL</p>
+                    <p class="kv">Detection Range: 0.156-10ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat CTX-II (Cross Linked C-t…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000008.pdf" data-name="BQE-B0004-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066128936962.pdf" data-name="BQE-R0046-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000009.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human B2M (Beta2-microglobulin) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066577727490.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat OVA sIgG (Ovalbumin specific Immunoglobulin G) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000009.html">Human B2M (Beta2-microglobulin) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0681</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0681DescriptionHuman B…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066577727490.html">Rat OVA sIgG (Ovalbumin specific Immunoglobulin G) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0123</p>
+                    <p class="kv">Sensitivity: 0.12ng/mL</p>
+                    <p class="kv">Detection Range: 0.313-20ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat OVA sIgG (Ovalbumin spec…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000009.pdf" data-name="BQE-H0681-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066577727490.pdf" data-name="BQE-R0123-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000010.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine PRL (Prolactin) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066196045826.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat D2D (D-Dimer) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000010.html">Bovine PRL (Prolactin) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0005</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0005DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066196045826.html">Rat D2D (D-Dimer) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0049</p>
+                    <p class="kv">Sensitivity: 2.59ng/mL</p>
+                    <p class="kv">Detection Range: 7.813-500ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat D2D (D-Dimer) ELISA KitC…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000010.pdf" data-name="BQE-B0005-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066196045826.pdf" data-name="BQE-R0049-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000011.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human BAMBI (BMP and activin membrane-bound inhibitor homolog) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065298464770.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat PTX3 (Pentraxin 3) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000011.html">Human BAMBI (BMP and activin membrane-bound inhibitor homolog) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0682</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0682DescriptionHuman B…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065298464770.html">Rat PTX3 (Pentraxin 3) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0138</p>
+                    <p class="kv">Sensitivity: 0.06ng/mL</p>
+                    <p class="kv">Detection Range: 0.156-10ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat PTX3 (Pentraxin 3) ELISA…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000011.pdf" data-name="BQE-H0682-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065298464770.pdf" data-name="BQE-R0138-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000012.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine serum albumin (BSA) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066066022401.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat CGRP (Calcitonin Gene Related Peptide) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000012.html">Bovine serum albumin (BSA) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0006</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0006DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066066022401.html">Rat CGRP (Calcitonin Gene Related Peptide) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0033</p>
+                    <p class="kv">Sensitivity: 4.52pg/mL</p>
+                    <p class="kv">Detection Range: 15.625-1000pg/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat CGRP (Calcitonin Gene Re…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000012.pdf" data-name="BQE-B0006-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066066022401.pdf" data-name="BQE-R0033-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000013.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human BCAM (Basal cell adhesion molecule) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065231355905.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat MPO (Myeloperoxidase) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000013.html">Human BCAM (Basal cell adhesion molecule) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0683</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0683DescriptionHuman B…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065231355905.html">Rat MPO (Myeloperoxidase) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0107</p>
+                    <p class="kv">Sensitivity: 0.31ng/mL</p>
+                    <p class="kv">Detection Range: 0.781-50ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat MPO (Myeloperoxidase) EL…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000013.pdf" data-name="BQE-H0683-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065231355905.pdf" data-name="BQE-R0107-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000014.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Bovine TGF-β (Transforming Growth Factor Beta) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066451898369.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat IgG (Immunoglobulin G) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000014.html">Bovine TGF-β (Transforming Growth Factor Beta) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-B0007</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-B0007DescriptionBovine …</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066451898369.html">Rat IgG (Immunoglobulin G) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0079</p>
+                    <p class="kv">Sensitivity: 0.46ng/mL</p>
+                    <p class="kv">Detection Range: 1.563-100ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat IgG (Immunoglobulin G) E…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000014.pdf" data-name="BQE-B0007-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066451898369.pdf" data-name="BQE-R0079-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000015.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human BID (BH3-interacting domain death agonist) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460067156541441.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat β-CTx (Beta Crosslaps) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000015.html">Human BID (BH3-interacting domain death agonist) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0684</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0684DescriptionHuman B…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460067156541441.html">Rat β-CTx (Beta Crosslaps) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0166</p>
+                    <p class="kv">Sensitivity: 34.97pg/mL</p>
+                    <p class="kv">Detection Range: 125-8000pg/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat β-CTx (Beta Crosslaps) E…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000015.pdf" data-name="BQE-H0684-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460067156541441.pdf" data-name="BQE-R0166-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000016.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Canine ADP/Acrp30 (Adiponectin) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065424293889.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat TJP1 (Tight Junction Protein 1) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000016.html">Canine ADP/Acrp30 (Adiponectin) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-CA0001</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-CA0001DescriptionCanine…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065424293889.html">Rat TJP1 (Tight Junction Protein 1) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0155</p>
+                    <p class="kv">Sensitivity: 0.07ng/mL</p>
+                    <p class="kv">Detection Range: 0.156-10ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat TJP1 (Tight Junction Pro…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000016.pdf" data-name="BQE-CA0001-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065424293889.pdf" data-name="BQE-R0155-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000017.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human BST1 (ADP-ribosyl cyclase 2) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065680146434.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat ACTH (Adrenocorticotropic Hormone) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000017.html">Human BST1 (ADP-ribosyl cyclase 2) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0685</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0685DescriptionHuman B…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065680146434.html">Rat ACTH (Adrenocorticotropic Hormone) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0003</p>
+                    <p class="kv">Sensitivity: 7.5pg/mL</p>
+                    <p class="kv">Detection Range: 15.625-1000pg/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat ACTH (Adrenocorticotropi…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000017.pdf" data-name="BQE-H0685-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065680146434.pdf" data-name="BQE-R0003-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000018.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Canine Anti-KLH IgG (anti Keyhole Limpet Hemocyanin  IgG) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/universal-elisa-kits/2108460067349479425.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Poly HRP-Goat anti Human IgG (H&L)"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000018.html">Canine Anti-KLH IgG (anti Keyhole Limpet Hemocyanin  IgG) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-CA0002</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/universal-elisa-kits/2108460067349479425.html">Poly HRP-Goat anti Human IgG (H&L)</a></p>
+                    <p class="no">Code: BQA-0002</p>
                     <p class="kv">Sensitivity: </p>
                     <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-CA0002DescriptionCanine…</p>
+                    <p class="ds">Product IntroductionProduct NamePoly HRP-Goat anti Human IgG…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000018.pdf" data-name="BQE-CA0002-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460067349479425.pdf" data-name="BQA-0002-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">100ul</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000019.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Human C1INH (Complement 1 Inhibitor) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460066963603457.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat TAT (Thrombin-Antithrombin Complex) ELISA Kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000019.html">Human C1INH (Complement 1 Inhibitor) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-H0686</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-H0686DescriptionHuman C…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460066963603457.html">Rat TAT (Thrombin-Antithrombin Complex) ELISA Kit</a></p>
+                    <p class="no">Code: BQE-R0151</p>
+                    <p class="kv">Sensitivity: 4.48pg/mL</p>
+                    <p class="kv">Detection Range: 15.625-1000pg/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat TAT (Thrombin-Antithromb…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000019.pdf" data-name="BQE-H0686-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460066963603457.pdf" data-name="BQE-R0151-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
             <div class="bq2-row">
-                <a class="bq2-row-img" href="/html/web/en/products/kits/elisa-kits/47000000000000020.html"><img src="/upload/1/bioquanti/pimg_elisa.jpg" alt="Canine Anti-KLH IgM (anti Keyhole Limpet Hemocyanin  IgM) ELISA Kit"></a>
+                <a class="bq2-row-img" href="/html/web/en/products/kits/rat-elisa-kits/2108460065873084417.html"><img src="/template/1/bioquanti/en/images/newui/kit-photo-sm.png" alt="Rat Anti-KLH IgG (Keyhole Limpet Hemocyanin IgG)ELISA kit"></a>
                 <div class="bq2-row-info">
-                    <p class="tt"><a href="/html/web/en/products/kits/elisa-kits/47000000000000020.html">Canine Anti-KLH IgM (anti Keyhole Limpet Hemocyanin  IgM) ELISA Kit</a></p>
-                    <p class="no">Code: BQE-CA0003</p>
-                    <p class="kv">Sensitivity: </p>
-                    <p class="kv">Detection Range: </p>
-                    <p class="ds">Product SpecificationsCatalog No.BQE-CA0003DescriptionCanine…</p>
+                    <p class="tt"><a href="/html/web/en/products/kits/rat-elisa-kits/2108460065873084417.html">Rat Anti-KLH IgG (Keyhole Limpet Hemocyanin IgG)ELISA kit</a></p>
+                    <p class="no">Code: BQE-R0010</p>
+                    <p class="kv">Sensitivity: 0.78ng/mL</p>
+                    <p class="kv">Detection Range: 1.563-100ng/mL</p>
+                    <p class="ds">Product IntroductionProduct NameRat Anti-KLH IgG (Keyhole Li…</p>
                     <div class="bq2-row-acts">
-                        <button type="button" class="act-manual" data-url="/upload/1/manual/47000000000000020.pdf" data-name="BQE-CA0003-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
+                        <button type="button" class="act-manual" data-url="/upload/1/manual/2108460065873084417.pdf" data-name="BQE-R0010-Manual.pdf"><img src="/template/1/bioquanti/en/images/newui/icon-manual.png" alt="">Manual</button>
                     </div>
                 </div>
                 <div class="bq2-row-side">
-                    <p class="price">Inquiry</p>
+                    <select class="bq-specsel">
+                        <option value="0">96T</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -541,10 +635,10 @@
         <div class="bq-pagination">
             <a href="/html/web/en/products/kits/index.html">First</a>
             <a href="/html/web/en/products/kits/index.html">Prev</a>
-            <span class="cur">1</span><span>/ 1</span>
-            <a href="/html/web/en/products/kits/index.html">Next</a>
-            <a href="/html/web/en/products/kits/index.html">Last</a>
-            <span style="margin-left:10px;color:#999;">Total 20</span>
+            <span class="cur">1</span><span>/ 74</span>
+            <a href="/html/web/en/products/kits/list-2.html">Next</a>
+            <a href="/html/web/en/products/kits/list-74.html">Last</a>
+            <span style="margin-left:10px;color:#999;">Total 1473</span>
         </div>
     </div>
 </div>

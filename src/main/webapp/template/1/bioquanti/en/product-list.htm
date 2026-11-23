@@ -66,11 +66,14 @@
                 <div class="bq2-row-info">
                     <p class="tt"><a href="{ms:global.html/}${field.link}">${field.title}</a></p>
                     <#assign aid = field.link?string?keep_after_last('/')?replace('.html','')>
+                    <#-- Code: spec table CATALOG_NO first, fallback to article keyword first segment (BQA code), then shorttitle -->
                     <#assign codeNo = ((field.CATALOG_NO)!'')?string>
+                    <#if !codeNo?has_content><#assign codeNo = ((field.keyword!'')?string)?trim></#if>
+                    <#assign codeNo = (codeNo?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim>
                     <#if !codeNo?has_content><#assign codeNo = (field.shorttitle)!''></#if>
                     <p class="no">Code: ${codeNo}</p>
-                    <p class="kv">Sensitivity: ${(field.SENSITIVITY)!''}</p>
-                    <p class="kv">Detection Range: ${(field.DETECT_RANGE)!''}</p>
+                    <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><p class="kv">Sensitivity: ${field.SENSITIVITY}</p></#if>
+                    <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><p class="kv">Detection Range: ${field.DETECT_RANGE}</p></#if>
                     <#assign intro = ((field.content)!'')?string?replace('<[^>]+>','','r')?replace('&nbsp;',' ')?replace('\\s+',' ','r')?trim>
                     <#if intro?length gt 60><#assign intro = intro[0..59] + '…'></#if>
                     <#if intro?has_content><p class="ds">${intro}</p></#if>

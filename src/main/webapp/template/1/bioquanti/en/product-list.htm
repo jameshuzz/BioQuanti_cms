@@ -72,10 +72,18 @@
                     <#assign codeNo = (codeNo?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim>
                     <#if !codeNo?has_content><#assign codeNo = (field.shorttitle)!''></#if>
                     <p class="no">Code: ${codeNo}</p>
+                    <#-- Intro from body table with display-only separators; parse Host/Application for antibody params -->
+                    <#assign introFull = ((field.content)!'')?string?replace('</th><td>', ': ', 'r')?replace('</td></tr>', '; ', 'r')?replace('<h3>[^<]*</h3>', '', 'r')?replace('<[^>]+>', '', 'r')?replace('&nbsp;', ' ')?replace('\\s+', ' ', 'r')?trim>
+                    <#assign abHost = ''><#assign abApp = ''>
+                    <#if introFull?contains('Host: ')><#assign abHost = introFull?keep_after('Host: ')?keep_before(';')?trim></#if>
+                    <#if introFull?contains('Tested Application: ')><#assign abApp = introFull?keep_after('Tested Application: ')?keep_before(';')?trim></#if>
                     <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><p class="kv">Sensitivity: ${field.SENSITIVITY}</p></#if>
                     <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><p class="kv">Detection Range: ${field.DETECT_RANGE}</p></#if>
-                    <#assign intro = ((field.content)!'')?string?replace('<[^>]+>','','r')?replace('&nbsp;',' ')?replace('\\s+',' ','r')?trim>
-                    <#if intro?length gt 60><#assign intro = intro[0..59] + '…'></#if>
+                    <#-- Antibody params: Host / Tested Application (parsed from body), kits show nothing -->
+                    <#if abHost?has_content && abHost != '-'><p class="kv">Host: ${abHost}</p></#if>
+                    <#if abApp?has_content && abApp != '-'><p class="kv">Application: ${abApp}</p></#if>
+                    <#assign intro = introFull>
+                    <#if intro?length gt 90><#assign intro = intro[0..89] + '…'></#if>
                     <#if intro?has_content><p class="ds">${intro}</p></#if>
                     <div class="bq2-row-acts">
                         <button type="button" class="act-manual" data-url="/upload/1/manual/${aid}.pdf" data-name="${codeNo}-Manual.pdf"><img src="/{ms:global.style/}en/images/newui/icon-manual.png" alt="">Manual</button>

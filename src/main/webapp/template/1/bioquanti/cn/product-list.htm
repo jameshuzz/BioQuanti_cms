@@ -73,10 +73,18 @@
                     <#assign codeNo = (codeNo?replace('，', ',')?replace('；', ',')?replace(';', ','))?keep_before(',')?trim>
                     <#if !codeNo?has_content><#assign codeNo = (field.shorttitle)!''></#if>
                     <p class="no">货号：${codeNo}</p>
+                    <#-- 简介取正文表格，显示层加分隔符（不影响数据与详情页）；并解析宿主/应用作为抗体参数行 -->
+                    <#assign introFull = ((field.content)!'')?string?replace('</th><td>', '：', 'r')?replace('</td></tr>', '；', 'r')?replace('<h3>[^<]*</h3>', '', 'r')?replace('<[^>]+>', '', 'r')?replace('&nbsp;', ' ')?replace('\\s+', ' ', 'r')?trim>
+                    <#assign abHost = ''><#assign abApp = ''>
+                    <#if introFull?contains('宿主：')><#assign abHost = introFull?keep_after('宿主：')?keep_before('；')?trim></#if>
+                    <#if introFull?contains('应用：')><#assign abApp = introFull?keep_after('应用：')?keep_before('；')?trim></#if>
                     <#if field.SENSITIVITY?? && field.SENSITIVITY?has_content><p class="kv">灵敏度：${field.SENSITIVITY}</p></#if>
                     <#if field.DETECT_RANGE?? && field.DETECT_RANGE?has_content><p class="kv">检测范围：${field.DETECT_RANGE}</p></#if>
-                    <#assign intro = ((field.content)!'')?string?replace('<[^>]+>','','r')?replace('&nbsp;',' ')?replace('\\s+',' ','r')?trim>
-                    <#if intro?length gt 60><#assign intro = intro[0..59] + '…'></#if>
+                    <#-- 抗体专属参数：宿主/应用（正文解析），试剂盒无此数据不显示 -->
+                    <#if abHost?has_content && abHost != '-'><p class="kv">宿主：${abHost}</p></#if>
+                    <#if abApp?has_content && abApp != '-'><p class="kv">应用：${abApp}</p></#if>
+                    <#assign intro = introFull>
+                    <#if intro?length gt 90><#assign intro = intro[0..89] + '…'></#if>
                     <#if intro?has_content><p class="ds">${intro}</p></#if>
                     <div class="bq2-row-acts">
                         <button type="button" class="act-manual" data-url="/upload/1/manual/${aid}.pdf" data-name="${codeNo}-说明书.pdf"><img src="/{ms:global.style/}cn/images/newui/icon-manual.png" alt="">说明书</button>

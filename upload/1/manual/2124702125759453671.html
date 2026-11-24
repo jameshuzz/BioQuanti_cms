@@ -3,66 +3,25 @@
 <head>
 <meta charset="UTF-8"/>
 <style>
-    @page { size: A4; margin: 3.6cm 1.9cm 2cm 1.9cm;
+    @page { size: A4; margin: 2.4cm 2cm 2cm 2cm;
         @bottom-center { content: counter(page) " / " counter(pages); font-family: 'NotoSerifSC'; font-size: 10.5pt; color: #1F3864; }
         @bottom-right { content: "www.bioquanti.com"; font-family: 'NotoSerifSC'; font-size: 10.5pt; color: #C99C33; } }
-    @page plain { margin: 3.6cm 1.9cm 2cm 1.9cm;
-        @bottom-center { content: none; }
-        @bottom-right { content: none; } }
-    body { font-family: 'NotoSerifSC'; font-size: 12pt; color: #000; line-height: 1.5; margin: 0; }
-    p { margin: 0; text-align: justify; text-indent: 2em; }
-    p.li, p.noind { text-indent: 0; }
-
-    .cover { page: plain; page-break-after: always; text-align: left; padding-top: 30px; }
-    .cover p { text-indent: 0; }
-    .cover .logo { font-size: 26pt; font-weight: bold; color: #C99C33; letter-spacing: 0.5px; }
-    .cover .logo sup { font-size: 12pt; }
-    .cover h1 { font-family: 'NotoSansSC'; font-size: 20pt; font-weight: bold; margin: 14px 0 0; line-height: 1.45; }
-    .cover h2.ab-sub { font-family: 'NotoSansSC'; font-size: 15pt; font-weight: bold; color: #1F3864; margin: 8px 0 0; }
-    .cover-grid { width: 72%; border-collapse: collapse; margin-top: 46px; }
-    .cover-grid td { border: none; padding: 5px 0; font-size: 12pt; text-align: left; }
-    .cover-grid td.k { width: 21%; }
-    .cover .intro { margin-top: 44px; }
-    .cover .tel { margin-top: 30px; line-height: 2; }
-    .cover .notice { margin-top: 150px; text-align: center; font-weight: bold; line-height: 2; }
-
-    h2.sec { font-size: 14pt; font-weight: bold; color: #FFF; background: #000080;
-        padding: 3px 6px; margin: 16px 0 10px; page-break-after: avoid; }
+    body { font-family: 'Times New Roman', 'NotoSerifSC', serif; font-size: 12pt; color: #000; line-height: 1.6; margin: 0; }
+    h1.ttl { font-family: 'Times New Roman', 'NotoSansSC', sans-serif; font-size: 17pt; font-weight: bold; text-align: center; margin: 2px 0 0; line-height: 1.4; }
+    p.sub { font-family: 'Times New Roman', 'NotoSansSC', sans-serif; font-size: 14pt; font-weight: bold; text-align: center; margin: 6px 0 0; }
+    h2.sec { font-size: 13pt; font-weight: bold; text-decoration: underline; margin: 18px 0 8px; page-break-after: avoid; }
     table { border-collapse: collapse; width: 100%; margin: 6px 0; }
-    table.ab-tbl td { border: none; padding: 6px 4px; font-size: 11.5pt; vertical-align: top; text-align: left; }
-    table.ab-tbl td.k { width: 24%; font-weight: bold; }
-    .note { margin: 10px 0 4px; }
-    .note p, p.note { text-indent: 0; font-size: 11pt; line-height: 1.55; }
-    .gold { color: #C99C33; }
+    table.ab-tbl td { border: none; padding: 5px 4px; font-size: 11.5pt; vertical-align: top; text-align: left; }
+    table.ab-tbl td.k { width: 26%; font-weight: bold; white-space: nowrap; }
+    p.note { text-indent: 0; font-weight: bold; font-size: 11.5pt; line-height: 1.6; margin: 14px 0 0; }
 </style>
 </head>
 <body>
 
-<!-- ==================== 封面 ==================== -->
-<div class="cover">
-    <div class="logo">BioQuanti<sup>&reg;</sup></div>
-    <h1>{{PRODUCT_NAME}} Antibody</h1>
-    <!--IF:CLONALITY=Monoclonal--><h2 class="ab-sub">{{HOST}} Monoclonal, Protein A Purified</h2><!--ENDIF-->
-    <!--IF:CLONALITY=Polyclonal--><h2 class="ab-sub">{{HOST}} PAb, Antigen Affinity Purified</h2><!--ENDIF-->
-    <table class="cover-grid">
-        <tr><td class="k">Catalog No.:</td><td>{{CATALOG_NO}}</td></tr>
-        <tr><td class="k">Size:</td><td>{{SIZE}}</td></tr>
-        <tr><td class="k">Host:</td><td>{{HOST}}</td></tr>
-        <tr><td class="k">Clonality:</td><td>{{CLONALITY}}</td></tr>
-        <tr><td class="k">Application:</td><td>{{APPLICATION}}</td></tr>
-    </table>
-    <p class="intro">This antibody is intended for research use only.</p>
-    <p class="tel">
-        销售电话（微信同号）：18627880041<br/>
-        技术支持电话（微信同号）：15988423858
-    </p>
-    <div class="notice">
-        请在实验前仔细阅读本说明书<br/>
-        本产品仅供科学研究使用，不用于临床诊断
-    </div>
-</div>
+<h1 class="ttl">{{ANTIBODY_TITLE}} Antibody,</h1>
+<!--IF:CLONALITY=Monoclonal--><p class="sub">{{HOST}} Monoclonal, Protein A Purified</p><!--ENDIF-->
+<!--IF:CLONALITY=Polyclonal--><p class="sub">{{HOST}} PAb, Antigen Affinity Purified</p><!--ENDIF-->
 
-<!-- ==================== Product Information ==================== -->
 <h2 class="sec">Product Information</h2>
 <table class="ab-tbl">
     <tr><td class="k">Catalog No.:</td><td>{{CATALOG_NO}}</td></tr>
@@ -78,7 +37,6 @@
         Sodium azide is recommended to avoid contamination (final concentration 0.05%-0.1%). It is toxic to cells and should be disposed of properly. Avoid repeated freeze-thaw cycles.</td></tr>
 </table>
 
-<!-- ==================== Application ==================== -->
 <h2 class="sec">Application</h2>
 <table class="ab-tbl">
     <tr><td class="k">Tested Application:</td><td>{{APPLICATION}}</td></tr>

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +69,21 @@ public class ManualAction extends BaseAction {
 	@ResponseBody
 	@LogAnn(title = "一键生成说明书附件", businessType = BusinessTypeEnum.UPDATE)
 	@RequiresPermissions("cms:manual:bind")
-	public ResultData generateAttach(@RequestParam String templateId) {
-		Map<String, Object> result = manualTemplateBiz.generateAttachmentsAsync(templateId);
+	public ResultData generateAttach(@RequestParam String templateId,
+	                                 @RequestParam(required = false) String productIds) {
+		Map<String, Object> result;
+		if (StringUtils.isNotBlank(productIds)) {
+			// 指定产品生成（绑定弹窗按行/勾选生成）：仅对传出的文章id生成附件
+			List<String> ids = new ArrayList<>();
+			for (String id : productIds.split(",")) {
+				if (StringUtils.isNotBlank(id)) {
+					ids.add(id.trim());
+				}
+			}
+			result = manualTemplateBiz.generateAttachmentsAsync(templateId, ids);
+		} else {
+			result = manualTemplateBiz.generateAttachmentsAsync(templateId);
+		}
 		if (!Boolean.TRUE.equals(result.get("accepted"))) {
 			return ResultData.build().error(String.valueOf(result.get("message")));
 		}

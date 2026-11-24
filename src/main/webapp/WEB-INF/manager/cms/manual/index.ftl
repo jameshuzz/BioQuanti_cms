@@ -128,6 +128,8 @@
                     <el-button type="primary" :disabled="selection.length == 0" @click="saveBind(true)"
                                v-loading="bindSaving">绑定选中 {{ selection.length }} 个产品到本模板</el-button>
                     <el-button type="warning" plain :disabled="selection.length == 0" @click="saveBind(false)">解绑选中</el-button>
+                    <el-button type="success" plain :disabled="selection.length == 0"
+                               @click="generateAttachIds(bindDialog.template, selection)">生成选中附件（{{ selection.length }}）</el-button>
                 </@shiro.hasPermission>
                 <span class="warn-tag" v-if="moveOutCount > 0" style="margin-left:10px;">
                     ⚠ 当前勾选中 {{ moveOutCount }} 个产品将从其他模板移出（一个产品只能绑定一个模板）
@@ -148,6 +150,13 @@
                         <span v-if="!scope.row.templateId" style="color:#909399;">未绑定</span>
                         <span v-else-if="scope.row.templateId == bindDialog.template.id" style="color:#67C23A;">本模板</span>
                         <span v-else class="other-template">{{ scope.row.templateName || '其他模板' }}（将移出）</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="110" fixed="right">
+                    <template #default="scope">
+                        <el-button type="primary" link size="small"
+                                   :disabled="scope.row.templateId != bindDialog.template.id"
+                                   @click="generateAttachIds(bindDialog.template, [scope.row.id])">生成附件</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -477,12 +486,33 @@
                     });
                 });
             },
-            // 打开进度弹窗并开始轮询
-            openProgressDialog: function (row) {
+            // ============ 指定产品生成附件（绑定弹窗行内/勾选） ============
+            // 仅对选中产品生成说明书PDF并静态化对应页面，用于少量产品快速生成与测试
+            generateAttachIds: function (template, rowsOrIds) {
+                var that = this;
+                var ids = (rowsOrIds || []).map(function (r) { return typeof r === 'string' ? r : r.id; });
+                if (!ids.length) return;
+                that.$confirm('将对选中的 ' + ids.length + ' 个产品生成说明书PDF附件，并同步静态化对应产品页面（页面立即生效）', '生成附件', {
+                    confirmButtonText: '开始生成', cancelButtonText: '取消', type: 'warning'
+                }).then(function () {
+                    ms.http.post(ms.manager + '/cms/manual/attach/generate.do', {
+                        templateId: template.id,
+                        productIds: ids.join(',')
+                    }).then(function (res) {
+                        if (res.result) {
+                            that.openProgressDialog(template, ids.length);
+                        } else {
+                            that.$notify({title: '生成失败', message: res.msg, type: 'error', duration: 0});
+                        }
+                    });
+                });
+            },
+            // 打开进度弹窗并开始轮询（total 可选：指定产品生成时传实际数量）
+            openProgressDialog: function (row, total) {
                 var that = this, d = that.progressDialog;
                 d.templateId = row.id; d.name = row.templateName;
                 d.stage = 'generating'; d.running = true;
-                d.total = row.bindCount || 0; d.done = 0; d.success = 0; d.failed = 0;
+                d.total = total || row.bindCount || 0; d.done = 0; d.success = 0; d.failed = 0;
                 d.current = ''; d.pages = 0; d.message = ''; d.errors = [];
                 d.percentage = 0; d.status = '';
                 d.staticTotal = 0; d.staticDone = 0;

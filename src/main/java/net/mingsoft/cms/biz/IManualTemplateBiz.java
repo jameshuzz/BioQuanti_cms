@@ -124,6 +124,14 @@ public interface IManualTemplateBiz extends IBaseBiz<ManualTemplateEntity> {
 	Map<String, Object> generateAttachmentsAsync(String templateId);
 
 	/**
+	 * 异步生成指定产品的说明书附件（用于少量产品快速生成/测试）
+	 * @param templateId 模板id
+	 * @param productIds 产品文章id（LINK_ID）集合，仅对这些产品生成
+	 * @return {total:产品数, accepted:是否受理}；同模板已有任务进行中时 accepted=false
+	 */
+	Map<String, Object> generateAttachmentsAsync(String templateId, java.util.List<String> productIds);
+
+	/**
 	 * 查询附件生成进度
 	 * @param templateId 模板id
 	 * @return {templateId, total, done, success, failed, current, stage, running, pages, errors, message}

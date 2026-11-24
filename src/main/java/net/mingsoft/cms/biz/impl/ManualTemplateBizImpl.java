@@ -331,6 +331,18 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		if (StringUtils.isNotBlank(calUnit)) {
 			specData.put("CAL_UNIT", calUnit);
 		}
+		// 抗体说明书标题：PRODUCT_NAME 去掉尾部“宿主 克隆类型”后派生靶点名（如 "14-3-3 epsilon Rabbit Polyclonal"→"14-3-3 epsilon"），
+		// 供模板 {{ANTIBODY_TITLE}} 渲染 "Xxx Antibody," 大标题；试剂盒无 PRODUCT_NAME/HOST/CLONALITY 不受影响
+		Object pnObj = specData.get("PRODUCT_NAME");
+		if (pnObj != null && StringUtils.isNotBlank(String.valueOf(pnObj)) && !"null".equals(String.valueOf(pnObj))) {
+			String abName = String.valueOf(pnObj).trim();
+			String abHost = String.valueOf(specData.get("HOST")).trim();
+			String abClonal = String.valueOf(specData.get("CLONALITY")).trim();
+			String suffix = " " + abHost + " " + abClonal;
+			String target = abName.endsWith(suffix) && suffix.length() > 3
+					? abName.substring(0, abName.length() - suffix.length()) : abName;
+			specData.put("ANTIBODY_TITLE", target);
+		}
 		String tid = StringUtils.isNotBlank(templateId) ? templateId : String.valueOf(specData.get("TEMPLATE_ID"));
 		if (StringUtils.isBlank(tid) || "null".equals(tid)) {
 			throw new BusinessException("该产品未绑定说明书模板");
@@ -442,6 +454,11 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 
 	@Override
 	public Map<String, Object> generateAttachmentsAsync(String templateId) {
+		return generateAttachmentsAsync(templateId, null);
+	}
+
+	@Override
+	public Map<String, Object> generateAttachmentsAsync(String templateId, java.util.List<String> productIds) {
 		Map<String, Object> old = GENERATE_PROGRESS.get(templateId);
 		if (old != null && Boolean.TRUE.equals(old.get("running"))) {
 			Map<String, Object> r = new HashMap<>();
@@ -454,7 +471,7 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 		GENERATE_PROGRESS.put(templateId, progress);
 		GENERATE_POOL.submit(() -> {
 			try {
-				runGenerateTask(templateId, progress);
+				runGenerateTask(templateId, progress, productIds);
 			} catch (Exception e) {
 				progress.put("stage", "done");
 				progress.put("running", false);
@@ -512,6 +529,15 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 	 * @param progress 非空时实时更新进度供前端轮询
 	 */
 	private Map<String, Object> runGenerateTask(String templateId, Map<String, Object> progress) {
+		return runGenerateTask(templateId, progress, null);
+	}
+
+	/**
+	 * 执行完整的附件生成流程（逐个渲染PDF+回填MANUAL+最后定向静态化）
+	 * @param progress 非空时实时更新进度供前端轮询
+	 * @param productIds 限定生成的产品文章id（null=全部绑定产品）
+	 */
+	private Map<String, Object> runGenerateTask(String templateId, Map<String, Object> progress, java.util.List<String> productIds) {
 		ManualTemplateEntity entity = getTemplate(templateId);
 		if (!"1".equals(entity.getStatus())) {
 			if (progress != null) {
@@ -522,13 +548,20 @@ public class ManualTemplateBizImpl extends BaseBizImpl<IManualTemplateDao, Manua
 			throw new BusinessException("说明书模板已停用");
 		}
 		// 绑定的产品（仅已发布、未删除且栏目启用的才生成）
-		List<Map<String, Object>> products = queryForList(
+		StringBuilder sql = new StringBuilder(
 				"SELECT s.LINK_ID AS linkId, s.CATALOG_NO AS catalogNo FROM (SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID FROM " + SPEC_TABLE
 						+ " UNION ALL SELECT LINK_ID, CATALOG_NO, TEMPLATE_ID FROM " + AB_SPEC_TABLE + ") s "
 						+ "INNER JOIN cms_content c ON c.ID = s.LINK_ID "
 						+ "LEFT JOIN cms_category ca ON ca.ID = c.CATEGORY_ID "
-						+ "WHERE s.TEMPLATE_ID = ? AND c.del = 0 AND c.content_display = '0' AND ca.category_display = 'enable'",
-				templateId);
+						+ "WHERE s.TEMPLATE_ID = ? AND c.del = 0 AND c.content_display = '0' AND ca.category_display = 'enable'");
+		List<Object> params = new ArrayList<>();
+		params.add(templateId);
+		if (productIds != null && !productIds.isEmpty()) {
+			String placeholders = String.join(",", java.util.Collections.nCopies(productIds.size(), "?"));
+			sql.append(" AND s.LINK_ID IN (").append(placeholders).append(")");
+			params.addAll(productIds);
+		}
+		List<Map<String, Object>> products = queryForList(sql.toString(), params.toArray());
 		Map<String, Object> result = new HashMap<>();
 		result.put("total", products.size());
 		if (progress != null) {

@@ -708,7 +708,7 @@ button.bq2-docbtn{border:0;cursor:pointer;font-family:inherit;}
 
 /* category article count (sidebar stats per design) */
 .bq2-cattree .cat-sons a .cnt{margin-left:4px;color:#93A1AF;font-size:12px;font-weight:400;}
-.bq2-cattree .cat-sons a.cur .cnt{color:rgba(255,255,255,.85);}
+.bq2-cattree .cat-sons a.cur .cnt{color:#1E88C7;}
 
 /* ===== Inner pages: article rows / promo rows / pagination ===== */
 .bq2-artrows,.bq2-promorows{display:flex;flex-direction:column;gap:16px;}
